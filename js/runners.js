@@ -113,14 +113,14 @@ function renderRunners(){
           <div class="runner-card-hdr">
             <div class="runner-icon" style="background:${r.color}22;border:1px solid ${r.color}44">${r.icon}</div>
             <div>
-              <div style="font-family:'Orbitron',monospace;font-size:12px;color:${r.color};letter-spacing:2px">${r.name}</div>
-              <div style="font-size:9px;color:#4a6070;margin-top:2px">${r.role}</div>
+              <div style="font-family:'Orbitron',monospace;font-size:15px;color:${r.color};letter-spacing:2px">${r.name}</div>
+              <div style="font-size:16px;color:#4a6070;margin-top:2px">${r.role}</div>
             </div>
             <span class="runner-tier" style="border-color:${tierCol[r.tier]||"#4a6070"};color:${tierCol[r.tier]||"#4a6070"}">${r.tier}-TIER</span>
           </div>
           <div class="runner-card-body">
-            <div style="font-size:9px;color:#8aa0b0;line-height:1.6;margin-bottom:8px">${r.playstyle}</div>
-            <div style="display:flex;gap:8px;font-size:8px">
+            <div style="font-size:16px;color:#8aa0b0;line-height:1.6;margin-bottom:8px">${r.playstyle}</div>
+            <div style="display:flex;gap:8px;font-size:15px">
               <span style="color:#4a6070">SOLO: <span style="color:${tierCol[r.solo[0]]||"#c8d8e8"}">${r.solo.split(" — ")[0]}</span></span>
               <span style="color:#4a6070">SQUAD: <span style="color:${tierCol[r.squad[0]]||"#c8d8e8"}">${r.squad.split(" — ")[0]}</span></span>
             </div>
@@ -147,7 +147,7 @@ function renderRunnerDetail(el){
   });
   const salvRows=Object.entries(salvNeeds).sort((a,b)=>b[1]-a[1]).map(([item,qty])=>{
     const loc=SL[item];const rc=loc?RC[loc.rarity]:"#4a6070";
-    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 5px;border-left:2px solid ${rc};margin-bottom:3px;font-size:9px">
+    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 5px;border-left:2px solid ${rc};margin-bottom:3px;font-size:16px">
       <span style="color:#c8d8e8">◈ ${item}</span><span style="color:#ffd600;font-weight:700">×${qty}</span>
     </div>`;
   }).join("");
@@ -159,22 +159,22 @@ function renderRunnerDetail(el){
         <div style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;background:${r.color}22;border:2px solid ${r.color}66">${r.icon}</div>
         <div>
           <div style="font-family:'Orbitron',monospace;font-size:18px;color:${r.color};letter-spacing:3px">${r.name}</div>
-          <div style="font-size:10px;color:#4a6070;margin-top:2px">${r.role}</div>
+          <div style="font-size:16px;color:#4a6070;margin-top:2px">${r.role}</div>
         </div>
         <div style="margin-left:auto;text-align:right">
-          <div style="font-size:9px;color:#4a6070">SOLO / SQUAD</div>
-          <div style="font-size:11px;font-weight:700">${r.solo.split(" — ")[0]} / ${r.squad.split(" — ")[0]}</div>
+          <div style="font-size:16px;color:#4a6070">SOLO / SQUAD</div>
+          <div style="font-size:15px;font-weight:700">${r.solo.split(" — ")[0]} / ${r.squad.split(" — ")[0]}</div>
         </div>
       </div>
-      <div style="font-size:10px;color:#8aa0b0;line-height:1.7;margin-bottom:16px;border-left:3px solid ${r.color};padding-left:12px">${r.playstyle}</div>
+      <div style="font-size:16px;color:#8aa0b0;line-height:1.7;margin-bottom:16px;border-left:3px solid ${r.color};padding-left:12px">${r.playstyle}</div>
 
       <div class="rd-grid">
         <div class="rd-box">
           <div class="rd-box-hdr" style="color:${r.color}">⚡ ABILITIES</div>
-          <div style="margin-bottom:8px"><div style="font-size:8px;color:#ffd600;letter-spacing:1px;margin-bottom:3px">PRIME</div><div style="font-size:9px;color:#c8d8e8">${r.prime}</div></div>
-          <div style="margin-bottom:8px"><div style="font-size:8px;color:#4a9eff;letter-spacing:1px;margin-bottom:3px">TACTICAL</div><div style="font-size:9px;color:#c8d8e8">${r.tactical}</div></div>
-          <div><div style="font-size:8px;color:#39ff14;letter-spacing:1px;margin-bottom:3px">TRAITS</div>
-            ${r.traits.map(t=>`<div style="font-size:9px;color:#c8d8e8;margin-bottom:2px">• ${t}</div>`).join("")}
+          <div style="margin-bottom:8px"><div style="font-size:15px;color:#ffd600;letter-spacing:1px;margin-bottom:3px">PRIME</div><div style="font-size:16px;color:#c8d8e8">${r.prime}</div></div>
+          <div style="margin-bottom:8px"><div style="font-size:15px;color:#4a9eff;letter-spacing:1px;margin-bottom:3px">TACTICAL</div><div style="font-size:16px;color:#c8d8e8">${r.tactical}</div></div>
+          <div><div style="font-size:15px;color:#39ff14;letter-spacing:1px;margin-bottom:3px">TRAITS</div>
+            ${r.traits.map(t=>`<div style="font-size:16px;color:#c8d8e8;margin-bottom:2px">• ${t}</div>`).join("")}
           </div>
         </div>
         <div class="rd-box">
@@ -182,42 +182,42 @@ function renderRunnerDetail(el){
           ${r.weapons.map(w=>{
             const wc={S:"#39ff14",A:"#ffd600",B:"#ff6d00"}[w.tier]||"#4a6070";
             return`<div style="margin-bottom:8px;padding:5px 8px;border-left:2px solid ${wc}">
-              <div style="font-size:9px;color:#fff;font-weight:700">${w.name} <span style="font-size:7px;padding:1px 4px;border:1px solid ${wc};color:${wc}">${w.tier}</span></div>
-              <div style="font-size:8px;color:#4a6070;margin-top:2px">${w.role}</div>
+              <div style="font-size:16px;color:#fff;font-weight:700">${w.name} <span style="font-size:15px;padding:1px 4px;border:1px solid ${wc};color:${wc}">${w.tier}</span></div>
+              <div style="font-size:15px;color:#4a6070;margin-top:2px">${w.role}</div>
             </div>`;
           }).join("")}
         </div>
         <div class="rd-box">
           <div class="rd-box-hdr" style="color:#bf5af2">💎 CORES</div>
-          ${r.cores.map(c=>`<div style="font-size:9px;color:#c8d8e8;margin-bottom:6px;padding:4px 8px;border-left:2px solid #bf5af2">• ${c}</div>`).join("")}
-          <div style="margin-top:10px"><div style="font-size:8px;color:#4a6070;letter-spacing:1px;margin-bottom:4px">BEST SYNERGY</div>
-            <div style="font-size:9px;color:#8aa0b0">${r.synergy}</div>
+          ${r.cores.map(c=>`<div style="font-size:16px;color:#c8d8e8;margin-bottom:6px;padding:4px 8px;border-left:2px solid #bf5af2">• ${c}</div>`).join("")}
+          <div style="margin-top:10px"><div style="font-size:15px;color:#4a6070;letter-spacing:1px;margin-bottom:4px">BEST SYNERGY</div>
+            <div style="font-size:16px;color:#8aa0b0">${r.synergy}</div>
           </div>
         </div>
         <div class="rd-box">
           <div class="rd-box-hdr" style="color:#ff6d00">📦 BUILD COSTS</div>
           <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #1a2530">
-            <span style="color:#4a6070;font-size:9px">Total Credits</span>
+            <span style="color:#4a6070;font-size:16px">Total Credits</span>
             <span style="color:#ffd600;font-weight:700">₵${totalCreds.toLocaleString()}</span>
           </div>
-          ${salvRows||`<div style="color:#4a6070;font-size:9px">No salvage needed</div>`}
+          ${salvRows||`<div style="color:#4a6070;font-size:16px">No salvage needed</div>`}
         </div>
       </div>
 
       <div class="rd-box" style="margin-bottom:14px">
         <div class="rd-box-hdr" style="color:#39ff14">💡 TIPS</div>
-        ${r.tips.map(t=>`<div style="font-size:9px;color:#8aa0b0;margin-bottom:6px;padding-left:10px;border-left:2px solid #1a2530">• ${t}</div>`).join("")}
+        ${r.tips.map(t=>`<div style="font-size:16px;color:#8aa0b0;margin-bottom:6px;padding-left:10px;border-left:2px solid #1a2530">• ${t}</div>`).join("")}
       </div>
 
       <div class="rd-box" style="margin-bottom:14px">
         <div class="rd-box-hdr" style="color:#00e5ff">⬆ PRIORITY UPGRADES FOR THIS BUILD</div>
-        <div style="margin-bottom:8px;font-size:9px;color:#4a6070">${r.upgrades.reason}</div>
+        <div style="margin-bottom:8px;font-size:16px;color:#4a6070">${r.upgrades.reason}</div>
         <div style="display:flex;flex-wrap:wrap;gap:4px">
           ${load.map(({id,lv})=>{
             const u=UG.find(x=>x.id===id);
             if(!u)return"";
             const fc=FC[u.f];
-            return`<span style="font-size:8px;padding:3px 8px;border:1px solid ${fc.color};color:${fc.color};background:${fc.color}11">${u.name} Lv${lv}</span>`;
+            return`<span style="font-size:15px;padding:3px 8px;border:1px solid ${fc.color};color:${fc.color};background:${fc.color}11">${u.name} Lv${lv}</span>`;
           }).join("")}
         </div>
       </div>

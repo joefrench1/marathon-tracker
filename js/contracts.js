@@ -55,17 +55,17 @@ function renderContracts(){
   el.innerHTML = `
     <div style="padding:16px 20px;border-bottom:1px solid #1a2530;display:flex;align-items:center;gap:12px;position:sticky;top:0;background:#070d12;z-index:10;flex-wrap:wrap">
       <div class="page-hdr" style="margin:0">📋 CONTRACT TRACKER</div>
-      <div style="font-size:10px;color:#4a6070">${totalDone}/${totalAll} completed</div>
+      <div style="font-size:16px;color:#4a6070">${totalDone}/${totalAll} completed</div>
       <div style="flex:1;background:#1a2530;height:4px;border-radius:2px;margin:0 10px">
         <div style="width:${Math.round(totalDone/totalAll*100)}%;height:100%;background:linear-gradient(90deg,#00e5ff,#39ff14);border-radius:2px"></div>
       </div>
-      <button onclick="if(confirm('Reset all contracts?')){completedContracts={};saveContracts();renderContracts();}" style="padding:4px 10px;border:1px solid #ff006e;color:#ff006e;background:transparent;cursor:pointer;font-family:inherit;font-size:9px">↺ RESET</button>
+      <button onclick="if(confirm('Reset all contracts?')){completedContracts={};saveContracts();renderContracts();}" style="padding:4px 10px;border:1px solid #ff006e;color:#ff006e;background:transparent;cursor:pointer;font-family:inherit;font-size:16px">↺ RESET</button>
     </div>
     <div style="padding:16px 20px">
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
         ${["All",...factions].map(f=>{
           const fc = FC[f]||{color:"#4a6070"};
-          return`<button onclick="contractFilter='${f}';renderContracts()" style="padding:4px 12px;border:1px solid ${contractFilter===f?(f==="All"?"#00e5ff":fc.color):"#1a2530"};color:${contractFilter===f?(f==="All"?"#00e5ff":fc.color):"#4a6070"};background:transparent;cursor:pointer;font-family:inherit;font-size:9px;letter-spacing:1px;transition:all .2s">${f}</button>`;
+          return`<button onclick="contractFilter='${f}';renderContracts()" style="padding:4px 12px;border:1px solid ${contractFilter===f?(f==="All"?"#00e5ff":fc.color):"#1a2530"};color:${contractFilter===f?(f==="All"?"#00e5ff":fc.color):"#4a6070"};background:transparent;cursor:pointer;font-family:inherit;font-size:16px;letter-spacing:1px;transition:all .2s">${f}</button>`;
         }).join("")}
       </div>
       ${factions.filter(f=>contractFilter==="All"||contractFilter===f).map(faction=>{
@@ -74,7 +74,7 @@ function renderContracts(){
         const done = cs.filter(c=>completedContracts[c.id]).length;
         return`<div style="margin-bottom:16px">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid ${fc.color}44">
-            <div style="font-family:'Orbitron',monospace;font-size:10px;color:${fc.color};letter-spacing:2px">${faction}</div>
+            <div style="font-family:'Orbitron',monospace;font-size:16px;color:${fc.color};letter-spacing:2px">${faction}</div>
             <div style="font-size:8.5px;color:#4a6070">${done}/${cs.length}</div>
           </div>
           ${cs.map(c=>{
@@ -84,9 +84,9 @@ function renderContracts(){
               <div style="flex:1">
                 <div style="font-size:9.5px;color:${done?"#4a6070":"#c8d8e8"};margin-bottom:2px">${c.name}</div>
                 <div style="font-size:8.5px;color:#4a6070;margin-bottom:2px">${c.desc}</div>
-                <div style="font-size:8px;color:${fc.color}">Reward: ${c.reward}</div>
+                <div style="font-size:15px;color:${fc.color}">Reward: ${c.reward}</div>
               </div>
-              <div style="font-size:8px;padding:1px 5px;border:1px solid ${fc.color}44;color:#4a6070">R${c.rank}+</div>
+              <div style="font-size:15px;padding:1px 5px;border:1px solid ${fc.color}44;color:#4a6070">R${c.rank}+</div>
             </div>`;
           }).join("")}
         </div>`;

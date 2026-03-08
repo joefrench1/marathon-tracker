@@ -5,7 +5,7 @@ function renderSalv(){
   const salvPlan=getSalvMapPlanned();
   const el=document.getElementById("sv-c");
   if(!salv.length && !salvPlan.length){
-    el.innerHTML='<div class="sv-empty">// UNLOCK OR PLAN UPGRADES IN THE TREE FIRST //<br><br><span style="font-size:9px;color:#4a6070">Left-click = owned &nbsp;·&nbsp; Right-click = planned (purple)</span></div>';return;
+    el.innerHTML='<div class="sv-empty">// UNLOCK OR PLAN UPGRADES IN THE TREE FIRST //<br><br><span style="font-size:16px;color:#4a6070">Left-click = owned &nbsp;·&nbsp; Right-click = planned (purple)</span></div>';return;
   }
   const supCnt=salv.filter(([n])=>SL[n]?.rarity==="superior").length;
 
@@ -22,24 +22,24 @@ function renderSalv(){
       <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px">
         ${isPlan?`<span class="svc-r" style="border-color:#bf5af2;color:#bf5af2">PLANNED</span>`:""}
         ${loc?`<span class="svc-r" style="border-color:${rc};color:${rc}">${loc.rarity}</span>
-               <span style="color:#4a9eff;font-size:9px">📍 ${loc.map}</span>`
-             :`<span style="color:#ff6d00;font-size:8px">⚠ Location unconfirmed</span>`}
+               <span style="color:#4a9eff;font-size:16px">📍 ${loc.map}</span>`
+             :`<span style="color:#ff6d00;font-size:15px">⚠ Location unconfirmed</span>`}
       </div>
-      ${loc?`<div style="color:#8aa0b0;font-size:9px">POIs: ${loc.pois.join(" · ")}</div>
-             <div style="color:#6a8090;font-size:8px;margin-top:2px;font-style:italic">${loc.note}</div>
-             ${loc.rarity==="superior"?'<div style="margin-top:5px;font-size:8px;color:#bf5af2;padding:2px 5px;background:rgba(191,90,242,.08);border-left:2px solid #bf5af2">⚠ Superior — UESC Incursion & Superior Locked Rooms only</div>':""}`:""}
+      ${loc?`<div style="color:#8aa0b0;font-size:16px">POIs: ${loc.pois.join(" · ")}</div>
+             <div style="color:#6a8090;font-size:15px;margin-top:2px;font-style:italic">${loc.note}</div>
+             ${loc.rarity==="superior"?'<div style="margin-top:5px;font-size:15px;color:#bf5af2;padding:2px 5px;background:rgba(191,90,242,.08);border-left:2px solid #bf5af2">⚠ Superior — UESC Incursion & Superior Locked Rooms only</div>':""}`:""}
     </div>`;
   }).join("");
 
   const ownedSection=salv.length?`
-    <div style="font-family:'Orbitron',monospace;font-size:10px;color:#ff6d00;letter-spacing:2px;margin-bottom:8px">✓ OWNED UPGRADES SALVAGE</div>
+    <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ff6d00;letter-spacing:2px;margin-bottom:8px">✓ OWNED UPGRADES SALVAGE</div>
     <div class="sv-grid">${makeCards(salv,false)}</div>`:"";
 
   const plannedSection=salvPlan.length?`
-    <div style="font-family:'Orbitron',monospace;font-size:10px;color:#bf5af2;letter-spacing:2px;margin:${salv.length?"14px":0} 0 8px">◈ PLANNED UPGRADES SALVAGE</div>
+    <div style="font-family:'Orbitron',monospace;font-size:16px;color:#bf5af2;letter-spacing:2px;margin:${salv.length?"14px":0} 0 8px">◈ PLANNED UPGRADES SALVAGE</div>
     <div class="sv-grid">${makeCards(salvPlan,true)}</div>`:"";
 
-  el.innerHTML=`<div style="margin-bottom:12px;font-size:9px;color:#4a6070">
+  el.innerHTML=`<div style="margin-bottom:12px;font-size:16px;color:#4a6070">
     ${getActives().length} owned · ${getPlanned().length} planned &nbsp;|&nbsp;
     <span style="color:#ff6d00">${salv.length} owned salvage types</span> &nbsp;·&nbsp;
     <span style="color:#bf5af2">${salvPlan.length} planned salvage types</span>
@@ -78,13 +78,13 @@ function renderBuild(){
     }
     return`<div class="bvc" style="border-left:3px solid ${fc.color}">
       <div style="font-family:'Orbitron',monospace;font-size:8.5px;color:${fc.color};margin-bottom:2px">${u.name}</div>
-      <div style="font-size:8px;color:${fc.color}55;margin-bottom:3px">${u.f}</div>
-      <div style="font-size:8px;color:#4a6070;margin-bottom:3px">Level ${lv}/${getMaxLv(u)} · Rank ${u.levels[0].rank}+</div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap;font-size:8px">
+      <div style="font-size:15px;color:${fc.color}55;margin-bottom:3px">${u.f}</div>
+      <div style="font-size:15px;color:#4a6070;margin-bottom:3px">Level ${lv}/${getMaxLv(u)} · Rank ${u.levels[0].rank}+</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;font-size:15px">
         <span style="color:#ffd600">₵${cc.toLocaleString()}</span>
         ${Object.entries(sm).map(([i,q])=>`<span style="color:#ff6d00">◈${i.split(" ")[0]} ×${q}</span>`).join("")}
       </div>
-      <div style="font-size:8px;font-weight:700;color:${fc.color};margin-top:3px">${u.levels[lv-1].eff}</div>
+      <div style="font-size:15px;font-weight:700;color:${fc.color};margin-top:3px">${u.levels[lv-1].eff}</div>
     </div>`;
   }).join("");
 
@@ -131,7 +131,7 @@ function openModal(mode){
   document.getElementById("mtitle").textContent=mode==="save"?"💾 SAVE BUILD":"📂 MANAGE BUILDS";
   const body=document.getElementById("mbody");
   if(mode==="save"){
-    body.innerHTML=`<div style="font-size:9px;color:#4a6070;margin-bottom:8px">
+    body.innerHTML=`<div style="font-size:16px;color:#4a6070;margin-bottom:8px">
       Name your current build to save it. You can load it again later.</div>
       <input class="sinput" id="bname" placeholder="e.g. Early Game, Melee Build..." maxlength="40">
       <div class="mbtns">
@@ -146,7 +146,7 @@ function openModal(mode){
 function renderBuildsModal(body){
   const builds=getBuilds(), keys=Object.keys(builds);
   if(!keys.length){
-    body.innerHTML=`<div style="color:#4a6070;text-align:center;padding:20px;font-size:10px">No saved builds yet.</div>
+    body.innerHTML=`<div style="color:#4a6070;text-align:center;padding:20px;font-size:16px">No saved builds yet.</div>
       <div class="mbtns"><button class="btn br" onclick="closeModal()">CLOSE</button></div>`;
     return;
   }
@@ -154,9 +154,9 @@ function renderBuildsModal(body){
     <span class="brow-n">${k}</span>
     <span class="brow-d">${builds[k].date||""}</span>
     <div class="brow-acts">
-      <button class="btn bg" style="font-size:8px;padding:3px 8px" onclick="doLoad('${k}')">LOAD</button>
-      <button class="btn by" style="font-size:8px;padding:3px 8px" onclick="doExportNamed('${k}')">⬇</button>
-      <button class="btn br" style="font-size:8px;padding:3px 8px" onclick="doDelete('${k}')">✕</button>
+      <button class="btn bg" style="font-size:15px;padding:3px 8px" onclick="doLoad('${k}')">LOAD</button>
+      <button class="btn by" style="font-size:15px;padding:3px 8px" onclick="doExportNamed('${k}')">⬇</button>
+      <button class="btn br" style="font-size:15px;padding:3px 8px" onclick="doDelete('${k}')">✕</button>
     </div>
   </div>`).join("");
   body.innerHTML=`${rows}<div class="mbtns"><button class="btn br" onclick="closeModal()">CLOSE</button></div>`;
@@ -254,20 +254,20 @@ function showPlanHdrTT(e){
   const salv=getSalvMapPlanned();
   const tt=document.getElementById("tt");
   if(!salv.length){
-    tt.innerHTML=`<div style="color:#bf5af2;font-size:9px;font-family:'Share Tech Mono',monospace">No planned upgrades yet.<br>Right-click any node to plan it.</div>`;
+    tt.innerHTML=`<div style="color:#bf5af2;font-size:16px;font-family:'Share Tech Mono',monospace">No planned upgrades yet.<br>Right-click any node to plan it.</div>`;
   } else {
     const rows=salv.map(([item,qty])=>{
       const loc=SL[item];
       const rc=loc?RC[loc.rarity]:"#4a6070";
       return`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 5px;margin-bottom:2px;border-left:2px solid ${rc}">
-        <span style="color:#c8d8e8;font-size:9px">◈ ${item}</span>
-        <span style="color:#bf5af2;font-weight:700;font-size:10px;margin-left:10px">×${qty}</span>
+        <span style="color:#c8d8e8;font-size:16px">◈ ${item}</span>
+        <span style="color:#bf5af2;font-weight:700;font-size:16px;margin-left:10px">×${qty}</span>
       </div>`;
     }).join("");
-    tt.innerHTML=`<div style="font-family:'Orbitron',monospace;font-size:10px;color:#bf5af2;margin-bottom:8px">◈ PLANNED SALVAGE</div>
-      <div style="font-size:8px;color:#4a6070;margin-bottom:6px">Right-click upgrades to plan them</div>
+    tt.innerHTML=`<div style="font-family:'Orbitron',monospace;font-size:16px;color:#bf5af2;margin-bottom:8px">◈ PLANNED SALVAGE</div>
+      <div style="font-size:15px;color:#4a6070;margin-bottom:6px">Right-click upgrades to plan them</div>
       ${rows}
-      <div style="margin-top:8px;padding-top:6px;border-top:1px solid #1a2530;font-size:8px;color:#4a6070">
+      <div style="margin-top:8px;padding-top:6px;border-top:1px solid #1a2530;font-size:15px;color:#4a6070">
         Planned credits: <span style="color:#bf5af2">₵${getTotalCredsPlanned().toLocaleString()}</span>
       </div>`;
   }

@@ -103,15 +103,15 @@ function renderMap() {
             style="padding:7px 20px;border:none;border-right:1px solid #1a2530;
                    background:${activeMap===id?m.color+'22':'transparent'};
                    color:${activeMap===id?m.color:'#4a6070'};
-                   cursor:pointer;font-family:inherit;font-size:12px;letter-spacing:1px;transition:all .2s">
+                   cursor:pointer;font-family:inherit;font-size:15px;letter-spacing:1px;transition:all .2s">
             ${m.name}
           </button>`).join("")}
       </div>
       <div style="margin-left:auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <div style="font-size:11px;color:#5a7080">${map.sub}</div>
+        <div style="font-size:15px;color:#5a7080">${map.sub}</div>
         <div style="display:flex;align-items:center;gap:3px">
           ${Array.from({length:5},(_,i)=>`<div style="width:9px;height:9px;border-radius:2px;background:${i<map.danger?'#ff4444':'#1a2530'}"></div>`).join("")}
-          <span style="font-size:10px;color:#4a6070;margin-left:5px">DANGER ${map.danger}/5</span>
+          <span style="font-size:16px;color:#4a6070;margin-left:5px">DANGER ${map.danger}/5</span>
         </div>
       </div>
     </div>
@@ -119,7 +119,7 @@ function renderMap() {
     <div class="map-body">
       <!-- SVG MAP -->
       <div class="map-svg-area">
-        <div style="font-size:11px;color:#3a5060;margin-bottom:10px;letter-spacing:1px">
+        <div style="font-size:15px;color:#3a5060;margin-bottom:10px;letter-spacing:1px">
           Click any zone to see details &nbsp;·&nbsp; Hover loot pins for tips
         </div>
         <svg viewBox="0 0 ${map.vw} ${map.vh}"
@@ -179,7 +179,7 @@ function renderMap() {
           ${[["#bf5af2","Superior"],["#4a9eff","Enhanced"],["#8aad6a","Standard"],["#ffd600","Event"],["#ff4444","High Risk"]].map(([c,l])=>`
             <div style="display:flex;align-items:center;gap:5px">
               <div style="width:9px;height:9px;border:1px solid ${c};background:${c}28;border-radius:2px"></div>
-              <span style="font-size:10px;color:#4a6070">${l}</span>
+              <span style="font-size:16px;color:#4a6070">${l}</span>
             </div>`).join("")}
         </div>
       </div>
@@ -187,8 +187,8 @@ function renderMap() {
       <!-- SIDEBAR -->
       <div class="map-sidebar">
         <div style="padding:14px 16px;border-bottom:1px solid #1a2530">
-          <div style="font-family:'Orbitron',monospace;font-size:12px;color:${map.color};letter-spacing:2px;margin-bottom:7px">${map.name}</div>
-          <div style="font-size:11px;color:#6a8090;line-height:1.8">${map.desc}</div>
+          <div style="font-family:'Orbitron',monospace;font-size:15px;color:${map.color};letter-spacing:2px;margin-bottom:7px">${map.name}</div>
+          <div style="font-size:15px;color:#6a8090;line-height:1.8">${map.desc}</div>
         </div>
         <div>
           ${selectedZone ? _renderZoneDetail(map) : _renderZoneList(map)}
@@ -206,12 +206,12 @@ function _renderZoneList(map) {
       onmouseleave="this.style.background='';this.style.borderLeftColor='transparent'">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
         <div style="width:8px;height:8px;border-radius:2px;background:${z.tcolor};flex-shrink:0"></div>
-        <div style="font-family:'Orbitron',monospace;font-size:11px;color:${z.color};flex:1">${z.label}</div>
+        <div style="font-family:'Orbitron',monospace;font-size:15px;color:${z.color};flex:1">${z.label}</div>
         <div style="display:flex;gap:2px">
           ${Array.from({length:5},(_,i)=>`<div style="width:5px;height:5px;border-radius:1px;background:${i<z.danger?'#ff4444':'#1a2530'}"></div>`).join("")}
         </div>
       </div>
-      <div style="font-size:10px;color:#5a7080;margin-left:16px">${z.loot.slice(0,2).join(' · ')}</div>
+      <div style="font-size:16px;color:#5a7080;margin-left:16px">${z.loot.slice(0,2).join(' · ')}</div>
     </div>`).join("");
 }
 
@@ -221,29 +221,29 @@ function _renderZoneDetail(map) {
   return `
     <div style="padding:14px 15px;border-bottom:2px solid ${z.color}">
       <button onclick="selectedZone=null;renderMap()"
-        style="font-size:10px;color:#4a6070;background:transparent;border:none;cursor:pointer;font-family:inherit;margin-bottom:10px;padding:0;letter-spacing:1px">
+        style="font-size:16px;color:#4a6070;background:transparent;border:none;cursor:pointer;font-family:inherit;margin-bottom:10px;padding:0;letter-spacing:1px">
         ← ALL ZONES
       </button>
-      <div style="font-family:'Orbitron',monospace;font-size:14px;color:${z.color};margin-bottom:4px">${z.label}</div>
+      <div style="font-family:'Orbitron',monospace;font-size:16px;color:${z.color};margin-bottom:4px">${z.label}</div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
-        <span style="font-size:10px;padding:2px 8px;border:1px solid ${z.tcolor};color:${z.tcolor}">${z.tier}</span>
+        <span style="font-size:16px;padding:2px 8px;border:1px solid ${z.tcolor};color:${z.tcolor}">${z.tier}</span>
         <div style="display:flex;align-items:center;gap:3px">
           ${Array.from({length:5},(_,i)=>`<div style="width:7px;height:7px;border-radius:1px;background:${i<z.danger?'#ff4444':'#1a2530'}"></div>`).join("")}
-          <span style="font-size:10px;color:#4a6070;margin-left:4px">Danger ${z.danger}/5</span>
+          <span style="font-size:16px;color:#4a6070;margin-left:4px">Danger ${z.danger}/5</span>
         </div>
       </div>
-      <div style="font-size:11px;color:#7a9aaa;line-height:1.8;margin-bottom:14px">${z.desc}</div>
+      <div style="font-size:15px;color:#7a9aaa;line-height:1.8;margin-bottom:14px">${z.desc}</div>
       <div style="margin-bottom:14px">
-        <div style="font-size:10px;color:#4a6070;letter-spacing:1px;margin-bottom:7px">LOOT</div>
+        <div style="font-size:16px;color:#4a6070;letter-spacing:1px;margin-bottom:7px">LOOT</div>
         ${z.loot.map(l=>`
-          <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1a2530;font-size:11px">
+          <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1a2530;font-size:15px">
             <div style="width:4px;height:4px;border-radius:50%;background:${z.color};flex-shrink:0"></div>
             <span>${l}</span>
           </div>`).join("")}
       </div>
       <div style="background:rgba(57,255,20,.06);border-left:3px solid #39ff14;padding:10px 12px">
-        <div style="font-size:10px;color:#39ff14;margin-bottom:4px;letter-spacing:1px">💡 TACTICAL TIP</div>
-        <div style="font-size:11px;color:#8aaa90;line-height:1.8">${z.tip}</div>
+        <div style="font-size:16px;color:#39ff14;margin-bottom:4px;letter-spacing:1px">💡 TACTICAL TIP</div>
+        <div style="font-size:15px;color:#8aaa90;line-height:1.8">${z.tip}</div>
       </div>
     </div>`;
 }
@@ -255,16 +255,16 @@ function showMapZoneTT(e, mapId, zoneId) {
   const tt = document.getElementById("tt");
   tt.innerHTML = `
     <div class="tt-name" style="color:${zone.color}">${zone.label}</div>
-    <div style="font-size:10px;color:${zone.tcolor};margin-bottom:6px">${zone.tier} · Danger ${zone.danger}/5</div>
-    <div style="font-size:11px;color:#8aa0b0;line-height:1.7;margin-bottom:8px">${zone.desc.substring(0,120)}...</div>
-    <div style="font-size:10px;color:#4a6070">Click to pin full details →</div>`;
+    <div style="font-size:16px;color:${zone.tcolor};margin-bottom:6px">${zone.tier} · Danger ${zone.danger}/5</div>
+    <div style="font-size:15px;color:#8aa0b0;line-height:1.7;margin-bottom:8px">${zone.desc.substring(0,120)}...</div>
+    <div style="font-size:16px;color:#4a6070">Click to pin full details →</div>`;
   tt.style.display = "block"; moveTT(e);
 }
 
 function showMapPinTT(e, label, tip, hot) {
   const tt = document.getElementById("tt");
   tt.innerHTML = `
-    <div style="font-size:11px;font-weight:700;color:${hot?'#ff4444':'#ffd600'};margin-bottom:6px">${decodeURIComponent(label)}</div>
-    <div style="font-size:11px;color:#8aa0b0;line-height:1.7">${decodeURIComponent(tip)}</div>`;
+    <div style="font-size:15px;font-weight:700;color:${hot?'#ff4444':'#ffd600'};margin-bottom:6px">${decodeURIComponent(label)}</div>
+    <div style="font-size:15px;color:#8aa0b0;line-height:1.7">${decodeURIComponent(tip)}</div>`;
   tt.style.display = "block"; moveTT(e);
 }

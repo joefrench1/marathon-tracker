@@ -232,7 +232,7 @@ function renderWeapons(el){
         </div>
         ${favouriteLoadouts.length?`
           <div style="margin-top:20px">
-            <div style="font-family:'Orbitron',monospace;font-size:10px;color:#ffd600;letter-spacing:2px;margin-bottom:10px">★ SAVED LOADOUTS</div>
+            <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ffd600;letter-spacing:2px;margin-bottom:10px">★ SAVED LOADOUTS</div>
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">
               ${favouriteLoadouts.map((f,i)=>renderSavedLoadout(f,i)).join("")}
             </div>
@@ -250,13 +250,13 @@ function renderWeaponCard(w){
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
       <span style="font-size:20px">${w.emoji}</span>
       <div style="flex:1">
-        <div style="font-family:'Orbitron',monospace;font-size:10px;color:#c8d8e8;letter-spacing:1px">${w.name}</div>
-        <div style="font-size:8px;color:#4a6070;margin-top:1px">${w.type}</div>
+        <div style="font-family:'Orbitron',monospace;font-size:16px;color:#c8d8e8;letter-spacing:1px">${w.name}</div>
+        <div style="font-size:15px;color:#4a6070;margin-top:1px">${w.type}</div>
       </div>
-      <span style="font-size:8px;padding:2px 6px;border:1px solid ${tc};color:${tc}">${w.tier}</span>
+      <span style="font-size:15px;padding:2px 6px;border:1px solid ${tc};color:${tc}">${w.tier}</span>
     </div>
     <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
-      <span style="font-size:7px;padding:1px 5px;border:1px solid ${ac};color:${ac}">${w.ammo}</span>
+      <span style="font-size:15px;padding:1px 5px;border:1px solid ${ac};color:${ac}">${w.ammo}</span>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
       ${renderStatBar("DMG",w.dmg,250,"#ff4444")}
@@ -273,7 +273,7 @@ function renderWeaponCard(w){
 function renderStatBar(label,val,max,col){
   const pct=Math.min(100,Math.round(val/max*100));
   return`<div>
-    <div style="font-size:7px;color:#4a6070;margin-bottom:2px">${label}</div>
+    <div style="font-size:15px;color:#4a6070;margin-bottom:2px">${label}</div>
     <div style="height:3px;background:#1a2530;border-radius:1px">
       <div style="height:100%;width:${pct}%;background:${col};border-radius:1px"></div>
     </div>
@@ -286,23 +286,23 @@ function renderWeaponDetail(){
   const ac=AMMO_COL[w.ammo]||"#4a6070";
   const isFav=favouriteLoadouts.some(f=>f.weaponId===w.id);
   return`
-    <div style="cursor:pointer;font-size:9px;color:#4a6070;margin-bottom:14px;letter-spacing:1px" onclick="selectedWeapon=null;renderGuns()">← BACK TO ALL WEAPONS</div>
+    <div style="cursor:pointer;font-size:16px;color:#4a6070;margin-bottom:14px;letter-spacing:1px" onclick="selectedWeapon=null;renderGuns()">← BACK TO ALL WEAPONS</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
       <div>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
           <span style="font-size:36px">${w.emoji}</span>
           <div>
             <div style="font-family:'Orbitron',monospace;font-size:16px;color:#c8d8e8;letter-spacing:2px">${w.name}</div>
-            <div style="font-size:9px;color:#4a6070;margin-top:2px">${w.type}</div>
+            <div style="font-size:16px;color:#4a6070;margin-top:2px">${w.type}</div>
             <div style="display:flex;gap:6px;margin-top:5px">
-              <span style="font-size:8px;padding:2px 6px;border:1px solid ${tc};color:${tc}">${w.tier}-TIER</span>
-              <span style="font-size:8px;padding:2px 6px;border:1px solid ${ac};color:${ac}">${w.ammo}</span>
+              <span style="font-size:15px;padding:2px 6px;border:1px solid ${tc};color:${tc}">${w.tier}-TIER</span>
+              <span style="font-size:15px;padding:2px 6px;border:1px solid ${ac};color:${ac}">${w.ammo}</span>
             </div>
           </div>
         </div>
         <div style="font-size:9.5px;color:#8aa0b0;line-height:1.7;margin-bottom:12px;padding:10px;background:#0d1318;border:1px solid #1a2530;border-left:3px solid ${tc}">${w.desc}</div>
         <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px">
-          <div style="font-family:'Orbitron',monospace;font-size:9px;color:#ffd600;margin-bottom:10px">📊 BASE STATS</div>
+          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ffd600;margin-bottom:10px">📊 BASE STATS</div>
           ${[["Damage",w.dmg,250,"#ff4444"],["Fire Rate (RPM)",w.rof,900,"#39ff14"],["Magazine",w.mag,75,"#4a9eff"],["Range",w.range,100,"#ffd600"],["Handling",w.handling,100,"#bf5af2"],["Reload Speed",(100-(w.reload/5*100)).toFixed(0),100,"#ff6d00"]].map(([l,v,m,c])=>`
             <div style="margin-bottom:8px">
               <div style="display:flex;justify-content:space-between;font-size:8.5px;margin-bottom:3px">
@@ -318,41 +318,41 @@ function renderWeaponDetail(){
           </div>`:""}
         </div>
         <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px">
-          <div style="font-family:'Orbitron',monospace;font-size:9px;color:#00e5ff;margin-bottom:8px">📍 WHERE TO FIND</div>
-          ${w.find.map(f=>`<div style="font-size:9px;color:#8aa0b0;margin-bottom:4px;padding-left:8px;border-left:2px solid #1a2530">• ${f}</div>`).join("")}
+          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#00e5ff;margin-bottom:8px">📍 WHERE TO FIND</div>
+          ${w.find.map(f=>`<div style="font-size:16px;color:#8aa0b0;margin-bottom:4px;padding-left:8px;border-left:2px solid #1a2530">• ${f}</div>`).join("")}
         </div>
       </div>
       <div>
         <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px">
-          <div style="font-family:'Orbitron',monospace;font-size:9px;color:#bf5af2;margin-bottom:8px">🔩 MOD SLOTS</div>
+          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#bf5af2;margin-bottom:8px">🔩 MOD SLOTS</div>
           <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">
-            ${w.mods.map(m=>`<span style="font-size:8px;padding:3px 8px;border:1px solid #bf5af2;color:#bf5af2">${m}</span>`).join("")}
+            ${w.mods.map(m=>`<span style="font-size:15px;padding:3px 8px;border:1px solid #bf5af2;color:#bf5af2">${m}</span>`).join("")}
           </div>
-          <div style="font-family:'Orbitron',monospace;font-size:8px;color:#39ff14;margin-bottom:6px">★ BEST MODS</div>
-          ${w.bestMods.map(m=>`<div style="font-size:9px;color:#8aa0b0;margin-bottom:4px;padding:4px 8px;border-left:2px solid #39ff14">◈ ${m}</div>`).join("")}
+          <div style="font-family:'Orbitron',monospace;font-size:15px;color:#39ff14;margin-bottom:6px">★ BEST MODS</div>
+          ${w.bestMods.map(m=>`<div style="font-size:16px;color:#8aa0b0;margin-bottom:4px;padding:4px 8px;border-left:2px solid #39ff14">◈ ${m}</div>`).join("")}
         </div>
         <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px">
-          <div style="font-family:'Orbitron',monospace;font-size:9px;color:#ff6d00;margin-bottom:8px">🏃 BEST FOR</div>
+          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ff6d00;margin-bottom:8px">🏃 BEST FOR</div>
           <div style="display:flex;flex-wrap:wrap;gap:5px">
-            ${w.bestFor.map(r=>`<span style="font-size:8px;padding:3px 8px;border:1px solid #ff6d00;color:#ff6d00">${r}</span>`).join("")}
+            ${w.bestFor.map(r=>`<span style="font-size:15px;padding:3px 8px;border:1px solid #ff6d00;color:#ff6d00">${r}</span>`).join("")}
           </div>
         </div>
         <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px;border-left:3px solid #ffd600">
-          <div style="font-family:'Orbitron',monospace;font-size:9px;color:#ffd600;margin-bottom:6px">💡 PRO TIP</div>
+          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ffd600;margin-bottom:6px">💡 PRO TIP</div>
           <div style="font-size:9.5px;color:#8aa0b0;line-height:1.6">${w.tip}</div>
         </div>
         <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px">
-          <div style="font-family:'Orbitron',monospace;font-size:9px;color:#4a9eff;margin-bottom:8px">RARITY EFFECTS</div>
+          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#4a9eff;margin-bottom:8px">RARITY EFFECTS</div>
           ${["Standard","Enhanced","Deluxe","Superior","Prestige"].map((r,i)=>{
             const rc=RARITY_COL[r];
             const bonuses=["Base stats, basic Chip","Better Chip, 1 pre-slotted mod","Improved Chip perks, 2 mods","Powerful Chip ability, 3 mods","Unique legendary Chip — game-changing perk"][i];
             return`<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:5px">
-              <span style="font-size:7px;padding:1px 5px;border:1px solid ${rc};color:${rc};flex-shrink:0;margin-top:1px">${r.toUpperCase()}</span>
+              <span style="font-size:15px;padding:1px 5px;border:1px solid ${rc};color:${rc};flex-shrink:0;margin-top:1px">${r.toUpperCase()}</span>
               <span style="font-size:8.5px;color:#8aa0b0">${bonuses}</span>
             </div>`;
           }).join("")}
         </div>
-        <button onclick="saveLoadout('${w.id}')" style="width:100%;padding:8px;border:1px solid ${isFav?"#ff006e":"#ffd600"};color:${isFav?"#ff006e":"#ffd600"};background:transparent;cursor:pointer;font-family:inherit;font-size:9px;letter-spacing:1px;transition:all .2s">
+        <button onclick="saveLoadout('${w.id}')" style="width:100%;padding:8px;border:1px solid ${isFav?"#ff006e":"#ffd600"};color:${isFav?"#ff006e":"#ffd600"};background:transparent;cursor:pointer;font-family:inherit;font-size:16px;letter-spacing:1px;transition:all .2s">
           ${isFav?"✕ REMOVE FROM FAVOURITES":"★ SAVE TO FAVOURITES"}
         </button>
       </div>
@@ -366,11 +366,11 @@ function renderSavedLoadout(f,i){
   return`<div style="background:#0d1318;border:1px solid #1a2530;border-left:3px solid #ffd600;padding:10px 12px;display:flex;align-items:center;gap:10px">
     <span style="font-size:18px">${w.emoji}</span>
     <div style="flex:1">
-      <div style="font-size:9px;color:${tc}">${w.name}</div>
-      <div style="font-size:8px;color:#4a6070">${w.type} · ${w.tier}-Tier</div>
+      <div style="font-size:16px;color:${tc}">${w.name}</div>
+      <div style="font-size:15px;color:#4a6070">${w.type} · ${w.tier}-Tier</div>
     </div>
-    <button onclick="selectedWeapon='${w.id}';renderGuns()" style="font-size:8px;padding:3px 8px;border:1px solid #1a2530;color:#c8d8e8;background:transparent;cursor:pointer;font-family:inherit">VIEW</button>
-    <button onclick="favouriteLoadouts.splice(${i},1);saveGunFavourites();renderGuns()" style="font-size:8px;padding:3px 8px;border:1px solid #ff006e;color:#ff006e;background:transparent;cursor:pointer;font-family:inherit">✕</button>
+    <button onclick="selectedWeapon='${w.id}';renderGuns()" style="font-size:15px;padding:3px 8px;border:1px solid #1a2530;color:#c8d8e8;background:transparent;cursor:pointer;font-family:inherit">VIEW</button>
+    <button onclick="favouriteLoadouts.splice(${i},1);saveGunFavourites();renderGuns()" style="font-size:15px;padding:3px 8px;border:1px solid #ff006e;color:#ff006e;background:transparent;cursor:pointer;font-family:inherit">✕</button>
   </div>`;
 }
 
@@ -394,7 +394,7 @@ function renderItemsPage(el){
     <div style="padding:16px 20px">
       ${cats.map(cat=>`
         <div style="margin-bottom:20px">
-          <div style="font-family:'Orbitron',monospace;font-size:10px;color:#4a6070;letter-spacing:2px;margin-bottom:10px;border-bottom:1px solid #1a2530;padding-bottom:6px">${cat.toUpperCase()}</div>
+          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#4a6070;letter-spacing:2px;margin-bottom:10px;border-bottom:1px solid #1a2530;padding-bottom:6px">${cat.toUpperCase()}</div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px">
             ${ITEMS_DATA.filter(i=>i.cat===cat).map(item=>`
               <div style="background:#0d1318;border:1px solid #1a2530;border-left:3px solid ${item.col};padding:10px 12px;cursor:default;position:relative"
@@ -406,8 +406,8 @@ function renderItemsPage(el){
                     <div style="font-size:7.5px;color:#4a6070">${item.cat}</div>
                   </div>
                 </div>
-                <div style="font-size:9px;color:#8aa0b0;line-height:1.5">${item.effect}</div>
-                <div style="font-size:8px;color:#4a6070;margin-top:5px;border-top:1px solid #1a2530;padding-top:4px">📍 ${item.find}</div>
+                <div style="font-size:16px;color:#8aa0b0;line-height:1.5">${item.effect}</div>
+                <div style="font-size:15px;color:#4a6070;margin-top:5px;border-top:1px solid #1a2530;padding-top:4px">📍 ${item.find}</div>
               </div>`).join("")}
           </div>
         </div>`).join("")}
@@ -417,9 +417,9 @@ function renderItemsPage(el){
 function showItemTT(e,id){
   const item=ITEMS_DATA.find(x=>x.id===id);if(!item)return;
   const tt=document.getElementById("tt");
-  tt.innerHTML=`<div style="font-size:9px;color:${item.col};font-family:'Orbitron',monospace;margin-bottom:6px">${item.emoji} ${item.name}</div>
-    <div style="font-size:9px;color:#c8d8e8;margin-bottom:6px">${item.effect}</div>
-    <div style="font-size:8px;color:#39ff14;padding:4px 6px;border-left:2px solid #39ff14;margin-bottom:4px">💡 ${item.tip}</div>
-    <div style="font-size:8px;color:#4a6070">📍 ${item.find}</div>`;
+  tt.innerHTML=`<div style="font-size:16px;color:${item.col};font-family:'Orbitron',monospace;margin-bottom:6px">${item.emoji} ${item.name}</div>
+    <div style="font-size:16px;color:#c8d8e8;margin-bottom:6px">${item.effect}</div>
+    <div style="font-size:15px;color:#39ff14;padding:4px 6px;border-left:2px solid #39ff14;margin-bottom:4px">💡 ${item.tip}</div>
+    <div style="font-size:15px;color:#4a6070">📍 ${item.find}</div>`;
   tt.style.display="block";moveTT(e);
 }

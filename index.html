@@ -55,9 +55,7 @@
 <!-- NAV: grouped tabs -->
 <nav id="nav">
   <div class="nav-group">
-    <button class="nav-tab on" data-tab="home" onclick="showMain('home')">HOME</button>
-    <div class="nav-divider"></div>
-    <button class="nav-tab" data-tab="tree" onclick="showMain('tree')">UPGRADE TREE</button>
+    <button class="nav-tab on" data-tab="tree" onclick="showMain('tree')">UPGRADE TREE</button>
     <button class="nav-tab" data-tab="progress" onclick="showMain('progress')">PROGRESS</button>
     <div class="nav-divider"></div>
     <button class="nav-tab" data-tab="runners" onclick="showMain('runners')">RUNNERS</button>
@@ -73,8 +71,8 @@
 </nav>
 
 <!-- VIEWS -->
-<div id="view-home"      class="view on"></div>
-<div id="view-tree"      class="view">
+<div id="view-home"      class="view"></div>
+<div id="view-tree"      class="view on">
   <div id="fbar"></div>
   <div id="tctrl">
     <button class="tcbtn" id="btn-hi"  onclick="toggleHi()">★ REDDIT GUIDE</button>
@@ -159,7 +157,7 @@ updateHdr();
 renderAuthWidget();
 updateSquadPill();
 tryRestoreSession();
-showMain('home');
+showMain('tree');
 </script>
 </body>
 </html>

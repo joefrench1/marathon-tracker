@@ -4,19 +4,26 @@
 
 // ── Supabase config ──────────────────────
 const SB_URL = "https://ppzulorxyiwkzhfeubhr.supabase.co";
-// Replace with your anon/public key from Supabase → Settings → API
-const SB_KEY = "PASTE_YOUR_ANON_JWT_HERE";
+// Replace with your key from Supabase → Project Settings → API
+// Use EITHER:
+//   • The "anon" JWT key (starts with eyJ...) from the Legacy API Keys tab
+//   • OR the "publishable" key (starts with sb_publishable_...) from the API Keys tab
+// Both work — the publishable key is newer and recommended.
+const SB_KEY = "PASTE_YOUR_ANON_OR_PUBLISHABLE_KEY_HERE";
 
 let authUser   = null;   // { id, username }
 let authToken  = null;   // Supabase JWT
 
 // ── Low-level fetch helper ────────────────
+// Works with both JWT anon key (eyJ...) and publishable key (sb_publishable_...)
+const _isJwt = SB_KEY.startsWith("eyJ");
 async function sbFetch(path, opts = {}, useAuth = true) {
   try {
+    const bearer = useAuth && authToken ? authToken : (_isJwt ? SB_KEY : null);
     const headers = {
       "Content-Type": "application/json",
       "apikey": SB_KEY,
-      "Authorization": "Bearer " + (useAuth && authToken ? authToken : SB_KEY),
+      ...(bearer ? { "Authorization": "Bearer " + bearer } : {}),
       ...(opts.extraHeaders || {})
     };
     const res = await fetch(SB_URL + path, {

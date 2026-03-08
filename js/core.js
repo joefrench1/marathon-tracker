@@ -161,10 +161,10 @@ function renderTree(){
   buildFbar();
   const fc=FC[curF];
   const fi=document.getElementById("fi");
-  fi.style.cssText=`background:${fc.bg};border-bottom-color:${fc.dim};padding:5px 14px;border-bottom:1px solid;display:flex;align-items:center;gap:10px;font-size:9px`;
+  fi.style.cssText=`background:${fc.bg};border-bottom-color:${fc.dim};padding:5px 14px;border-bottom:1px solid;display:flex;align-items:center;gap:10px;font-size:16px`;
   fi.innerHTML=`<span class="fi-name" style="color:${fc.color}">${curF}</span>
     <span style="color:#4a6070">Handler: ${fc.handler}</span>
-    ${showRec?`<span style="margin-left:auto;color:#39ff14;font-size:8px">⚡ green = next unlock</span>`:""}`;
+    ${showRec?`<span style="margin-left:auto;color:#39ff14;font-size:15px">⚡ green = next unlock</span>`:""}`;
 
   let nodes=UG.filter(u=>u.f===curF);
   if(showHi) nodes=nodes.filter(u=>u.hi||LV[u.id]>0);
@@ -241,8 +241,8 @@ function renderTree(){
     div.innerHTML=`
       <div class="node-inner">
         <div class="n-title">
-          ${hiActive?'<span style="color:#ffd600;font-size:9px">★ </span>':""}
-          ${isNext?'<span style="color:#39ff14;font-size:9px">⚡ </span>':""}
+          ${hiActive?'<span style="color:#ffd600;font-size:16px">★ </span>':""}
+          ${isNext?'<span style="color:#39ff14;font-size:16px">⚡ </span>':""}
           ${u.name}
         </div>
         <div class="n-badges">
@@ -253,15 +253,15 @@ function renderTree(){
           ${unverified?'<span class="bdg b-unv">⚠</span>':""}
         </div>
         ${locked
-          ?`<div class="n-desc" style="color:#ff006e55;font-size:8px">🔒 Requires: ${depNames.join(", ")}</div>`
+          ?`<div class="n-desc" style="color:#ff006e55;font-size:15px">🔒 Requires: ${depNames.join(", ")}</div>`
           :activeLv>0
-            ?`<div class="n-eff" style="color:${on?fc.color:PLAN_COL};font-size:9px">${currEff}</div>`
+            ?`<div class="n-eff" style="color:${on?fc.color:PLAN_COL};font-size:16px">${currEff}</div>`
             :`<div class="n-desc">${u.desc.substring(0,65)}${u.desc.length>65?"…":""}</div>`}
         <div class="n-pips">${pipHtml}</div>
         ${!locked?(nextCostObj
           ?`<div class="n-cost">→ ₵${nextCostObj.credits.toLocaleString()}${nextCostObj.salvage.length?" + "+nextCostObj.salvage.map(s=>`${s.i.split(" ").slice(0,2).join(" ")}×${s.q}`).join(", "):""}
 </div>`
-          :`<div style="font-size:8px;color:#39ff14;margin-top:4px">✓ MAX</div>`):""}
+          :`<div style="font-size:15px;color:#39ff14;margin-top:4px">✓ MAX</div>`):""}
       </div>
       ${on?`<div class="n-check" style="color:${fc.color}">✓</div>`:""}
       ${planned?`<div class="n-check" style="color:${PLAN_COL}">◈</div>`:""}
@@ -271,9 +271,9 @@ function renderTree(){
       if(locked){
         const depNames=(u.deps||[]).map(d=>{const du=UG.find(x=>x.id===d);return du?`<span style="color:#ffd600">${du.name}</span>`:"?";});
         const tt=document.getElementById("tt");
-        tt.innerHTML=`<div style="font-family:'Orbitron',monospace;font-size:10px;color:#ff006e;margin-bottom:7px">🔒 LOCKED</div>
-          <div style="font-size:9px;color:#8aa0b0;margin-bottom:5px">Unlock the following first:</div>
-          ${depNames.map(n=>`<div style="font-size:9px;padding:3px 6px;border-left:2px solid #ffd600;margin-bottom:3px">${n}</div>`).join("")}`;
+        tt.innerHTML=`<div style="font-family:'Orbitron',monospace;font-size:16px;color:#ff006e;margin-bottom:7px">🔒 LOCKED</div>
+          <div style="font-size:16px;color:#8aa0b0;margin-bottom:5px">Unlock the following first:</div>
+          ${depNames.map(n=>`<div style="font-size:16px;padding:3px 6px;border-left:2px solid #ffd600;margin-bottom:3px">${n}</div>`).join("")}`;
         tt.style.display="block";
         moveTT(e);
       } else {
@@ -314,8 +314,8 @@ function showTT(u,e){
   </div>`:"";
 
   const tt=document.getElementById("tt");
-  tt.innerHTML=`<div class="tt-name" style="color:${fc.color}">${u.name} <span style="font-size:8px;color:#4a6070">— ${u.f}</span></div>
-    <div style="font-size:8px;color:#6a8090;margin-bottom:6px">${u.desc}</div>
+  tt.innerHTML=`<div class="tt-name" style="color:${fc.color}">${u.name} <span style="font-size:15px;color:#4a6070">— ${u.f}</span></div>
+    <div style="font-size:15px;color:#6a8090;margin-bottom:6px">${u.desc}</div>
     ${rows}${locHtml}`;
   tt.style.display="block";
   moveTT(e);
@@ -356,20 +356,20 @@ function showCredHdrTT(e){
     : `<div style="color:#4a6070;font-size:8.5px;padding:3px 5px">No planned upgrades yet</div>`;
 
   tt.innerHTML=`
-    <div style="font-family:'Orbitron',monospace;font-size:10px;color:#ffd600;margin-bottom:8px">₵ CREDIT BREAKDOWN</div>
-    <div style="font-size:8px;color:#39ff14;letter-spacing:1px;margin-bottom:4px">✓ OWNED</div>
+    <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ffd600;margin-bottom:8px">₵ CREDIT BREAKDOWN</div>
+    <div style="font-size:15px;color:#39ff14;letter-spacing:1px;margin-bottom:4px">✓ OWNED</div>
     ${ownedRows}
-    <div style="display:flex;justify-content:space-between;padding:3px 5px;margin:4px 0 8px;border-top:1px solid #1a2530;font-size:9px">
+    <div style="display:flex;justify-content:space-between;padding:3px 5px;margin:4px 0 8px;border-top:1px solid #1a2530;font-size:16px">
       <span style="color:#4a6070">Owned total</span>
       <span style="color:#ffd600;font-weight:700">₵${ownedCred.toLocaleString()}</span>
     </div>
-    <div style="font-size:8px;color:#bf5af2;letter-spacing:1px;margin-bottom:4px">◈ PLANNED (R-CLICK)</div>
+    <div style="font-size:15px;color:#bf5af2;letter-spacing:1px;margin-bottom:4px">◈ PLANNED (R-CLICK)</div>
     ${planRows}
-    <div style="display:flex;justify-content:space-between;padding:3px 5px;margin-top:4px;border-top:1px solid #1a2530;font-size:9px">
+    <div style="display:flex;justify-content:space-between;padding:3px 5px;margin-top:4px;border-top:1px solid #1a2530;font-size:16px">
       <span style="color:#4a6070">Planned total</span>
       <span style="color:#bf5af2;font-weight:700">₵${plannedCred.toLocaleString()}</span>
     </div>
-    <div style="display:flex;justify-content:space-between;padding:4px 5px;margin-top:4px;border-top:1px solid #bf5af2;font-size:9px">
+    <div style="display:flex;justify-content:space-between;padding:4px 5px;margin-top:4px;border-top:1px solid #bf5af2;font-size:16px">
       <span style="color:#c8d8e8">Combined total</span>
       <span style="color:#fff;font-weight:700">₵${(ownedCred+plannedCred).toLocaleString()}</span>
     </div>`;
@@ -381,20 +381,20 @@ function showSalvHdrTT(e){
   const salv=getSalvMap();
   const tt=document.getElementById("tt");
   if(!salv.length){
-    tt.innerHTML=`<div style="color:#4a6070;font-size:9px;font-family:'Share Tech Mono',monospace">No salvage needed yet.<br>Unlock upgrades in the tree first.</div>`;
+    tt.innerHTML=`<div style="color:#4a6070;font-size:16px;font-family:'Share Tech Mono',monospace">No salvage needed yet.<br>Unlock upgrades in the tree first.</div>`;
   } else {
     const rows=salv.map(([item,qty])=>{
       const loc=SL[item];
       const rc=loc?RC[loc.rarity]:"#4a6070";
       return`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 5px;margin-bottom:2px;border-left:2px solid ${rc}">
-        <span style="color:#c8d8e8;font-size:9px">◈ ${item}</span>
-        <span style="color:#ffd600;font-weight:700;font-size:10px;margin-left:10px">×${qty}</span>
+        <span style="color:#c8d8e8;font-size:16px">◈ ${item}</span>
+        <span style="color:#ffd600;font-weight:700;font-size:16px;margin-left:10px">×${qty}</span>
       </div>`;
     }).join("");
-    tt.innerHTML=`<div style="font-family:'Orbitron',monospace;font-size:10px;color:#ff6d00;margin-bottom:8px">◈ ALL SALVAGE NEEDED</div>
-      <div style="font-size:8px;color:#4a6070;margin-bottom:6px;letter-spacing:1px">Hover salvage card in planner for locations</div>
+    tt.innerHTML=`<div style="font-family:'Orbitron',monospace;font-size:16px;color:#ff6d00;margin-bottom:8px">◈ ALL SALVAGE NEEDED</div>
+      <div style="font-size:15px;color:#4a6070;margin-bottom:6px;letter-spacing:1px">Hover salvage card in planner for locations</div>
       ${rows}
-      <div style="margin-top:8px;padding-top:6px;border-top:1px solid #1a2530;font-size:8px;color:#4a6070">
+      <div style="margin-top:8px;padding-top:6px;border-top:1px solid #1a2530;font-size:15px;color:#4a6070">
         Total credits: <span style="color:#ffd600">₵${getTotalCreds().toLocaleString()}</span>
       </div>`;
   }
@@ -433,19 +433,19 @@ function showSalvTT(item,e){
 
   const locHtml=loc?`
     <div style="margin-top:7px;padding-top:6px;border-top:1px solid #1a2530">
-      <div style="color:${rc};font-size:8px;margin-bottom:3px;font-weight:700">▲ ${loc.rarity.toUpperCase()} RARITY</div>
+      <div style="color:${rc};font-size:15px;margin-bottom:3px;font-weight:700">▲ ${loc.rarity.toUpperCase()} RARITY</div>
       <div style="font-size:8.5px;color:#c8d8e8;margin-bottom:2px">📍 ${loc.map}</div>
-      <div style="font-size:8px;color:#8aa0b0;margin-bottom:2px">POIs: ${loc.pois.join(", ")}</div>
-      <div style="font-size:8px;color:#6a8090;font-style:italic">${loc.note}</div>
+      <div style="font-size:15px;color:#8aa0b0;margin-bottom:2px">POIs: ${loc.pois.join(", ")}</div>
+      <div style="font-size:15px;color:#6a8090;font-style:italic">${loc.note}</div>
       ${loc.rarity==="superior"?`<div style="margin-top:4px;font-size:7.5px;color:#bf5af2;padding:2px 5px;background:rgba(191,90,242,.08);border-left:2px solid #bf5af2">⚠ UESC Incursion events & Superior Locked Rooms only</div>`:""}
-    </div>`:"<div style='margin-top:5px;font-size:8px;color:#ff6d00'>⚠ Location data unconfirmed</div>";
+    </div>`:"<div style='margin-top:5px;font-size:15px;color:#ff6d00'>⚠ Location data unconfirmed</div>";
 
   const totalQty=needs.reduce((s,n)=>s+n.qty,0);
   const tt=document.getElementById("tt");
   tt.innerHTML=`
-    <div style="font-family:'Orbitron',monospace;font-size:10px;color:${rc};margin-bottom:6px">◈ ${item}</div>
-    <div style="font-size:8px;color:#4a6070;margin-bottom:5px">Total needed: <span style="color:#ffd600;font-weight:700">×${totalQty}</span></div>
-    <div style="font-size:8px;color:#4a6070;margin-bottom:4px;letter-spacing:1px">REQUIRED BY:</div>
+    <div style="font-family:'Orbitron',monospace;font-size:16px;color:${rc};margin-bottom:6px">◈ ${item}</div>
+    <div style="font-size:15px;color:#4a6070;margin-bottom:5px">Total needed: <span style="color:#ffd600;font-weight:700">×${totalQty}</span></div>
+    <div style="font-size:15px;color:#4a6070;margin-bottom:4px;letter-spacing:1px">REQUIRED BY:</div>
     ${needRows}
     ${locHtml}`;
   tt.style.display="block";

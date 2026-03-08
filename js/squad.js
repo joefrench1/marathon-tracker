@@ -3,15 +3,15 @@ function renderAuthWidget() {
   if (!el) return;
   if (!authUser) {
     el.innerHTML = `
-      <button class="btn by" onclick="openAuthModal('login')" style="font-size:9px;padding:5px 12px">SIGN IN</button>
-      <button class="btn bg" onclick="openAuthModal('signup')" style="font-size:9px;padding:5px 12px">CREATE ACCOUNT</button>`;
+      <button class="btn by" onclick="openAuthModal('login')" style="font-size:16px;padding:5px 12px">SIGN IN</button>
+      <button class="btn bg" onclick="openAuthModal('signup')" style="font-size:16px;padding:5px 12px">CREATE ACCOUNT</button>`;
   } else {
     el.innerHTML = `
       <div style="text-align:right;line-height:1.5">
-        <div style="font-family:'Orbitron',monospace;font-size:10px;color:#00e5ff">${authUser.username || authUser.email}</div>
-        <div style="font-size:8px;color:#39ff14">● BUILD AUTO-SAVING</div>
+        <div style="font-family:'Orbitron',monospace;font-size:16px;color:#00e5ff">${authUser.username || authUser.email}</div>
+        <div style="font-size:15px;color:#39ff14">● BUILD AUTO-SAVING</div>
       </div>
-      <button class="btn br" onclick="authSignOut()" style="font-size:9px;padding:4px 10px">SIGN OUT</button>`;
+      <button class="btn br" onclick="authSignOut()" style="font-size:16px;padding:4px 10px">SIGN OUT</button>`;
   }
 }
 
@@ -29,7 +29,7 @@ function renderAuthModalBody(mode) {
   if (mode === "login") {
     el.innerHTML = `
       <div style="font-family:'Orbitron',monospace;font-size:15px;color:#00e5ff;letter-spacing:2px;margin-bottom:6px">SIGN IN</div>
-      <div style="font-size:11px;color:#4a6070;margin-bottom:16px;line-height:1.7">Sign in to sync your build and join squad sessions.</div>
+      <div style="font-size:15px;color:#4a6070;margin-bottom:16px;line-height:1.7">Sign in to sync your build and join squad sessions.</div>
       <input id="a-uname" class="sinput" placeholder="Username" autocomplete="username">
       <input id="a-pw"    class="sinput" placeholder="Password" type="password" autocomplete="current-password">
       <div id="auth-msg"></div>
@@ -40,7 +40,7 @@ function renderAuthModalBody(mode) {
   } else {
     el.innerHTML = `
       <div style="font-family:'Orbitron',monospace;font-size:15px;color:#39ff14;letter-spacing:2px;margin-bottom:6px">CREATE ACCOUNT</div>
-      <div style="font-size:11px;color:#4a6070;margin-bottom:16px;line-height:1.7">Choose a username and password. Your build syncs to your account automatically.</div>
+      <div style="font-size:15px;color:#4a6070;margin-bottom:16px;line-height:1.7">Choose a username and password. Your build syncs to your account automatically.</div>
       <input id="a-uname" class="sinput" placeholder="Username (3–20 chars, shown to squad)" maxlength="20" autocomplete="username">
       <input id="a-pw"    class="sinput" placeholder="Password (min 6 chars)" type="password" autocomplete="new-password">
       <div id="auth-msg"></div>
@@ -54,7 +54,7 @@ function renderAuthModalBody(mode) {
 function setAuthMsg(msg, type) {
   const el = document.getElementById("auth-msg");
   if (!el) return;
-  el.style.cssText = `margin-top:8px;padding:9px 11px;font-size:11px;border-left:3px solid ${type==="error"?"#ff006e":type==="success"?"#39ff14":"#4a9eff"};color:${type==="error"?"#ff006e":type==="success"?"#39ff14":"#8aa0b0"}`;
+  el.style.cssText = `margin-top:8px;padding:9px 11px;font-size:15px;border-left:3px solid ${type==="error"?"#ff006e":type==="success"?"#39ff14":"#4a9eff"};color:${type==="error"?"#ff006e":type==="success"?"#39ff14":"#8aa0b0"}`;
   el.textContent = msg;
 }
 
@@ -243,7 +243,7 @@ function renderSquadPage() {
     el.innerHTML = `<div style="padding:60px 40px;max-width:580px;margin:0 auto;text-align:center">
       <div style="font-size:52px;margin-bottom:20px">👥</div>
       <div style="font-family:'Orbitron',monospace;font-size:18px;color:#00e5ff;letter-spacing:3px;margin-bottom:14px">SQUAD SESSIONS</div>
-      <div style="color:#5a7080;font-size:12px;line-height:2;margin-bottom:28px">
+      <div style="color:#5a7080;font-size:15px;line-height:2;margin-bottom:28px">
         Sign in to create a squad session.<br>
         Share a link — your whole team's builds appear here, side by side in real time.<br>
         See every teammate's faction progress, owned upgrades, and planned builds at a glance.
@@ -258,12 +258,12 @@ function renderSquadPage() {
     el.innerHTML = `<div style="padding:60px 40px;max-width:580px;margin:0 auto;text-align:center">
       <div style="font-size:52px;margin-bottom:20px">👥</div>
       <div style="font-family:'Orbitron',monospace;font-size:18px;color:#00e5ff;letter-spacing:3px;margin-bottom:14px">SQUAD SESSIONS</div>
-      <div style="color:#5a7080;font-size:12px;line-height:2;margin-bottom:28px">
+      <div style="color:#5a7080;font-size:15px;line-height:2;margin-bottom:28px">
         Signed in as <span style="color:#00e5ff;font-weight:700">${authUser.username}</span>.<br>
         Create a session and share the link with your squad.<br>
         Everyone who joins has their build synced here — compare upgrades side by side.
       </div>
-      <button class="btn bg" onclick="squadCreate()" style="margin-right:10px;font-size:12px;padding:9px 20px">+ CREATE SESSION</button>
+      <button class="btn bg" onclick="squadCreate()" style="margin-right:10px;font-size:15px;padding:9px 20px">+ CREATE SESSION</button>
       <div style="display:flex;gap:8px;justify-content:center;margin-top:20px;max-width:340px;margin-left:auto;margin-right:auto">
         <input id="sq-page-join" class="sinput" placeholder="Enter 6-char session code" maxlength="6"
           style="text-align:center;letter-spacing:4px;text-transform:uppercase;margin-bottom:0"
@@ -279,12 +279,12 @@ function renderSquadPage() {
 
   el.innerHTML = `
     <div style="padding:13px 20px;border-bottom:1px solid #1a2530;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;background:#070d12;z-index:10">
-      <div style="font-family:'Orbitron',monospace;font-size:14px;color:#00e5ff;letter-spacing:3px">👥 SQUAD</div>
-      <div style="font-family:'Orbitron',monospace;font-size:14px;color:#ffd600;letter-spacing:4px">${sessionCode}</div>
+      <div style="font-family:'Orbitron',monospace;font-size:16px;color:#00e5ff;letter-spacing:3px">👥 SQUAD</div>
+      <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ffd600;letter-spacing:4px">${sessionCode}</div>
       <div style="display:flex;align-items:center;gap:5px">
         <div style="width:7px;height:7px;border-radius:50%;background:#39ff14;box-shadow:0 0 6px #39ff14"></div>
-        <span style="font-size:11px;color:#39ff14">LIVE</span>
-        <span style="font-size:11px;color:#4a6070;margin-left:4px">${players.length} player${players.length!==1?"s":""}</span>
+        <span style="font-size:15px;color:#39ff14">LIVE</span>
+        <span style="font-size:15px;color:#4a6070;margin-left:4px">${players.length} player${players.length!==1?"s":""}</span>
       </div>
       <button id="sq-copy-btn" onclick="copyInviteLink()" class="btn bb" style="margin-left:auto">📋 INVITE LINK</button>
       <button onclick="squadLeave()" class="btn br">LEAVE SESSION</button>
@@ -292,12 +292,12 @@ function renderSquadPage() {
 
     <div style="display:flex;border-bottom:1px solid #1a2530;overflow-x:auto;background:rgba(0,0,0,.2)">
       <button onclick="squadViewTab=null;renderSquadPage()"
-        style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:12px;letter-spacing:1px;
+        style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:15px;letter-spacing:1px;
                color:${squadViewTab===null?'#fff':'#4a6070'};border-bottom:2px solid ${squadViewTab===null?'#ffd600':'transparent'};white-space:nowrap;transition:all .2s">
         ⊞ OVERVIEW
       </button>
       <button onclick="squadViewTab='compare';renderSquadPage()"
-        style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:12px;letter-spacing:1px;
+        style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:15px;letter-spacing:1px;
                color:${squadViewTab==='compare'?'#fff':'#4a6070'};border-bottom:2px solid ${squadViewTab==='compare'?'#39ff14':'transparent'};white-space:nowrap;transition:all .2s">
         ⇄ SIDE BY SIDE
       </button>
@@ -307,11 +307,11 @@ function renderSquadPage() {
         const live   = ago < 8;
         const active = squadViewTab===p.player_name;
         return `<button onclick="squadViewTab='${p.player_name}';renderSquadPage()"
-          style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:12px;
+          style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:15px;
                  display:flex;align-items:center;gap:7px;color:${active?'#fff':'#4a6070'};
                  border-bottom:2px solid ${active?'#00e5ff':'transparent'};white-space:nowrap;transition:all .2s;letter-spacing:1px">
           <div style="width:7px;height:7px;border-radius:50%;background:${isMe?'#00e5ff':live?'#39ff14':'#4a6070'};flex-shrink:0"></div>
-          ${p.player_name}${isMe?" <span style='font-size:9px;color:#00e5ff;border:1px solid #00e5ff;padding:0 4px;margin-left:3px'>YOU</span>":""}
+          ${p.player_name}${isMe?" <span style='font-size:16px;color:#00e5ff;border:1px solid #00e5ff;padding:0 4px;margin-left:3px'>YOU</span>":""}
         </button>`;
       }).join("")}
     </div>
@@ -324,9 +324,9 @@ function renderSquadPage() {
 }
 
 function _renderOverview(players, myName) {
-  if (!players.length) return `<div style="color:#4a6070;text-align:center;padding:60px;font-size:13px">
+  if (!players.length) return `<div style="color:#4a6070;text-align:center;padding:60px;font-size:16px">
     Waiting for players to join…<br>
-    <span style="font-size:11px;margin-top:10px;display:block">Share the invite link to bring your squad in</span>
+    <span style="font-size:15px;margin-top:10px;display:block">Share the invite link to bring your squad in</span>
   </div>`;
 
   return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;padding:18px 20px">
@@ -335,7 +335,7 @@ function _renderOverview(players, myName) {
 }
 
 function _renderSideBySide(players, myName) {
-  if (players.length < 2) return `<div style="color:#4a6070;text-align:center;padding:60px;font-size:12px">
+  if (players.length < 2) return `<div style="color:#4a6070;text-align:center;padding:60px;font-size:15px">
     Need at least 2 players in session to compare builds side by side.
   </div>`;
 
@@ -344,13 +344,13 @@ function _renderSideBySide(players, myName) {
 
   return `
     <div style="padding:16px 20px">
-      <div style="font-size:11px;color:#4a6070;margin-bottom:14px;letter-spacing:1px">
+      <div style="font-size:15px;color:#4a6070;margin-bottom:14px;letter-spacing:1px">
         COMPARING ${players.length} BUILDS · Faction completion bars shown side by side
       </div>
 
       <!-- Player summary row -->
       <div style="display:grid;grid-template-columns:130px repeat(${players.length}, 1fr);gap:0;margin-bottom:16px;border:1px solid #1a2530">
-        <div style="padding:11px 13px;background:#0a1218;border-right:1px solid #1a2530;font-size:10px;color:#4a6070;display:flex;align-items:center">PLAYER</div>
+        <div style="padding:11px 13px;background:#0a1218;border-right:1px solid #1a2530;font-size:16px;color:#4a6070;display:flex;align-items:center">PLAYER</div>
         ${players.map(p=>{
           const isMe = p.player_name===myName;
           const fd   = p.faction_data||{};
@@ -360,12 +360,12 @@ function _renderSideBySide(players, myName) {
           const ago    = Math.round((Date.now()-new Date(p.updated_at).getTime())/1000);
           const live   = ago < 8;
           return `<div style="padding:11px 13px;background:${isMe?'rgba(0,229,255,.04)':'#0d1318'};border-right:1px solid #1a2530;border-left:${isMe?'2px solid #00e5ff':'none'}">
-            <div style="font-family:'Orbitron',monospace;font-size:11px;color:${isMe?'#00e5ff':'#c8d8e8'};margin-bottom:5px;display:flex;align-items:center;gap:6px">
+            <div style="font-family:'Orbitron',monospace;font-size:15px;color:${isMe?'#00e5ff':'#c8d8e8'};margin-bottom:5px;display:flex;align-items:center;gap:6px">
               <div style="width:6px;height:6px;border-radius:50%;background:${live?'#39ff14':'#4a6070'};flex-shrink:0"></div>
               ${p.player_name}
             </div>
-            <div style="font-size:11px;color:#ffd600">₵${totalC.toLocaleString()}</div>
-            <div style="font-size:10px;color:#39ff14">${owned.length} upgrades</div>
+            <div style="font-size:15px;color:#ffd600">₵${totalC.toLocaleString()}</div>
+            <div style="font-size:16px;color:#39ff14">${owned.length} upgrades</div>
           </div>`;
         }).join("")}
       </div>
@@ -385,7 +385,7 @@ function _renderSideBySide(players, myName) {
         return `<div style="border:1px solid #1a2530;margin-bottom:8px">
           <div style="display:grid;grid-template-columns:130px repeat(${players.length}, 1fr);gap:0">
             <div style="padding:10px 13px;background:#0a1218;border-right:1px solid #1a2530;border-left:3px solid ${fc.color};display:flex;align-items:center">
-              <div style="font-family:'Orbitron',monospace;font-size:10px;color:${fc.color};letter-spacing:1px">${f}</div>
+              <div style="font-family:'Orbitron',monospace;font-size:16px;color:${fc.color};letter-spacing:1px">${f}</div>
             </div>
             ${players.map((p,pi)=>{
               const fd   = p.faction_data||{};
@@ -401,12 +401,12 @@ function _renderSideBySide(players, myName) {
                   <div style="flex:1;height:5px;background:#1a2530;border-radius:3px">
                     <div style="height:100%;width:${pct}%;background:${fc.color};border-radius:3px;transition:width .4s"></div>
                   </div>
-                  <div style="font-size:10px;color:${pct>0?fc.color:'#2a3a48'};width:32px;text-align:right;font-weight:700">${pct}%</div>
+                  <div style="font-size:16px;color:${pct>0?fc.color:'#2a3a48'};width:32px;text-align:right;font-weight:700">${pct}%</div>
                 </div>
                 <div style="display:flex;flex-wrap:wrap;gap:3px">
-                  ${fa.map(u=>`<span style="font-size:9px;padding:1px 6px;border:1px solid ${fc.color}22;color:${fc.color};background:${fc.color}11">${u.name}</span>`).join("")}
-                  ${fp.map(u=>`<span style="font-size:9px;padding:1px 6px;border:1px solid #bf5af222;color:#bf5af2;background:#bf5af211">${u.name} ◈</span>`).join("")}
-                  ${!fa.length&&!fp.length?`<span style="font-size:9px;color:#2a3a48">—</span>`:""}
+                  ${fa.map(u=>`<span style="font-size:16px;padding:1px 6px;border:1px solid ${fc.color}22;color:${fc.color};background:${fc.color}11">${u.name}</span>`).join("")}
+                  ${fp.map(u=>`<span style="font-size:16px;padding:1px 6px;border:1px solid #bf5af222;color:#bf5af2;background:#bf5af211">${u.name} ◈</span>`).join("")}
+                  ${!fa.length&&!fp.length?`<span style="font-size:16px;color:#2a3a48">—</span>`:""}
                 </div>
               </div>`;
             }).join("")}
@@ -433,11 +433,11 @@ function _playerMiniCard(p, isMe) {
     const lvs = fa.reduce((s,u)=>s+(pLV[u.id]||0),0);
     const pct = Math.round(lvs/tot*100);
     return `<div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
-      <div style="font-size:9px;color:${FC[f].color};width:68px;flex-shrink:0;font-family:'Orbitron',monospace;overflow:hidden;white-space:nowrap">${f.substring(0,8)}</div>
+      <div style="font-size:16px;color:${FC[f].color};width:68px;flex-shrink:0;font-family:'Orbitron',monospace;overflow:hidden;white-space:nowrap">${f.substring(0,8)}</div>
       <div style="flex:1;height:4px;background:#1a2530;border-radius:2px">
         <div style="height:100%;width:${pct}%;background:${FC[f].color};border-radius:2px"></div>
       </div>
-      <div style="font-size:9px;color:#4a6070;width:28px;text-align:right">${pct}%</div>
+      <div style="font-size:16px;color:#4a6070;width:28px;text-align:right">${pct}%</div>
     </div>`;
   }).filter(Boolean).join("");
 
@@ -447,17 +447,17 @@ function _playerMiniCard(p, isMe) {
     onmouseleave="this.style.transform='';this.style.boxShadow=''">
     <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
       <div style="width:8px;height:8px;border-radius:50%;background:${live?'#39ff14':'#4a6070'};flex-shrink:0;box-shadow:${live?'0 0 6px #39ff14':'none'}"></div>
-      <div style="font-family:'Orbitron',monospace;font-size:12px;color:${isMe?'#00e5ff':'#c8d8e8'};flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.player_name}</div>
-      ${isMe?'<span style="font-size:9px;padding:1px 6px;border:1px solid #00e5ff;color:#00e5ff">YOU</span>':''}
+      <div style="font-family:'Orbitron',monospace;font-size:15px;color:${isMe?'#00e5ff':'#c8d8e8'};flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.player_name}</div>
+      ${isMe?'<span style="font-size:16px;padding:1px 6px;border:1px solid #00e5ff;color:#00e5ff">YOU</span>':''}
     </div>
-    <div style="display:flex;gap:14px;margin-bottom:11px;font-size:11px">
+    <div style="display:flex;gap:14px;margin-bottom:11px;font-size:15px">
       <span style="color:#ffd600">₵${totalC.toLocaleString()}</span>
       <span style="color:#39ff14">${owned.length} owned</span>
       ${planned.length?`<span style="color:#bf5af2">${planned.length} planned</span>`:""}
       <span style="color:#4a6070;margin-left:auto">${ago<60?ago+"s":Math.floor(ago/60)+"m"} ago</span>
     </div>
     ${fBars}
-    <div style="margin-top:11px;font-size:10px;color:#4a6070;letter-spacing:1px;text-align:center;border-top:1px solid #1a2530;padding-top:8px">CLICK FOR FULL BUILD →</div>
+    <div style="margin-top:11px;font-size:16px;color:#4a6070;letter-spacing:1px;text-align:center;border-top:1px solid #1a2530;padding-top:8px">CLICK FOR FULL BUILD →</div>
   </div>`;
 }
 
@@ -480,13 +480,13 @@ function _renderPlayerDetail(playerName, myName) {
         <div style="display:flex;align-items:center;gap:9px">
           <div style="width:10px;height:10px;border-radius:50%;background:${live?'#39ff14':'#4a6070'};box-shadow:${live?'0 0 6px #39ff14':'none'}"></div>
           <div style="font-family:'Orbitron',monospace;font-size:18px;color:${isMe?'#00e5ff':'#c8d8e8'}">${playerName}</div>
-          ${isMe?'<span style="font-size:9px;padding:2px 7px;border:1px solid #00e5ff;color:#00e5ff">YOU</span>':''}
+          ${isMe?'<span style="font-size:16px;padding:2px 7px;border:1px solid #00e5ff;color:#00e5ff">YOU</span>':''}
         </div>
         <div style="display:flex;gap:18px;margin-left:auto;flex-wrap:wrap">
-          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#ffd600">₵${totalC.toLocaleString()}</div><div style="font-size:10px;color:#4a6070">INVESTED</div></div>
-          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#39ff14">${owned.length}</div><div style="font-size:10px;color:#4a6070">OWNED</div></div>
-          ${planned.length?`<div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#bf5af2">${planned.length}</div><div style="font-size:10px;color:#4a6070">PLANNED</div></div>`:''}
-          <div style="text-align:center"><div style="font-size:12px;color:#4a6070">${ago<60?ago+"s":Math.floor(ago/60)+"m"} ago</div><div style="font-size:10px;color:#4a6070">UPDATED</div></div>
+          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#ffd600">₵${totalC.toLocaleString()}</div><div style="font-size:16px;color:#4a6070">INVESTED</div></div>
+          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#39ff14">${owned.length}</div><div style="font-size:16px;color:#4a6070">OWNED</div></div>
+          ${planned.length?`<div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#bf5af2">${planned.length}</div><div style="font-size:16px;color:#4a6070">PLANNED</div></div>`:''}
+          <div style="text-align:center"><div style="font-size:15px;color:#4a6070">${ago<60?ago+"s":Math.floor(ago/60)+"m"} ago</div><div style="font-size:16px;color:#4a6070">UPDATED</div></div>
         </div>
       </div>
 
@@ -501,20 +501,20 @@ function _renderPlayerDetail(playerName, myName) {
           const pct = Math.round(lvs/tot*100);
           return `<div style="background:#0d1318;border:1px solid #1a2530;border-left:3px solid ${fc.color};padding:13px 15px">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-              <div style="font-family:'Orbitron',monospace;font-size:12px;color:${fc.color};letter-spacing:2px">${f}</div>
+              <div style="font-family:'Orbitron',monospace;font-size:15px;color:${fc.color};letter-spacing:2px">${f}</div>
               <div style="flex:1;height:4px;background:#1a2530;border-radius:2px">
                 <div style="height:100%;width:${pct}%;background:${fc.color};border-radius:2px"></div>
               </div>
-              <div style="font-size:10px;color:#4a6070;font-weight:700">${pct}%</div>
+              <div style="font-size:16px;color:#4a6070;font-weight:700">${pct}%</div>
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:5px">
-              ${fa.map(u=>`<span style="font-size:10px;padding:3px 9px;border:1px solid ${fc.color};color:${fc.color};background:${fc.color}11">${u.name}${pLV[u.id]>1?` Lv${pLV[u.id]}`:""}</span>`).join("")}
-              ${fp.map(u=>`<span style="font-size:10px;padding:3px 9px;border:1px solid #bf5af2;color:#bf5af2;background:#bf5af211">${u.name}${pPL[u.id]>1?` Lv${pPL[u.id]}`:""} ◈</span>`).join("")}
+              ${fa.map(u=>`<span style="font-size:16px;padding:3px 9px;border:1px solid ${fc.color};color:${fc.color};background:${fc.color}11">${u.name}${pLV[u.id]>1?` Lv${pLV[u.id]}`:""}</span>`).join("")}
+              ${fp.map(u=>`<span style="font-size:16px;padding:3px 9px;border:1px solid #bf5af2;color:#bf5af2;background:#bf5af211">${u.name}${pPL[u.id]>1?` Lv${pPL[u.id]}`:""} ◈</span>`).join("")}
             </div>
           </div>`;
         }).join("")}
       </div>
-      ${!owned.length&&!planned.length?`<div style="color:#4a6070;font-size:12px;padding:30px;text-align:center">No upgrades selected yet</div>`:""}
+      ${!owned.length&&!planned.length?`<div style="color:#4a6070;font-size:15px;padding:30px;text-align:center">No upgrades selected yet</div>`:""}
     </div>`;
 }
 
