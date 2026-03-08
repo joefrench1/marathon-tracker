@@ -114,7 +114,7 @@ async function authSignOut() {
   sessionCode = null; squadPlayers = {};
   try { sessionStorage.clear(); } catch(e){}
   renderAuthWidget();
-  updateSquadWidget();
+  updateSquadPill();
   updateHdr();
 }
 
@@ -124,7 +124,7 @@ function _onAuthOK() {
     sessionStorage.setItem("mara_user",  JSON.stringify(authUser));
   } catch(e){}
   renderAuthWidget();
-  updateSquadWidget();
+  updateSquadPill();
   updateHdr();
   pushProfile();
 }
@@ -144,7 +144,7 @@ async function tryRestoreSession() {
       if (fd.PL) Object.assign(PL, fd.PL);
       refresh();
       renderAuthWidget();
-      updateSquadWidget();
+      updateSquadPill();
       updateHdr();
       const code = new URLSearchParams(window.location.search).get("session");
       if (code) squadJoin(code);

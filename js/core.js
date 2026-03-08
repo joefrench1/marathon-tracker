@@ -85,28 +85,40 @@ function updateHdr(){
 }
 
 // ══════════════════════════════════════════
-// TABS
+// TABS — grouped nav
 // ══════════════════════════════════════════
+const ALL_VIEWS = ["home","tree","progress","runners","guns","map","tools","squad",
+                   "salvage","build","runs","loadout","contracts","ammo"];
+
 function showMain(t){
-  curTab=t;
-  const tabs=["tree","salvage","build","runners","guns","map","runs","loadout","contracts","ammo","squad"];
-  document.querySelectorAll(".mtab").forEach((b,i)=>b.classList.toggle("on",tabs[i]===t));
-  ["view-tree","view-salvage","view-build","view-runners","view-guns","view-map","view-runs","view-loadout","view-contracts","view-ammo","view-squad"].forEach((id,i)=>
-    document.getElementById(id).classList.toggle("on",tabs[i]===t));
+  curTab = t;
+  // Update nav tab highlights
+  document.querySelectorAll(".nav-tab").forEach(b=>{
+    b.classList.toggle("on", b.dataset.tab === t);
+  });
+  // Show/hide views
+  ALL_VIEWS.forEach(id=>{
+    const el = document.getElementById("view-"+id);
+    if(el) el.classList.toggle("on", id===t);
+  });
   renderCurrent();
 }
 function renderCurrent(){
-  if(curTab==="tree") renderTree();
-  else if(curTab==="salvage") renderSalv();
-  else if(curTab==="build") renderBuild();
-  else if(curTab==="runners") renderRunners();
-  else if(curTab==="guns") renderGuns();
-  else if(curTab==="map") renderMap();
-  else if(curTab==="runs") renderRuns();
-  else if(curTab==="loadout") renderLoadout();
+  if(curTab==="home")      renderDashboard();
+  else if(curTab==="tree") renderTree();
+  else if(curTab==="progress") renderProgressTab();
+  else if(curTab==="runners")  renderRunners();
+  else if(curTab==="guns")     renderGuns();
+  else if(curTab==="map")      renderMap();
+  else if(curTab==="tools")    renderToolsHub();
+  else if(curTab==="squad")    renderSquadPage();
+  // Legacy single-tab renders (still called if navigated to directly)
+  else if(curTab==="salvage")   renderSalv();
+  else if(curTab==="build")     renderBuild();
+  else if(curTab==="runs")      renderRuns();
+  else if(curTab==="loadout")   renderLoadout();
   else if(curTab==="contracts") renderContracts();
-  else if(curTab==="ammo") renderAmmo();
-  else if(curTab==="squad") renderSquadPage();
+  else if(curTab==="ammo")      renderAmmo();
 }
 function toggleHi(){
   showHi=!showHi;

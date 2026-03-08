@@ -12,94 +12,125 @@
 <!-- AUTH MODAL -->
 <div id="auth-modal" class="auth-modal-wrap">
   <div class="auth-modal-box">
-    <button onclick="closeAuthModal()" style="position:absolute;top:12px;right:14px;background:transparent;border:none;color:#4a6070;cursor:pointer;font-size:16px;font-family:inherit">✕</button>
+    <button onclick="closeAuthModal()" class="auth-close">✕</button>
     <div id="auth-modal-body"></div>
   </div>
 </div>
 
+<!-- HEADER -->
 <div id="hdr">
-  <div class="logo">MARATHON <sub>// UPGRADE TRACKER</sub></div>
+  <div class="logo">MARATHON <sub>// TRACKER</sub></div>
+
   <div class="hstats">
-    <div class="hs"><span class="v" id="h-lvs" style="color:#39ff14;text-shadow:0 0 8px rgba(57,255,20,.4)">0</span><span class="l">LEVELS</span></div>
     <div class="hs hs-hoverable" onmouseenter="showCredHdrTT(event)" onmouseleave="hideTT()" onmousemove="moveTT(event)">
-      <span class="v" id="h-cred" style="color:#bf5af2;text-shadow:0 0 8px rgba(191,90,242,.4)">₵0</span>
-      <span class="l">PLANNED ₵ ▲</span>
+      <span class="v" id="h-cred" style="color:var(--purple)">₵0</span>
+      <span class="l">PLANNED</span>
+    </div>
+    <div class="hs">
+      <span class="v" id="h-lvs" style="color:var(--green)">0</span>
+      <span class="l">LEVELS</span>
     </div>
     <div class="hs hs-hoverable" id="hs-salv" onmouseenter="showSalvHdrTT(event)" onmouseleave="hideTT()" onmousemove="moveTT(event)">
-      <span class="v" id="h-salv" style="color:#ff6d00">0</span>
-      <span class="l">OWNED SALVAGE ▲</span>
+      <span class="v" id="h-salv" style="color:var(--orange)">0</span>
+      <span class="l">MATERIALS</span>
     </div>
-    <div class="hs hs-hoverable" id="hs-plan" onmouseenter="showPlanHdrTT(event)" onmouseleave="hideTT()" onmousemove="moveTT(event)">
-      <span class="v" id="h-plan" style="color:#bf5af2">0</span>
-      <span class="l">PLANNED SALVAGE ▲</span>
-    </div>
+  </div>
+
+  <div class="hdr-actions">
     <div class="save-menu">
-      <button class="save-menu-btn">💾 SAVE BUILD</button>
+      <button class="save-menu-btn">💾 SAVE</button>
       <div class="save-dropdown">
         <button onclick="openModal('save')">💾 Save Build</button>
         <button onclick="openModal('load')">📂 Load Build</button>
         <button onclick="doExport()">⬇ Export .TXT</button>
       </div>
     </div>
-    <button class="btn br" onclick="resetAll()">⟳ RESET</button>
-    <div id="auth-widget" style="display:flex;align-items:center;gap:8px;padding-left:14px;border-left:1px solid #1a2530"></div>
+    <button class="btn br" onclick="resetAll()" title="Reset all upgrades">↺</button>
+    <div id="auth-widget"></div>
   </div>
 </div>
 
 <div id="prog"><div id="prog-f" style="width:0%"></div></div>
 
-<div id="mtabs">
-  <button class="mtab on"  onclick="showMain('tree')">🌐 UPGRADE TREE</button>
-  <button class="mtab"     onclick="showMain('salvage')">◈ SALVAGE PLANNER</button>
-  <button class="mtab"     onclick="showMain('build')">📋 BUILD SUMMARY</button>
-  <button class="mtab"     onclick="showMain('runners')">🏃 RUNNER BUILDS</button>
-  <button class="mtab"     onclick="showMain('guns')">🔫 GUNS & ITEMS</button>
-  <button class="mtab"     onclick="showMain('map')">🗺️ MAP</button>
-  <button class="mtab"     onclick="showMain('runs')">📊 RUN TRACKER</button>
-  <button class="mtab"     onclick="showMain('loadout')">🎒 LOADOUT</button>
-  <button class="mtab"     onclick="showMain('contracts')">📋 CONTRACTS</button>
-  <button class="mtab"     onclick="showMain('ammo')">🔹 AMMO CALC</button>
-  <button class="mtab"     onclick="showMain('squad')">👥 SQUAD</button>
-</div>
+<!-- NAV: grouped tabs -->
+<nav id="nav">
+  <div class="nav-group">
+    <button class="nav-tab on" data-tab="home" onclick="showMain('home')">HOME</button>
+    <div class="nav-divider"></div>
+    <button class="nav-tab" data-tab="tree" onclick="showMain('tree')">UPGRADE TREE</button>
+    <button class="nav-tab" data-tab="progress" onclick="showMain('progress')">PROGRESS</button>
+    <div class="nav-divider"></div>
+    <button class="nav-tab" data-tab="runners" onclick="showMain('runners')">RUNNERS</button>
+    <button class="nav-tab" data-tab="guns" onclick="showMain('guns')">GUNS</button>
+    <button class="nav-tab" data-tab="map" onclick="showMain('map')">MAP</button>
+    <div class="nav-divider"></div>
+    <button class="nav-tab" data-tab="tools" onclick="showMain('tools')">TOOLS</button>
+    <div class="nav-divider"></div>
+    <button class="nav-tab nav-squad" data-tab="squad" onclick="showMain('squad')">
+      <span id="squad-nav-dot" class="squad-dot offline"></span>SQUAD
+    </button>
+  </div>
+</nav>
 
-<div id="view-tree" class="view on">
+<!-- VIEWS -->
+<div id="view-home"      class="view on"></div>
+<div id="view-tree"      class="view">
   <div id="fbar"></div>
   <div id="tctrl">
-    <button class="tcbtn" id="btn-hi"  onclick="toggleHi()">★ REDDIT BUILD GUIDE</button>
+    <button class="tcbtn" id="btn-hi"  onclick="toggleHi()">★ REDDIT GUIDE</button>
     <button class="tcbtn" id="btn-rec" onclick="toggleRec()">⚡ REC. PATH</button>
-    <button class="tcbtn" id="btn-fit" onclick="fitTree()" title="Scale tree to fit your window">⊡ FIT TO SCREEN</button>
-    <button class="tcbtn" id="btn-100" onclick="resetZoom()" title="Reset to 100%">100%</button>
-    <button class="tcbtn" id="btn-squad-send" onclick="sendBuildToSquad()" title="Push your current build to squad" style="border-color:#00e5ff;color:#00e5ff">👥 SEND TO SQUAD</button>
-    <span style="margin-left:auto;font-size:10px;color:#4a6070">L-click = own &nbsp;·&nbsp; R-click = plan (purple) &nbsp;·&nbsp; Click pip to set level</span>
+    <button class="tcbtn" id="btn-fit" onclick="fitTree()">⊡ FIT</button>
+    <button class="tcbtn" id="btn-100" onclick="resetZoom()">100%</button>
+    <span style="margin-left:auto;font-size:.7rem;color:var(--text-dead)">
+      Left-click = own &nbsp;·&nbsp; Right-click = plan &nbsp;·&nbsp; Click pip = set level
+    </span>
   </div>
   <div id="fi"></div>
   <div id="legend">
-    <span class="leg"><span class="legbox" style="border-color:#ffd600;background:rgba(255,214,0,.12)"></span>★ Reddit build</span>
-    <span class="leg"><span class="legbox" style="border-color:#39ff14;background:rgba(57,255,20,.12)"></span>⚡ Next recommended</span>
-    <span class="leg"><span class="legbox" style="border-color:#00e5ff;background:rgba(0,229,255,.1)"></span>✓ Owned</span>
-    <span class="leg"><span class="legbox" style="border-color:#bf5af2;background:rgba(191,90,242,.1)"></span>◈ Planned (R-click)</span>
-    <span class="leg"><span class="legbox" style="border-color:#4a6070;background:#0d1318"></span>Locked</span>
+    <span class="leg"><span class="legbox" style="border-color:var(--yellow);background:rgba(255,214,0,.1)"></span>★ Reddit build</span>
+    <span class="leg"><span class="legbox" style="border-color:var(--green);background:rgba(57,255,20,.1)"></span>⚡ Recommended</span>
+    <span class="leg"><span class="legbox" style="border-color:var(--cyan);background:rgba(0,229,255,.08)"></span>Owned</span>
+    <span class="leg"><span class="legbox" style="border-color:var(--purple);background:rgba(191,90,242,.08)"></span>Planned</span>
   </div>
   <div id="tscroll"><div id="tcanvas"><svg id="tsvg"></svg></div></div>
 </div>
 
-<div id="view-salvage"   class="view"><div id="sv"><div class="sv-hdr">◈ SALVAGE PLANNER</div><div id="sv-c"></div></div></div>
-<div id="view-build"     class="view"><div id="bv"><div class="bv-hdr">📋 BUILD SUMMARY</div><div id="bv-c"></div></div></div>
+<!-- PROGRESS: combines salvage + build summary + contracts -->
+<div id="view-progress" class="view"><div id="progressv"></div></div>
+
 <div id="view-runners"   class="view"><div id="rv"></div></div>
 <div id="view-guns"      class="view"><div id="gv"></div></div>
 <div id="view-map"       class="view"><div id="mapv"></div></div>
+
+<!-- TOOLS: combines run tracker + loadout + ammo calc -->
+<div id="view-tools"     class="view"><div id="toolsv"></div></div>
+
+<div id="view-squad"     class="view"><div id="sqv"></div></div>
+
+<!-- LEGACY views (still needed by renderCurrent dispatchers) -->
+<div id="view-salvage"   class="view"><div id="sv"><div class="sv-hdr">◈ SALVAGE</div><div id="sv-c"></div></div></div>
+<div id="view-build"     class="view"><div id="bv"><div class="bv-hdr">📋 BUILD</div><div id="bv-c"></div></div></div>
 <div id="view-runs"      class="view"><div id="runsv"></div></div>
 <div id="view-loadout"   class="view"><div id="loadoutv"></div></div>
 <div id="view-contracts" class="view"><div id="contractsv"></div></div>
 <div id="view-ammo"      class="view"><div id="ammov"></div></div>
-<div id="view-squad"     class="view"><div id="sqv"></div></div>
 
 <div id="tt"></div>
-<div id="squad-widget"></div>
+
+<!-- SQUAD PILL (replaces the old floating widget) -->
+<div id="squad-pill" onclick="toggleSquadPill()">
+  <span id="squad-pill-dot" class="squad-dot offline"></span>
+  <span id="squad-pill-label">SQUAD</span>
+  <span id="squad-pill-count" style="display:none"></span>
+  <span id="squad-pill-chevron">▲</span>
+</div>
+<div id="squad-pill-panel">
+  <div id="squad-widget-body"></div>
+</div>
 
 <div id="modal-bg" onclick="bgClick(event)">
   <div id="modal">
-    <div class="mhdr"><span id="mtitle">SAVE BUILD</span><button class="mclose" onclick="closeModal()">✕ CLOSE</button></div>
+    <div class="mhdr"><span id="mtitle">SAVE BUILD</span><button class="mclose" onclick="closeModal()">✕</button></div>
     <div id="mbody"></div>
   </div>
 </div>
@@ -117,16 +148,18 @@
 <script src="js/loadout.js"></script>
 <script src="js/contracts.js"></script>
 <script src="js/ammo.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/tools-hub.js"></script>
 
 <script>
 // INIT
 buildFbar();
-renderTree();
 updateHdr();
 renderAuthWidget();
-updateSquadWidget();
+updateSquadPill();
 tryRestoreSession();
+showMain('home');
 </script>
-
 </body>
 </html>

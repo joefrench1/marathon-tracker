@@ -77,7 +77,7 @@ async function squadCreate() {
   sessionCode = _genCode();
   await _squadUpsertRow();
   _startPolling();
-  updateSquadWidget();
+  updateSquadPill();
   if (curTab==="squad") renderSquadPage();
 }
 
@@ -87,7 +87,7 @@ async function squadJoin(code) {
   if (!sessionCode) return;
   await _squadUpsertRow();
   _startPolling();
-  updateSquadWidget();
+  updateSquadPill();
   if (curTab==="squad") renderSquadPage();
 }
 
@@ -117,7 +117,7 @@ async function squadLeave() {
   if (sqPollTimer) clearInterval(sqPollTimer);
   sqPollTimer = null;
   sessionCode = null; squadPlayers = {}; squadViewTab = null;
-  updateSquadWidget();
+  updateSquadPill();
   if (curTab==="squad") renderSquadPage();
 }
 
@@ -143,7 +143,7 @@ async function _loadSquad() {
   if (!Array.isArray(rows)) return;
   squadPlayers = {};
   rows.forEach(r => { squadPlayers[r.player_name] = r; });
-  updateSquadWidget();
+  updateSquadPill();
   if (curTab==="squad") renderSquadPage();
 }
 
@@ -156,63 +156,80 @@ function copyInviteLink() {
 }
 
 // ══════════════════════════════════════════
-// SQUAD WIDGET (fixed bottom-right)
+// SQUAD PILL (collapsed bottom-right pill)
 // ══════════════════════════════════════════
-function updateSquadWidget() {
-  const el = document.getElementById("squad-widget");
+let pillOpen = false;
+
+function updateSquadPill() {
+  const pill   = document.getElementById("squad-pill");
+  const dot    = document.getElementById("squad-pill-dot");
+  const label  = document.getElementById("squad-pill-label");
+  const count  = document.getElementById("squad-pill-count");
+  const navDot = document.getElementById("squad-nav-dot");
+  if (!pill) return;
+
+  const players   = Object.values(squadPlayers);
+  const connected = !!sessionCode;
+
+  pill.classList.toggle("connected", connected);
+  if (dot)    dot.className  = "squad-dot " + (connected ? "online" : "offline");
+  if (navDot) navDot.className = "squad-dot " + (connected ? "online" : "offline");
+  if (label)  label.textContent = connected ? sessionCode : "SQUAD";
+  if (count) {
+    count.style.display = (players.length && connected) ? "inline" : "none";
+    count.textContent = players.length;
+  }
+  if (pillOpen) renderSquadPillBody();
+}
+function updateSquadWidget() { updateSquadPill(); } // alias
+
+function renderSquadPillBody() {
+  const el = document.getElementById("squad-widget-body");
   if (!el) return;
   const players = Object.values(squadPlayers);
-  const myName  = authUser?.username || authUser?.email;
+  const myName  = authUser?.username;
 
-  el.innerHTML = `
-    <div onclick="toggleSquadWidget()" style="padding:9px 13px;display:flex;align-items:center;gap:8px;cursor:pointer;border-bottom:1px solid #1a2530;user-select:none">
-      <div style="width:7px;height:7px;border-radius:50%;background:${sessionCode?'#39ff14':'#4a6070'};flex-shrink:0;${sessionCode?'box-shadow:0 0 5px #39ff14':''}"></div>
-      <span style="font-family:'Orbitron',monospace;font-size:9px;color:#c8d8e8;letter-spacing:1px">SQUAD</span>
-      ${sessionCode ? `<span style="font-family:'Orbitron',monospace;font-size:9px;color:#00e5ff;letter-spacing:2px">${sessionCode}</span>` : ''}
-      ${players.length ? `<span style="font-size:8px;padding:1px 5px;background:#1a2530;color:#4a6070;margin-left:auto">${players.length}</span>` : `<span style="margin-left:auto"></span>`}
-      <span id="sq-chevron" style="color:#4a6070;font-size:9px">${widgetOpen?"▲":"▼"}</span>
+  el.innerHTML = !authUser ? `
+    <div style="color:var(--text-dim);font-size:.82rem;margin-bottom:12px;line-height:1.7">Sign in to create or join a squad and share builds live.</div>
+    <button class="sq-btn" style="border-color:var(--green);color:var(--green)" onclick="openAuthModal('login')">SIGN IN TO USE SQUAD</button>
+  ` : !sessionCode ? `
+    <div style="color:var(--text-dim);font-size:.82rem;margin-bottom:12px;line-height:1.7">Create or join a session to share builds live with your team.</div>
+    <button class="sq-btn" style="border-color:var(--green);color:var(--green)" onclick="squadCreate()">+ CREATE SESSION</button>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <input id="sq-join-input" class="sq-input" placeholder="6-char code" maxlength="6" style="flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+      <button class="sq-btn" onclick="squadJoin(document.getElementById('sq-join-input').value)" style="width:auto;padding:0 12px;flex-shrink:0;margin:0">JOIN</button>
     </div>
-    <div id="squad-widget-body" style="padding:10px 12px;font-size:9px;display:${widgetOpen?'block':'none'}">
-      ${!authUser ? `
-        <div style="color:#4a6070;font-size:9px;margin-bottom:10px;line-height:1.6">Sign in to create or join a squad and share builds live.</div>
-        <button class="sq-btn" style="border-color:#39ff14;color:#39ff14" onclick="openAuthModal('login')">SIGN IN TO USE SQUAD</button>
-      ` : !sessionCode ? `
-        <div style="color:#4a6070;font-size:9px;margin-bottom:10px;line-height:1.6">Create or join a session to see your team's builds side-by-side.</div>
-        <button class="sq-btn" style="border-color:#39ff14;color:#39ff14" onclick="squadCreate()">+ CREATE SESSION</button>
-        <div style="display:flex;gap:5px;margin-top:7px">
-          <input id="sq-join-input" class="sq-input" placeholder="6-char code" maxlength="6" style="flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
-          <button class="sq-btn" onclick="squadJoin(document.getElementById('sq-join-input').value)" style="width:auto;padding:0 10px;flex-shrink:0">JOIN</button>
-        </div>
-      ` : `
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
-          <span style="font-family:'Orbitron',monospace;font-size:12px;color:#00e5ff;letter-spacing:3px">${sessionCode}</span>
-          <button id="sq-copy-btn" class="sq-btn" onclick="copyInviteLink()" style="width:auto;padding:2px 8px;font-size:8px;margin:0">📋 COPY LINK</button>
-        </div>
-        <div>
-          ${players.map(p=>{
-            const isMe = p.player_name===myName;
-            const ago  = Math.round((Date.now()-new Date(p.updated_at).getTime())/1000);
-            const live = ago < 8;
-            return `<div class="sq-player">
-              <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${isMe?'#00e5ff':live?'#39ff14':'#4a6070'}"></div>
-              <span style="font-size:9px;color:${isMe?'#00e5ff':'#c8d8e8'}">${p.player_name}</span>
-              ${isMe?'<span style="font-size:7px;padding:1px 4px;border:1px solid #00e5ff;color:#00e5ff;margin-left:auto">YOU</span>'
-                    :`<span style="font-size:7px;color:#4a6070;margin-left:auto">${live?"live":ago+"s ago"}</span>`}
-            </div>`;
-          }).join("")}
-        </div>
-        <button class="sq-btn" onclick="showMain('squad')" style="margin-top:8px;border-color:#00e5ff;color:#00e5ff">VIEW SQUAD BUILDS →</button>
-        <button class="sq-btn" onclick="squadLeave()" style="border-color:#ff006e;color:#ff006e">LEAVE SESSION</button>
-      `}
-    </div>`;
+  ` : `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <span style="font-family:'Orbitron',monospace;font-size:1rem;color:var(--cyan);letter-spacing:3px">${sessionCode}</span>
+      <button id="sq-copy-btn" class="sq-btn" onclick="copyInviteLink()" style="width:auto;padding:2px 10px;font-size:.7rem;margin:0">📋 COPY</button>
+    </div>
+    <div style="margin-bottom:10px">
+      ${players.map(p=>{
+        const isMe = p.player_name===myName;
+        const ago  = Math.round((Date.now()-new Date(p.updated_at).getTime())/1000);
+        const live = ago < 8;
+        return `<div class="sq-player">
+          <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${isMe?"var(--cyan)":live?"var(--green)":"var(--text-dead)"}"></div>
+          <span style="color:${isMe?"var(--cyan)":"var(--text)"}">${p.player_name}</span>
+          <span style="margin-left:auto;font-size:.7rem;color:var(--text-dead)">${isMe?"YOU":live?"live":ago+"s ago"}</span>
+        </div>`;
+      }).join("")}
+    </div>
+    <button class="sq-btn" onclick="showMain('squad')" style="border-color:var(--cyan);color:var(--cyan)">VIEW SQUAD BUILDS →</button>
+    <button class="sq-btn" onclick="squadLeave()" style="border-color:var(--red);color:var(--red)">LEAVE SESSION</button>
+  `;
 }
 
-function toggleSquadWidget() {
-  widgetOpen = !widgetOpen;
-  const body    = document.getElementById("squad-widget-body");
-  const chevron = document.getElementById("sq-chevron");
-  if (body)    body.style.display = widgetOpen ? "block" : "none";
-  if (chevron) chevron.textContent = widgetOpen ? "▲" : "▼";
+function toggleSquadPill() {
+  pillOpen = !pillOpen;
+  const panel   = document.getElementById("squad-pill-panel");
+  const pill    = document.getElementById("squad-pill");
+  const chevron = document.getElementById("squad-pill-chevron");
+  if (panel)   panel.classList.toggle("open", pillOpen);
+  if (pill)    pill.classList.toggle("open", pillOpen);
+  if (chevron) chevron.textContent = pillOpen ? "▼" : "▲";
+  if (pillOpen) renderSquadPillBody();
 }
 
 // ══════════════════════════════════════════
