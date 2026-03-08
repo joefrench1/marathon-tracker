@@ -1,3 +1,4 @@
+
 // ══════════════════════════════════════════
 // FACTIONS
 // ══════════════════════════════════════════
@@ -9,7 +10,6 @@ const FC={
   Arachne:   {color:"#ff6d00",bg:"rgba(255,109,0,.09)",dim:"rgba(255,109,0,.3)",handler:"Charter"},
   SekGen:    {color:"#39ff14",bg:"rgba(57,255,20,.09)",dim:"rgba(57,255,20,.3)",handler:"Nona"},
 };
-
 
 // ══════════════════════════════════════════
 // SALVAGE LOCATIONS (verified - Dexerto/Shacknews)
@@ -439,10 +439,3 @@ const UG=[
   {eff:"Deluxe Shell Cores Available",   credits:3000, salvage:[{i:"Fractal Circuit",q:20},{i:"Amygdala Drive",q:5}], rank:12},
 ]},
 ];
-
-
-// ══════════════════════════════════════════
-// RECOMMENDED PATH
-// ══════════════════════════════════════════
-const REC=["nc_saf","ar_cred","ar_inf","ca_cred","ca_sink","nc_shie","nc_rest",
-           "nc_saf2","ar_kni","ar_str","ar_shot","mi_flex","sg_tac","sg_hds","ar_reb","tr_snp","ca_firm"];

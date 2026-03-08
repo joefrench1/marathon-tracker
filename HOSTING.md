@@ -1,95 +1,113 @@
-# Hosting Guide — Namecheap Domain + Netlify
+# Hosting Guide — marathon-tracker
 
-This guide connects your Namecheap domain to a free Netlify hosting account so your Marathon tracker is live at a proper URL like `https://marathontracker.gg`.
+## Option A: Netlify Drop (5 minutes, free)
 
----
+1. Go to https://app.netlify.com/drop
+2. Drag the `marathon-tracker/` folder onto the page
+3. Netlify gives you a URL like `https://amazing-einstein-abc123.netlify.app`
 
-## Step 1 — Deploy to Netlify (takes 2 minutes)
+### Connecting your Namecheap domain to Netlify
 
-Netlify hosts static HTML files for free with no server required.
+1. In Netlify: **Site settings → Domain management → Add custom domain**
+   - Enter your domain e.g. `marathon-tracker.com`
+   - Click **Verify** then **Add domain**
 
-1. Go to **[app.netlify.com](https://app.netlify.com)** and create a free account
-2. From your dashboard, click **"Add new site" → "Deploy manually"**
-3. Drag and drop your `index.html` file onto the upload zone
-4. Netlify instantly assigns you a URL like `https://amazing-name-123456.netlify.app`
-5. Test it — your tracker should be fully working at that URL
+2. Netlify shows you **nameservers** (e.g. `dns1.p01.nsone.net`)
 
----
+3. In Namecheap: 
+   - Go to **Domain List → Manage → Nameservers**
+   - Switch to **Custom DNS**
+   - Paste all 4 Netlify nameservers
+   - Save
 
-## Step 2 — Add a Custom Domain to Netlify
-
-1. In your Netlify site dashboard, go to **Domain management → Add a domain**
-2. Enter your domain (e.g. `marathontracker.gg`) and click **Verify**
-3. Netlify will show you its **nameservers** — they look like:
-   ```
-   dns1.p04.nsone.net
-   dns2.p04.nsone.net
-   dns3.p04.nsone.net
-   dns4.p04.nsone.net
-   ```
-   Copy these — you need them for Step 3.
+4. Wait 10–60 minutes for DNS to propagate. SSL is automatic.
 
 ---
 
-## Step 3 — Point Your Namecheap Domain to Netlify
+## Option B: GitHub Pages (free, version controlled)
 
-1. Log in to **[namecheap.com](https://namecheap.com)**
-2. Go to **Domain List → Manage** (next to your domain)
-3. Click the **Nameservers** tab
-4. Change from "Namecheap BasicDNS" to **"Custom DNS"**
-5. Enter Netlify's nameservers (the ones from Step 2), one per line
-6. Click the green ✓ to save
+### Step 1 — Create GitHub repo
 
-DNS propagation takes **15 minutes to 48 hours** — usually under an hour.
+1. Go to https://github.com/new
+2. Name: `marathon-tracker` (or whatever you like)
+3. Set to **Public**
+4. Click **Create repository**
 
----
+### Step 2 — Push your files
 
-## Step 4 — Enable HTTPS (Free SSL)
+```bash
+cd path/to/marathon-tracker
 
-Once DNS propagates:
-
-1. Back in Netlify → **Domain management → HTTPS**
-2. Click **"Verify DNS configuration"**
-3. Then **"Provision certificate"**
-4. Netlify automatically issues a free Let's Encrypt SSL certificate
-
-Your site will be live at `https://yourdomain.com` with HTTPS — squad invite links will work properly.
-
----
-
-## Step 5 — Keep it Updated
-
-When you update `index.html`:
-
-**Option A — Drag and drop again:**
-- Go to Netlify dashboard → Deploys → drag new `index.html`
-
-**Option B — GitHub + auto-deploy (recommended):**
-1. Push your repo to GitHub
-2. In Netlify: **Site settings → Build & Deploy → Connect to Git**
-3. Select your repo — every `git push` to `main` auto-deploys
-
----
-
-## Squad Invite Links
-
-Once hosted, squad invite links look like:
-```
-https://yourdomain.com/?session=ABC123
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/YOURUSERNAME/marathon-tracker.git
+git push -u origin main
 ```
 
-Anyone opening that link automatically joins the session — no manual code entry needed.
+### Step 3 — Enable GitHub Pages
 
-Make sure your Supabase `SB_KEY` is set in `index.html` before deploying, and that you've run the SQL from `README.md` to create the `profiles` and `squad_sessions` tables.
+1. Go to your repo → **Settings → Pages**
+2. Source: **Deploy from a branch**
+3. Branch: `main` / `/ (root)`
+4. Click **Save**
+5. Your site is live at: `https://YOURUSERNAME.github.io/marathon-tracker/`
+
+### Step 4 — Connect Namecheap domain to GitHub Pages
+
+1. In GitHub Pages settings, add your custom domain e.g. `marathon-tracker.gg`
+
+2. Create a file called `CNAME` in your repo root containing just your domain:
+   ```
+   marathon-tracker.gg
+   ```
+
+3. In Namecheap → **Advanced DNS** for your domain, add these records:
+
+   | Type  | Host | Value                        | TTL  |
+   |-------|------|------------------------------|------|
+   | A     | @    | 185.199.108.153               | Auto |
+   | A     | @    | 185.199.109.153               | Auto |
+   | A     | @    | 185.199.110.153               | Auto |
+   | A     | @    | 185.199.111.153               | Auto |
+   | CNAME | www  | YOURUSERNAME.github.io.       | Auto |
+
+4. Back in GitHub Pages settings, check **Enforce HTTPS**
+
+5. Wait up to 30 minutes. Done ✓
 
 ---
 
-## Troubleshooting
+## Option C: Cloudflare Pages (free, very fast CDN)
 
-| Problem | Fix |
-|---------|-----|
-| Site loads but squad doesn't work | Check `SB_KEY` is a real JWT (starts with `eyJ`), not the placeholder |
-| Domain not resolving | DNS can take up to 48h — check progress at [dnschecker.org](https://dnschecker.org) |
-| HTTPS certificate pending | Wait for DNS to propagate first, then re-verify in Netlify |
-| Login/signup fails | Check Supabase → Authentication → Email Auth is enabled |
-| Squad sessions not saving | Run the SQL from README.md to create the `squad_sessions` table |
+1. Push to GitHub as above
+2. Go to https://pages.cloudflare.com
+3. **Create a project → Connect to Git → Select your repo**
+4. Build settings: Framework = **None**, Build command = (blank), Output = `/`
+5. Deploy
+
+Cloudflare Pages + Namecheap domain: add your domain to Cloudflare first (free plan), then in Namecheap switch nameservers to Cloudflare's provided ones.
+
+---
+
+## Updating the site
+
+After making changes locally:
+
+```bash
+git add .
+git commit -m "Update upgrade data"
+git push
+```
+
+GitHub Pages and Netlify both auto-deploy on push (within ~1 minute).
+
+---
+
+## Squad sessions and Supabase
+
+For squad features to work, you need to:
+1. Replace `PASTE_YOUR_ANON_JWT_HERE` in `js/auth.js` with your real Supabase anon key
+2. Deploy to a public URL (localhost won't work for squad invites)
+3. In Supabase: **Authentication → URL Configuration** → add your domain to allowed origins
