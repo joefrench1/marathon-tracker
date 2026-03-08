@@ -505,6 +505,26 @@ function _renderPlayerDetail(playerName, myName) {
     </div>`;
 }
 
+
+// ══════════════════════════════════════════
+// SEND BUILD TO SQUAD (called from tree ctrl)
+// ══════════════════════════════════════════
+function sendBuildToSquad() {
+  if (!sessionCode) {
+    // If not in session, prompt to go to squad tab
+    showMain('squad');
+    return;
+  }
+  _squadPushData();
+  const btn = document.getElementById("btn-squad-send");
+  if (btn) { const o = btn.textContent; btn.textContent = "✓ SENT!"; setTimeout(()=>btn.textContent=o, 2000); }
+}
+
+// maybeSync (called by old refresh path in core.js)
+function maybeSync() {
+  if (authUser && sessionCode) _squadPushData();
+}
+
 // ══════════════════════════════════════════
 // REFRESH OVERRIDE — push to profile + squad
 // ══════════════════════════════════════════
