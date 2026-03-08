@@ -120,11 +120,3 @@ function renderAmmoResults(){
     </div>
   </div>`;
 }
-
-// ══════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════
-buildFbar();renderTree();updateHdr();renderAuthWidget();updateSquadWidget();tryRestoreSession();
-
-</script>
-</body>

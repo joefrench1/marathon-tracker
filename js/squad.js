@@ -25,28 +25,28 @@ function closeAuthModal() {
 
 function renderAuthModalBody(mode) {
   const el = document.getElementById("auth-modal-body");
+  if (!el) return;
   if (mode === "login") {
     el.innerHTML = `
-      <div style="font-family:'Orbitron',monospace;font-size:13px;color:#00e5ff;letter-spacing:3px;margin-bottom:14px">SIGN IN</div>
-      <div id="auth-msg" style="display:none;padding:7px 10px;font-size:9.5px;margin-bottom:10px;border-left:3px solid"></div>
-      <div style="font-size:9px;color:#4a6070;margin-bottom:14px;line-height:1.7">Sign in to sync your build across devices and join squad sessions.</div>
-      <input id="a-email" class="sinput" placeholder="Email address"   type="email"    autocomplete="email">
-      <input id="a-pw"    class="sinput" placeholder="Password"         type="password" autocomplete="current-password">
-      <div style="display:flex;gap:8px;margin-top:14px">
-        <button class="btn" style="border-color:#4a6070;color:#4a6070;font-size:9px;flex:1" onclick="renderAuthModalBody('signup')">Create account</button>
-        <button class="btn bb" style="flex:1;font-size:9px" onclick="authSignIn(document.getElementById('a-email').value,document.getElementById('a-pw').value)">SIGN IN →</button>
+      <div style="font-family:'Orbitron',monospace;font-size:15px;color:#00e5ff;letter-spacing:2px;margin-bottom:6px">SIGN IN</div>
+      <div style="font-size:11px;color:#4a6070;margin-bottom:16px;line-height:1.7">Sign in to sync your build and join squad sessions.</div>
+      <input id="a-uname" class="sinput" placeholder="Username" autocomplete="username">
+      <input id="a-pw"    class="sinput" placeholder="Password" type="password" autocomplete="current-password">
+      <div id="auth-msg"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn" style="border-color:#4a6070;color:#4a6070;flex:1" onclick="renderAuthModalBody('signup')">Create account</button>
+        <button class="btn bb" style="flex:1" onclick="authSignIn(document.getElementById('a-uname').value.trim(),document.getElementById('a-pw').value)">SIGN IN →</button>
       </div>`;
   } else {
     el.innerHTML = `
-      <div style="font-family:'Orbitron',monospace;font-size:13px;color:#00e5ff;letter-spacing:3px;margin-bottom:14px">CREATE ACCOUNT</div>
-      <div id="auth-msg" style="display:none;padding:7px 10px;font-size:9.5px;margin-bottom:10px;border-left:3px solid"></div>
-      <div style="font-size:9px;color:#4a6070;margin-bottom:14px;line-height:1.7">Your build auto-saves to your profile. Rejoin any squad and your build syncs instantly.</div>
-      <input id="a-uname" class="sinput" placeholder="Username (shown to squad)" maxlength="20" autocomplete="username">
-      <input id="a-email" class="sinput" placeholder="Email address"   type="email"    autocomplete="email">
-      <input id="a-pw"    class="sinput" placeholder="Password (min 8 chars)" type="password" autocomplete="new-password">
-      <div style="display:flex;gap:8px;margin-top:14px">
-        <button class="btn" style="border-color:#4a6070;color:#4a6070;font-size:9px;flex:1" onclick="renderAuthModalBody('login')">Sign in instead</button>
-        <button class="btn bg" style="flex:1;font-size:9px" onclick="_doSignUp()">CREATE →</button>
+      <div style="font-family:'Orbitron',monospace;font-size:15px;color:#39ff14;letter-spacing:2px;margin-bottom:6px">CREATE ACCOUNT</div>
+      <div style="font-size:11px;color:#4a6070;margin-bottom:16px;line-height:1.7">Choose a username and password. Your build syncs to your account automatically.</div>
+      <input id="a-uname" class="sinput" placeholder="Username (3–20 chars, shown to squad)" maxlength="20" autocomplete="username">
+      <input id="a-pw"    class="sinput" placeholder="Password (min 6 chars)" type="password" autocomplete="new-password">
+      <div id="auth-msg"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn" style="border-color:#4a6070;color:#4a6070;flex:1" onclick="renderAuthModalBody('login')">Sign in instead</button>
+        <button class="btn bg" style="flex:1" onclick="_doSignUp()">CREATE →</button>
       </div>`;
   }
 }
@@ -54,18 +54,14 @@ function renderAuthModalBody(mode) {
 function setAuthMsg(msg, type) {
   const el = document.getElementById("auth-msg");
   if (!el) return;
-  const col = type==="error"?"#ff006e":type==="success"?"#39ff14":"#ffd600";
-  el.style.cssText = `display:block;padding:7px 10px;font-size:9.5px;margin-bottom:10px;border-left:3px solid ${col};color:${col};background:${col}11`;
+  el.style.cssText = `margin-top:8px;padding:9px 11px;font-size:11px;border-left:3px solid ${type==="error"?"#ff006e":type==="success"?"#39ff14":"#4a9eff"};color:${type==="error"?"#ff006e":type==="success"?"#39ff14":"#8aa0b0"}`;
   el.textContent = msg;
 }
 
 function _doSignUp() {
   const uname = document.getElementById("a-uname")?.value?.trim();
-  const email = document.getElementById("a-email")?.value?.trim();
   const pw    = document.getElementById("a-pw")?.value;
-  if (!uname||!email||!pw) { setAuthMsg("Fill in all fields.", "error"); return; }
-  if (pw.length < 8)        { setAuthMsg("Password must be at least 8 characters.", "error"); return; }
-  authSignUp(email, pw, uname);
+  authSignUp(uname, pw);
 }
 
 // ══════════════════════════════════════════
