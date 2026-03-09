@@ -94,9 +94,9 @@ async function squadJoin(code) {
 async function _squadUpsertRow() {
   const name = authUser.username || authUser.email;
   // delete then insert for clean upsert
-  await sbFetch(`/rest/v1/squad_sessions?session_code=eq.${sessionCode}&player_name=eq.${encodeURIComponent(name)}`,
+  await sbFetch(`/rest/v1/sessions?session_code=eq.${sessionCode}&player_name=eq.${encodeURIComponent(name)}`,
     { method:"DELETE" });
-  await sbFetch("/rest/v1/squad_sessions", {
+  await sbFetch("/rest/v1/sessions", {
     method: "POST",
     extraHeaders: { "Prefer": "return=minimal" },
     body: JSON.stringify({
@@ -111,7 +111,7 @@ async function _squadUpsertRow() {
 async function squadLeave() {
   if (sessionCode && authUser) {
     const name = authUser.username || authUser.email;
-    await sbFetch(`/rest/v1/squad_sessions?session_code=eq.${sessionCode}&player_name=eq.${encodeURIComponent(name)}`,
+    await sbFetch(`/rest/v1/sessions?session_code=eq.${sessionCode}&player_name=eq.${encodeURIComponent(name)}`,
       { method:"DELETE" });
   }
   if (sqPollTimer) clearInterval(sqPollTimer);
@@ -124,7 +124,7 @@ async function squadLeave() {
 async function _squadPushData() {
   if (!sessionCode || !authUser) return;
   const name = authUser.username || authUser.email;
-  await sbFetch(`/rest/v1/squad_sessions?session_code=eq.${sessionCode}&player_name=eq.${encodeURIComponent(name)}`, {
+  await sbFetch(`/rest/v1/sessions?session_code=eq.${sessionCode}&player_name=eq.${encodeURIComponent(name)}`, {
     method: "PATCH",
     extraHeaders: { "Prefer": "return=minimal" },
     body: JSON.stringify({ faction_data:{ LV, PL }, updated_at: new Date().toISOString() })
@@ -139,7 +139,7 @@ function _startPolling() {
 
 async function _loadSquad() {
   if (!sessionCode) return;
-  const rows = await sbFetch(`/rest/v1/squad_sessions?session_code=eq.${sessionCode}&select=player_name,faction_data,updated_at&order=updated_at`);
+  const rows = await sbFetch(`/rest/v1/sessions?session_code=eq.${sessionCode}&select=player_name,faction_data,updated_at&order=updated_at`);
   if (!Array.isArray(rows)) return;
   squadPlayers = {};
   rows.forEach(r => { squadPlayers[r.player_name] = r; });

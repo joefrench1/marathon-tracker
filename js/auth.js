@@ -2,51 +2,42 @@
 // AUTH & SQUAD  (Supabase-backed)
 // ══════════════════════════════════════════
 
-// ── Supabase config ──────────────────────
 const SB_URL = "https://ppzulorxyiwkzhfeubhr.supabase.co";
-// Replace with your key from Supabase → Project Settings → API
-// Use EITHER:
-//   • The "anon" JWT key (starts with eyJ...) from the Legacy API Keys tab
-//   • OR the "publishable" key (starts with sb_publishable_...) from the API Keys tab
-// Both work — the publishable key is newer and recommended.
 const SB_KEY = "sb_publishable_nL6282I7TKx6zcqa73j2-g_0CatgzXM";
 
-let authUser   = null;   // { id, username }
-let authToken  = null;   // session token (profile id)
+let authUser  = null;   // { id, username }
+let authToken = null;   // profile id used as session token
 
-// ── Low-level fetch helper ────────────────
-// Publishable keys (sb_publishable_...) go in apikey header only — NOT in Authorization Bearer
-async function sbFetch(path, opts = {}, useAuth = true) {
-  try {
-    const headers = {
-      "Content-Type": "application/json",
-      "apikey": SB_KEY,
-      ...(opts.extraHeaders || {})
-    };
-    const res = await fetch(SB_URL + path, {
-      method: opts.method || "GET",
-      headers,
-      body: opts.body
-    });
-    if (res.status === 204) return {};
-    return await res.json();
-  } catch(e) {
-    console.warn("sbFetch error:", e);
-    return null;
+// ── Low-level fetch ───────────────────────
+async function sbFetch(path, opts = {}) {
+  const headers = {
+    "Content-Type": "application/json",
+    "apikey": SB_KEY,
+    "Authorization": "Bearer " + SB_KEY,
+    ...(opts.extraHeaders || {})
+  };
+  const res = await fetch(SB_URL + path, {
+    method: opts.method || "GET",
+    headers,
+    body: opts.body
+  });
+  if (res.status === 204 || res.status === 201) {
+    try { return await res.json(); } catch(e) { return {}; }
   }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data?.message || data?.error || `HTTP ${res.status}`);
+  return data;
 }
 
-// ══════════════════════════════════════════
-// USERNAME-ONLY AUTH
-// No email required. Username + password stored in Supabase profiles table.
-// Password is hashed client-side using SHA-256 before storing — never stored plain.
-// ══════════════════════════════════════════
-
+// ── SHA-256 hash ──────────────────────────
 async function _sha256(str) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 
+// ══════════════════════════════════════════
+// SIGN UP
+// ══════════════════════════════════════════
 async function authSignUp(username, password) {
   if (!username || username.length < 3) {
     setAuthMsg("Username must be at least 3 characters.", "error"); return;
@@ -56,66 +47,84 @@ async function authSignUp(username, password) {
   }
   setAuthMsg("Creating account…", "info");
 
-  // Check username not taken
-  const existing = await sbFetch(`/rest/v1/profiles?username=eq.${encodeURIComponent(username)}&select=id`, {}, false);
-  if (existing?.length > 0) {
-    setAuthMsg("That username is already taken.", "error"); return;
+  try {
+    // Check username not taken
+    const existing = await sbFetch(`/rest/v1/profiles?username=eq.${encodeURIComponent(username)}&select=id`);
+    if (Array.isArray(existing) && existing.length > 0) {
+      setAuthMsg("That username is already taken.", "error"); return;
+    }
+
+    const pwHash = await _sha256(password + username + "marathon_salt");
+    const id     = crypto.randomUUID();
+
+    await sbFetch("/rest/v1/profiles", {
+      method: "POST",
+      extraHeaders: { "Prefer": "return=minimal" },
+      body: JSON.stringify({
+        id, username, pw_hash: pwHash,
+        faction_data: { LV: {}, PL: {} },
+        updated_at: new Date().toISOString()
+      })
+    });
+
+    authToken = id;
+    authUser  = { id, username };
+    _onAuthOK();
+    setAuthMsg("Welcome, " + username + "!", "success");
+    setTimeout(closeAuthModal, 900);
+
+  } catch(e) {
+    console.error("Sign-up error:", e);
+    setAuthMsg("Sign-up failed: " + (e.message || "unknown error"), "error");
   }
-
-  const pwHash = await _sha256(password + username + "marathon_salt");
-  const id     = crypto.randomUUID();
-  const res    = await sbFetch("/rest/v1/profiles", {
-    method: "POST",
-    extraHeaders: { "Prefer": "return=representation" },
-    body: JSON.stringify({
-      id, username, pw_hash: pwHash,
-      faction_data: { LV: {}, PL: {} },
-      updated_at: new Date().toISOString()
-    })
-  }, false);
-
-  if (!res?.[0]?.id) {
-    setAuthMsg("Sign-up failed. Check your Supabase key is set in auth.js.", "error");
-    return;
-  }
-
-  // Use username as the "token" (session key)
-  authToken = id;
-  authUser  = { id, username };
-  _onAuthOK();
-  setAuthMsg("Account created — welcome, " + username + "!", "success");
-  setTimeout(closeAuthModal, 1000);
 }
 
+// ══════════════════════════════════════════
+// SIGN IN
+// ══════════════════════════════════════════
 async function authSignIn(username, password) {
   if (!username || !password) { setAuthMsg("Enter username and password.", "error"); return; }
   setAuthMsg("Signing in…", "info");
 
-  const pwHash = await _sha256(password + username + "marathon_salt");
-  const rows   = await sbFetch(`/rest/v1/profiles?username=eq.${encodeURIComponent(username)}&select=*`, {}, false);
+  try {
+    const rows = await sbFetch(`/rest/v1/profiles?username=eq.${encodeURIComponent(username)}&select=*`);
 
-  if (!rows?.[0]) { setAuthMsg("Username not found.", "error"); return; }
-  if (rows[0].pw_hash !== pwHash) { setAuthMsg("Incorrect password.", "error"); return; }
+    if (!Array.isArray(rows) || rows.length === 0) {
+      setAuthMsg("Username not found.", "error"); return;
+    }
 
-  const row = rows[0];
-  authToken = row.id;
-  authUser  = { id: row.id, username };
+    const pwHash = await _sha256(password + username + "marathon_salt");
+    if (rows[0].pw_hash !== pwHash) {
+      setAuthMsg("Incorrect password.", "error"); return;
+    }
 
-  // Restore build
-  const fd = row.faction_data || {};
-  if (fd.LV) Object.assign(LV, fd.LV);
-  if (fd.PL) Object.assign(PL, fd.PL);
-  refresh();
+    const row = rows[0];
+    authToken = row.id;
+    authUser  = { id: row.id, username };
 
-  _onAuthOK();
-  setAuthMsg("Welcome back, " + username + "!", "success");
-  setTimeout(closeAuthModal, 900);
+    const fd = row.faction_data || {};
+    if (fd.LV) Object.assign(LV, fd.LV);
+    if (fd.PL) Object.assign(PL, fd.PL);
+    refresh();
+
+    _onAuthOK();
+    setAuthMsg("Welcome back, " + username + "!", "success");
+    setTimeout(closeAuthModal, 900);
+
+  } catch(e) {
+    console.error("Sign-in error:", e);
+    setAuthMsg("Sign-in failed: " + (e.message || "unknown error"), "error");
+  }
 }
 
+// ══════════════════════════════════════════
+// SIGN OUT
+// ══════════════════════════════════════════
 async function authSignOut() {
   authUser = authToken = null;
-  if (sqPollTimer) clearInterval(sqPollTimer);
-  sessionCode = null; squadPlayers = {};
+  if (typeof sqPollTimer !== "undefined" && sqPollTimer) clearInterval(sqPollTimer);
+  if (typeof sessionCode !== "undefined") sessionCode = null;
+  if (typeof squadPlayers !== "undefined") squadPlayers = {};
   try { sessionStorage.clear(); } catch(e){}
   renderAuthWidget();
   updateSquadPill();
@@ -133,15 +142,18 @@ function _onAuthOK() {
   pushProfile();
 }
 
+// ══════════════════════════════════════════
+// RESTORE SESSION
+// ══════════════════════════════════════════
 async function tryRestoreSession() {
   try {
     const token = sessionStorage.getItem("mara_token");
     const user  = JSON.parse(sessionStorage.getItem("mara_user") || "null");
     if (!token || !user) return;
     authToken = token; authUser = user;
-    // Verify still valid + load latest build
+
     const rows = await sbFetch(`/rest/v1/profiles?id=eq.${user.id}&select=*`);
-    if (rows?.[0]) {
+    if (Array.isArray(rows) && rows[0]) {
       authUser.username = rows[0].username;
       const fd = rows[0].faction_data || {};
       if (fd.LV) Object.assign(LV, fd.LV);
@@ -156,19 +168,26 @@ async function tryRestoreSession() {
       authUser = authToken = null;
       sessionStorage.clear();
     }
-  } catch(e) {}
+  } catch(e) {
+    authUser = authToken = null;
+    try { sessionStorage.clear(); } catch(_){}
+  }
 }
 
-// ── Profile save (debounced 1.2s) ─────────────
+// ══════════════════════════════════════════
+// PROFILE SAVE (debounced)
+// ══════════════════════════════════════════
 let _pushTimer = null;
 async function pushProfile() {
   if (!authUser || !authToken) return;
   clearTimeout(_pushTimer);
   _pushTimer = setTimeout(async () => {
-    await sbFetch(`/rest/v1/profiles?id=eq.${authUser.id}`, {
-      method: "PATCH",
-      extraHeaders: { "Prefer": "return=minimal" },
-      body: JSON.stringify({ faction_data: { LV, PL }, updated_at: new Date().toISOString() })
-    });
+    try {
+      await sbFetch(`/rest/v1/profiles?id=eq.${authUser.id}`, {
+        method: "PATCH",
+        extraHeaders: { "Prefer": "return=minimal" },
+        body: JSON.stringify({ faction_data: { LV, PL }, updated_at: new Date().toISOString() })
+      });
+    } catch(e) { console.warn("pushProfile failed:", e); }
   }, 1200);
 }
