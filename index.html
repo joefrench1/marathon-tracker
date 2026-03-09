@@ -394,6 +394,23 @@ body {
 
 /* ── TOOLTIP ────────────────────────────── */
 #tt { display: none; position: fixed; z-index: 9999; background: var(--bg1); border: 1px solid var(--border2); padding: 14px 16px; min-width: 280px; max-width: 340px; pointer-events: none; box-shadow: 0 6px 32px rgba(0,0,0,.85); }
+
+/* ── ABILITY TOOLTIP (runner abilities + video) ── */
+#abt { display: none; position: fixed; z-index: 9999; background: var(--bg1); border: 1px solid var(--border2); width: 340px; max-width: 92vw; pointer-events: none; box-shadow: 0 8px 40px rgba(0,0,0,.9); overflow: hidden; }
+#abt .abt-hdr { padding: 11px 14px 8px; border-bottom: 1px solid var(--border); }
+#abt .abt-type { font-size: .68rem; letter-spacing: 2px; font-weight: 700; text-transform: uppercase; }
+#abt .abt-name { font-family: 'Orbitron', monospace; font-size: .92rem; margin: 4px 0 0; color: var(--text); }
+#abt .abt-desc { font-size: .82rem; color: var(--text-dim); line-height: 1.55; padding: 9px 14px; border-bottom: 1px solid var(--border); }
+#abt .abt-video { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
+#abt .abt-video iframe { width: 100%; height: 100%; border: none; display: block; }
+#abt .abt-no-video { padding: 14px; text-align: center; font-size: .76rem; color: var(--text-dim); }
+#abt .abt-no-video span { display: block; font-size: 1.4rem; margin-bottom: 5px; opacity: .3; }
+
+/* ── LPW TOOLTIP (live players enriched) ── */
+#live-players-widget { cursor: help; }
+.lpw-tt-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; font-size: .82rem; }
+.lpw-tt-label { color: var(--text-dim); }
+.lpw-tt-val { color: var(--text); font-weight: 700; }
 .tt-name    { font-family: 'Orbitron', monospace; font-size: 1rem; margin-bottom: 9px; }
 .tt-lvl     { padding: 10px 12px; border: 1px solid var(--border); margin-bottom: 5px; font-size: .85rem; }
 .tt-lvl.cur { border-color: var(--yellow); }
@@ -690,7 +707,8 @@ body {
       <span class="v" id="h-salv" style="color:var(--orange)">0</span>
       <span class="l">MATERIALS</span>
     </div>
-    <div id="live-players-widget" class="lpw-loading" title="Live player count from Steam — updates every 5 minutes">
+    <div id="live-players-widget" class="lpw-loading"
+         onmouseenter="showLpwTT(event)" onmouseleave="hideTT()" onmousemove="moveTT(event)">
       <div class="lpw-dot"></div>
       <div>
         <span class="lpw-count" id="lpw-count">—</span>
@@ -763,6 +781,7 @@ body {
 <div id="view-ammo"      class="view"><div id="ammov"></div></div>
 
 <div id="tt"></div>
+<div id="abt"></div>
 
 <!-- SQUAD PILL (replaces the old floating widget) -->
 <div id="squad-pill" onclick="toggleSquadPill()">
@@ -5015,6 +5034,86 @@ function renderToolsContent() {
 // Routed through allorigins.win to avoid CORS block on direct browser requests
 // ══════════════════════════════════════════
 
+const lpwMetrics = {
+  current: null,       // latest player count
+  prev: null,          // previous reading (for trend)
+  sessionPeak: null,   // highest count seen this session
+  sessionLow: null,    // lowest count seen this session
+  lastFetch: null,     // Date of last successful fetch
+  nextFetch: null,     // Date of next scheduled fetch
+  sessionStart: Date.now(),
+  readings: 0,         // number of successful fetches this session
+  lastError: null,     // last error message
+};
+
+function showLpwTT(e) {
+  const tt = document.getElementById("tt");
+  const m  = lpwMetrics;
+
+  if (m.current === null && m.lastError) {
+    tt.innerHTML = `
+      <div style="font-family:'Orbitron',monospace;font-size:.9rem;color:var(--red);margin-bottom:8px">⚠ FETCH ERROR</div>
+      <div style="font-size:.8rem;color:var(--text-dim)">${m.lastError}</div>
+      <div style="font-size:.75rem;color:var(--text-dead);margin-top:6px">Source: Steam Web API · App ID 3065800</div>`;
+    tt.style.display = "block";
+    moveTT(e);
+    return;
+  }
+
+  const trend = m.prev !== null && m.current !== null
+    ? (m.current > m.prev ? `<span style="color:var(--green)">↑ +${(m.current - m.prev).toLocaleString()}</span>`
+     : m.current < m.prev ? `<span style="color:var(--red)">↓ −${(m.prev - m.current).toLocaleString()}</span>`
+     : `<span style="color:var(--text-dim)">= no change</span>`)
+    : `<span style="color:var(--text-dead)">—</span>`;
+
+  const sessionMins = Math.floor((Date.now() - m.sessionStart) / 60000);
+  const sessionStr  = sessionMins < 60
+    ? `${sessionMins}m`
+    : `${Math.floor(sessionMins/60)}h ${sessionMins%60}m`;
+
+  const nextStr = m.nextFetch
+    ? (() => {
+        const s = Math.max(0, Math.round((m.nextFetch - Date.now()) / 1000));
+        return s < 60 ? `${s}s` : `${Math.floor(s/60)}m ${s%60}s`;
+      })()
+    : "—";
+
+  const lastStr = m.lastFetch
+    ? m.lastFetch.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"})
+    : "—";
+
+  const peakDiff = m.sessionPeak !== null && m.current !== null && m.sessionPeak !== m.current
+    ? ` <span style="color:var(--text-dead);font-weight:400">(+${(m.sessionPeak - m.current).toLocaleString()} vs now)</span>`
+    : "";
+
+  const lowDiff = m.sessionLow !== null && m.current !== null && m.sessionLow !== m.current
+    ? ` <span style="color:var(--text-dead);font-weight:400">(−${(m.current - m.sessionLow).toLocaleString()} vs now)</span>`
+    : "";
+
+  function row(label, val) {
+    return `<div class="lpw-tt-row"><span class="lpw-tt-label">${label}</span><span class="lpw-tt-val">${val}</span></div>`;
+  }
+
+  tt.innerHTML = `
+    <div style="font-family:'Orbitron',monospace;font-size:.88rem;color:var(--green);margin-bottom:10px;letter-spacing:1.5px">🟢 MARATHON LIVE</div>
+    <div style="font-size:1.6rem;font-family:'Orbitron',monospace;color:var(--green);font-weight:700;letter-spacing:1px;margin-bottom:4px">${m.current !== null ? m.current.toLocaleString() : "—"}</div>
+    <div style="font-size:.72rem;color:var(--text-dead);letter-spacing:1px;margin-bottom:10px">CONCURRENT PLAYERS ON STEAM</div>
+    <div style="border-top:1px solid var(--border);padding-top:8px;display:flex;flex-direction:column;gap:2px">
+      ${row("Since last check", trend)}
+      ${row("Session peak", m.sessionPeak !== null ? `<span style="color:var(--yellow)">${m.sessionPeak.toLocaleString()}${peakDiff}</span>` : "—")}
+      ${row("Session low", m.sessionLow !== null ? `<span style="color:var(--text-dim)">${m.sessionLow.toLocaleString()}${lowDiff}</span>` : "—")}
+      ${row("Readings this session", `<span style="color:var(--cyan)">${m.readings}</span>`)}
+      ${row("Session duration", `<span style="color:var(--text-dim)">${sessionStr}</span>`)}
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:7px;margin-top:7px;display:flex;flex-direction:column;gap:2px">
+      ${row("Last updated", `<span style="color:var(--text-dim)">${lastStr}</span>`)}
+      ${row("Next update in", `<span style="color:var(--text-dim)">${nextStr}</span>`)}
+    </div>
+    <div style="font-size:.72rem;color:var(--text-dead);margin-top:8px;border-top:1px solid var(--border);padding-top:6px">Source: Steam Web API · App ID 3065800</div>`;
+  tt.style.display = "block";
+  moveTT(e);
+}
+
 (function initLivePlayerCount() {
   const STEAM_URL   = "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=3065800";
   const PROXY_URL   = "https://api.allorigins.win/get?url=" + encodeURIComponent(STEAM_URL);
@@ -5025,23 +5124,31 @@ function renderToolsContent() {
     const countEl = document.getElementById("lpw-count");
     if (!widget || !countEl) return;
 
+    lpwMetrics.nextFetch = new Date(Date.now() + REFRESH_MS);
+
     try {
       const res    = await fetch(PROXY_URL);
       const outer  = await res.json();
       const data   = JSON.parse(outer.contents);
       const n      = data?.response?.player_count;
       if (typeof n === "number") {
+        lpwMetrics.prev        = lpwMetrics.current;
+        lpwMetrics.current     = n;
+        lpwMetrics.lastFetch   = new Date();
+        lpwMetrics.readings   += 1;
+        lpwMetrics.lastError   = null;
+        if (lpwMetrics.sessionPeak === null || n > lpwMetrics.sessionPeak) lpwMetrics.sessionPeak = n;
+        if (lpwMetrics.sessionLow  === null || n < lpwMetrics.sessionLow)  lpwMetrics.sessionLow  = n;
         countEl.textContent = n.toLocaleString();
         widget.classList.remove("lpw-loading", "lpw-error");
-        widget.title = `${n.toLocaleString()} players in Marathon right now · updates every 5 min`;
       } else {
         throw new Error("unexpected response");
       }
     } catch(e) {
+      lpwMetrics.lastError = e.message || "Unknown error";
       widget.classList.add("lpw-error");
       widget.classList.remove("lpw-loading");
       countEl.textContent = "N/A";
-      widget.title = "Could not fetch live player count";
     }
   }
 
