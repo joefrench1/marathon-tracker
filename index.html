@@ -76,7 +76,43 @@ body {
   display: flex;
   gap: 20px;
   align-items: center;
+  flex: 1;
+  justify-content: center;
 }
+
+#live-players-widget {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 14px;
+  border: 1px solid rgba(57,255,20,.25);
+  background: rgba(57,255,20,.04);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+#live-players-widget .lpw-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: lpw-pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes lpw-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--green); }
+  50%       { opacity: .4; box-shadow: none; }
+}
+#live-players-widget .lpw-count {
+  font-size: 1.1rem; font-weight: 700; color: var(--green);
+  line-height: 1; font-family: 'Orbitron', monospace;
+}
+#live-players-widget .lpw-label {
+  font-size: .62rem; color: var(--text-dead); letter-spacing: 1.5px;
+  text-transform: uppercase; line-height: 1.3;
+}
+#live-players-widget.lpw-loading .lpw-count { color: var(--text-dead); }
+#live-players-widget.lpw-error  { border-color: rgba(255,51,102,.2); background: rgba(255,51,102,.04); }
+#live-players-widget.lpw-error .lpw-dot { background: var(--red); animation: none; opacity: .5; }
+#live-players-widget.lpw-error .lpw-count { color: var(--text-dead); font-size: .75rem; }
 .hs      { text-align: center; }
 .hs .v   { font-size: 1.25rem; font-weight: 700; display: block; line-height: 1; }
 .hs .l   { font-size: .72rem; color: var(--text-dead); letter-spacing: 1.5px; margin-top: 2px; display: block; text-transform: uppercase; }
@@ -653,6 +689,13 @@ body {
     <div class="hs hs-hoverable" id="hs-salv" onmouseenter="showSalvHdrTT(event)" onmouseleave="hideTT()" onmousemove="moveTT(event)">
       <span class="v" id="h-salv" style="color:var(--orange)">0</span>
       <span class="l">MATERIALS</span>
+    </div>
+    <div id="live-players-widget" class="lpw-loading" title="Live player count from Steam — updates every 5 minutes">
+      <div class="lpw-dot"></div>
+      <div>
+        <span class="lpw-count" id="lpw-count">—</span>
+        <span class="lpw-label" style="display:block">LIVE PLAYERS</span>
+      </div>
     </div>
   </div>
 
@@ -4835,10 +4878,45 @@ function renderBuildInProgress(el) {
 }
 
 function toggleContractProgress(id) {
-  completedContracts[id] = !completedContracts[id];
-  if (!completedContracts[id]) delete completedContracts[id];
-  saveContracts();
-  renderProgressTab();
+  // Left-click: mark as complete only
+  if (!completedContracts[id]) {
+    completedContracts[id] = true;
+    saveContracts();
+    renderProgressTab();
+  }
+}
+
+function deselectContractProgress(e, id) {
+  // Right-click: deselect/unmark
+  e.preventDefault();
+  if (completedContracts[id]) {
+    delete completedContracts[id];
+    saveContracts();
+    renderProgressTab();
+  }
+}
+
+function showContractTT(faction, id, e) {
+  const fc = FC[faction] || {color:"#888"};
+  const c  = (CONTRACTS_DATA[faction] || []).find(x => x.id === id);
+  if (!c) return;
+  const isDone = !!completedContracts[id];
+  const tt = document.getElementById("tt");
+  tt.innerHTML = `
+    <div style="font-family:'Orbitron',monospace;font-size:.82rem;color:${fc.color};letter-spacing:2px;margin-bottom:6px">${c.name}</div>
+    <div style="font-size:.78rem;color:var(--text-dim);margin-bottom:10px;line-height:1.5">${c.desc}</div>
+    <div style="border-top:1px solid var(--border);padding-top:8px;margin-bottom:6px">
+      <div style="font-size:.65rem;color:var(--text-dead);letter-spacing:1.5px;margin-bottom:4px">REWARD</div>
+      <div style="font-size:.85rem;color:${fc.color};font-weight:700">${c.reward}</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">
+      <span style="font-size:.68rem;color:var(--text-dead)">Rank ${c.rank}+ required</span>
+      <span style="font-size:.68rem;color:${isDone?"var(--green)":"var(--text-dead)"}">
+        ${isDone ? "✓ COMPLETED" : "Left-click = done · Right-click = undo"}
+      </span>
+    </div>`;
+  tt.style.display = "block";
+  moveTT(e);
 }
 
 function renderContractsInProgress(el) {
@@ -4848,31 +4926,36 @@ function renderContractsInProgress(el) {
   const totalAll  = allContracts.length;
 
   let html = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-    <span style="font-size:.8rem;color:var(--text-dim)">${totalDone}/${totalAll} completed</span>
+    <span style="font-size:.85rem;color:var(--text-dim)">${totalDone}/${totalAll} completed</span>
     <div style="flex:1;background:var(--border);height:4px;border-radius:2px">
       <div style="width:${totalAll?Math.round(totalDone/totalAll*100):0}%;height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:2px;transition:width .3s"></div>
     </div>
   </div>`;
 
   for (const faction of factions) {
-    const fc  = FC[faction] || {color:"#888"};
-    const cs  = CONTRACTS_DATA[faction];
+    const fc   = FC[faction] || {color:"#888"};
+    const cs   = CONTRACTS_DATA[faction];
     const done = cs.filter(c => completedContracts[c.id]).length;
-    html += `<div style="margin-bottom:20px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid ${fc.color}44;font-family:'Orbitron',monospace;font-size:.78rem;color:${fc.color};letter-spacing:2px">
-        ${faction} <span style="color:var(--text-dead);font-size:.7rem">${done}/${cs.length}</span>
+    html += `<div style="margin-bottom:24px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid ${fc.color}44;font-family:'Orbitron',monospace;font-size:.85rem;color:${fc.color};letter-spacing:2px">
+        ${faction} <span style="color:var(--text-dead);font-size:.75rem">${done}/${cs.length}</span>
       </div>`;
     html += cs.map(c => {
       const isDone = !!completedContracts[c.id];
-      return `<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid ${isDone?"var(--green)":"var(--border)"};margin-bottom:5px;font-size:.84rem;cursor:pointer;transition:border-color .15s;${isDone?"opacity:.6":""}"
-        onclick="toggleContractProgress('${c.id}')">
-        <span style="color:${isDone?"var(--green)":"var(--border2)"};font-size:1rem;width:14px;text-align:center">${isDone?"✓":"○"}</span>
-        <span style="flex:1">
-          <span style="${isDone?"text-decoration:line-through;color:var(--text-dim)":""}">${c.name}</span>
-          <span style="display:block;font-size:.7rem;color:var(--text-dead);margin-top:2px">${c.desc}</span>
+      const esc = c.id.replace(/'/g, "\\'");
+      const fesc = faction.replace(/'/g, "\\'");
+      return `<div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid ${isDone?"var(--green)":"var(--border)"};margin-bottom:6px;cursor:pointer;transition:border-color .15s,background .15s;${isDone?"opacity:.55;background:rgba(57,255,20,.03)":""}"
+        onclick="toggleContractProgress('${esc}')"
+        oncontextmenu="deselectContractProgress(event,'${esc}')"
+        onmouseenter="showContractTT('${fesc}','${esc}',event)"
+        onmouseleave="hideTT()"
+        onmousemove="moveTT(event)">
+        <span style="color:${isDone?"var(--green)":"var(--border2)"};font-size:1.15rem;width:18px;text-align:center;flex-shrink:0">${isDone?"✓":"○"}</span>
+        <span style="flex:1;min-width:0">
+          <span style="display:block;font-size:.92rem;${isDone?"text-decoration:line-through;color:var(--text-dim)":""}">${c.name}</span>
+          <span style="display:block;font-size:.78rem;color:var(--text-dead);margin-top:3px">${c.desc}</span>
         </span>
-        <span style="font-size:.7rem;color:${fc.color};text-align:right;max-width:120px">${c.reward}</span>
-        <span style="font-size:.65rem;padding:1px 5px;border:1px solid ${fc.color}44;color:var(--text-dead);white-space:nowrap">R${c.rank}+</span>
+        <span style="font-size:.75rem;padding:2px 7px;border:1px solid ${fc.color}44;color:var(--text-dead);white-space:nowrap;flex-shrink:0">R${c.rank}+</span>
       </div>`;
     }).join("");
     html += `</div>`;
@@ -4925,6 +5008,43 @@ function renderToolsContent() {
     renderAmmo();
   }
 }
+
+// ══════════════════════════════════════════
+// LIVE PLAYER COUNT — Steam Web API
+// App ID 3065800 = Marathon (Bungie)
+// ══════════════════════════════════════════
+
+(function initLivePlayerCount() {
+  const STEAM_URL = "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=3065800";
+  const REFRESH_MS = 5 * 60 * 1000; // 5 minutes (Steam API update cadence)
+
+  async function fetchPlayers() {
+    const widget = document.getElementById("live-players-widget");
+    const countEl = document.getElementById("lpw-count");
+    if (!widget || !countEl) return;
+
+    try {
+      const res  = await fetch(STEAM_URL);
+      const data = await res.json();
+      const n    = data?.response?.player_count;
+      if (typeof n === "number") {
+        countEl.textContent = n.toLocaleString();
+        widget.classList.remove("lpw-loading", "lpw-error");
+        widget.title = `${n.toLocaleString()} players in Marathon right now · updates every 5 min`;
+      } else {
+        throw new Error("unexpected response");
+      }
+    } catch(e) {
+      widget.classList.add("lpw-error");
+      widget.classList.remove("lpw-loading");
+      countEl.textContent = "N/A";
+      widget.title = "Could not fetch live player count";
+    }
+  }
+
+  fetchPlayers();
+  setInterval(fetchPlayers, REFRESH_MS);
+})();
 
 // ── INIT ──
 buildFbar();
