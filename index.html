@@ -719,6 +719,7 @@ body {
 
   <div class="hdr-actions">
     <button class="btn br" onclick="resetAll()" title="Reset all upgrades">↺ RESET BUILD</button>
+    <div id="sync-badge" style="display:none;align-items:center;gap:5px;font-size:.72rem;letter-spacing:1.5px;padding:4px 10px;border:1px solid;border-radius:2px;transition:all .3s"></div>
     <div id="auth-widget"></div>
   </div>
 </div>
@@ -751,6 +752,14 @@ body {
     <span style="font-size:.7rem;color:var(--text-dead)">
       Left-click = own &nbsp;·&nbsp; Right-click = plan &nbsp;·&nbsp; <span title="Middle-click resets a node back to zero — handy if you accidentally over-clicked" style="cursor:help;border-bottom:1px dashed var(--text-dead)">Middle-click = clear</span> &nbsp;·&nbsp; Click pip = set level
     </span>
+    <input id="tree-search" type="text" placeholder="🔍 Search upgrades…"
+      style="margin-left:auto;background:#0a0f13;border:1px solid #1a2530;color:#c8d8e8;
+             font-family:inherit;font-size:.78rem;padding:4px 10px;outline:none;width:180px;
+             transition:border-color .2s"
+      oninput="treeSearch=this.value.toLowerCase().trim();renderTree()"
+      onfocus="this.style.borderColor='var(--cyan)'"
+      onblur="this.style.borderColor='#1a2530'"
+      onkeydown="if(event.key==='Escape'){this.value='';treeSearch='';renderTree();this.blur()}">
   </div>
   <div id="fi"></div>
   <div id="legend">
@@ -1258,7 +1267,7 @@ const REC=["nc_saf","ar_cred","ar_inf","ca_cred","ca_sink","nc_shie","nc_rest",
 let LV={};   // owned levels (left-click, faction colour)
 let PL={};   // planned levels (right-click, purple)
 UG.forEach(u=>{LV[u.id]=0; PL[u.id]=0;});
-let curF="CyberAcme",curTab="tree";
+let curF="CyberAcme",curTab="tree",treeSearch="";
 const NW=210,NH=138,GX=30,GY=18;
 
 const canUnlock=u=>!u.deps||u.deps.every(d=>LV[d]>0||PL[d]>0);
@@ -1437,10 +1446,24 @@ function renderTree(){
   svg.innerHTML=paths;
   canvas.querySelectorAll(".node").forEach(n=>n.remove());
 
+  // Search highlight: count matches so we know whether to show the "no results" hint
+  const matchCount = treeSearch ? nodes.filter(u=>u.name.toLowerCase().includes(treeSearch)||(u.desc||"").toLowerCase().includes(treeSearch)).length : nodes.length;
+  const noResultBanner = document.getElementById("tree-no-results");
+  if (noResultBanner) noResultBanner.remove();
+  if (treeSearch && matchCount === 0) {
+    const b = document.createElement("div");
+    b.id = "tree-no-results";
+    b.style.cssText = "position:absolute;left:50%;top:60px;transform:translateX(-50%);font-size:.9rem;color:#4a6070;letter-spacing:2px;pointer-events:none";
+    b.textContent = "NO UPGRADES MATCH \"" + treeSearch.toUpperCase() + "\"";
+    canvas.appendChild(b);
+  }
+
   nodes.forEach(u=>{
     const x=u.col*(NW+GX), y=u.row*(NH+GY);
     const lv=LV[u.id], plv=PL[u.id], maxLv=getMaxLv(u);
     const on=lv>0, planned=plv>0&&lv===0;
+    // Apply search dimming
+    const searchMatch = !treeSearch || u.name.toLowerCase().includes(treeSearch) || (u.desc||"").toLowerCase().includes(treeSearch);
     const isNext=false;
     const locked=!canUnlock(u)&&!on&&!planned;
     const PLAN_COL="#bf5af2";
@@ -1471,7 +1494,8 @@ function renderTree(){
     div.className="node"+(on?" unlocked":planned?" planned":"")+(locked?" locked-out":" clickable");
     div.style.cssText=`left:${x}px;top:${y}px;width:${NW}px;height:${NH}px;
       --ng:${on?fc.color+"44":planned?PLAN_COL+"44":"transparent"};
-      border-color:${bc};background:${bg};border-top-color:${bc}`;
+      border-color:${bc};background:${bg};border-top-color:${bc};
+      opacity:${searchMatch?1:0.12};transition:opacity .2s`;
     div.dataset.id=u.id;
 
     if(!locked){
@@ -2252,13 +2276,23 @@ function renderRunnerCard(r) {
 
       <!-- Abilities quick view -->
       <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
-        <div style="font-size:10px;color:#4a6070;letter-spacing:2px;margin-bottom:2px">ABILITIES</div>
-        <div style="font-size:12px;color:#c8d8e8;padding:4px 8px;background:#0a0f13;border-left:2px solid #ffd600">
-          <span style="color:#ffd600;font-size:10px;letter-spacing:1px">PRIME  </span>${r.prime.split(" — ")[0]}
+        <div style="font-size:10px;color:#4a6070;letter-spacing:2px;margin-bottom:2px">ABILITIES <span style="color:#1a2530">— hover</span></div>
+        <div style="font-size:12px;color:#c8d8e8;padding:4px 8px;background:#0a0f13;border-left:2px solid #ffd600;cursor:help;transition:background .15s"
+             onmouseenter="event.stopPropagation();this.style.background='#111820';showAbilityTT('${r.id}','prime',0,event)"
+             onmouseleave="event.stopPropagation();this.style.background='#0a0f13';hideAbilityTT()" onmousemove="event.stopPropagation();moveAbilityTT(event)">
+          <span style="color:#ffd600;font-size:10px;letter-spacing:1px">PRIME ⓘ  </span>${r.prime.split(" — ")[0]}
         </div>
-        <div style="font-size:12px;color:#c8d8e8;padding:4px 8px;background:#0a0f13;border-left:2px solid #4a9eff">
-          <span style="color:#4a9eff;font-size:10px;letter-spacing:1px">TACT  </span>${r.tactical.split(" — ")[0]}
+        <div style="font-size:12px;color:#c8d8e8;padding:4px 8px;background:#0a0f13;border-left:2px solid #4a9eff;cursor:help;transition:background .15s"
+             onmouseenter="event.stopPropagation();this.style.background='#111820';showAbilityTT('${r.id}','tactical',0,event)"
+             onmouseleave="event.stopPropagation();this.style.background='#0a0f13';hideAbilityTT()" onmousemove="event.stopPropagation();moveAbilityTT(event)">
+          <span style="color:#4a9eff;font-size:10px;letter-spacing:1px">TACT ⓘ  </span>${r.tactical.split(" — ")[0]}
         </div>
+        ${r.traits.map((t,i)=>`
+        <div style="font-size:12px;color:#c8d8e8;padding:4px 8px;background:#0a0f13;border-left:2px solid #39ff14;cursor:help;transition:background .15s"
+             onmouseenter="event.stopPropagation();this.style.background='#111820';showAbilityTT('${r.id}','trait',${i},event)"
+             onmouseleave="event.stopPropagation();this.style.background='#0a0f13';hideAbilityTT()" onmousemove="event.stopPropagation();moveAbilityTT(event)">
+          <span style="color:#39ff14;font-size:10px;letter-spacing:1px">TRAIT ⓘ  </span>${t.split(" — ")[0]}
+        </div>`).join("")}
       </div>
 
       <!-- Weapons -->
@@ -2269,6 +2303,22 @@ function renderRunnerCard(r) {
           return `<span style="font-size:11px;padding:2px 7px;border:1px solid ${wc}33;color:${wc};background:${wc}0d">${w.name}</span>`;
         }).join("")}
       </div>
+
+      <!-- Per-runner stats from run log -->
+      ${(()=>{
+        const rs = (typeof runLog!=="undefined"?runLog:[]).filter(x=>x.runner&&x.runner.toUpperCase()===r.name);
+        if (!rs.length) return "";
+        const ext = rs.filter(x=>x.outcome==="extract").length;
+        const rate = Math.round(ext/rs.length*100);
+        const avgCreds = Math.round(rs.reduce((s,x)=>s+(x.credits||0),0)/rs.length);
+        const col = rate>=60?"#39ff14":rate>=35?"#ffd600":"#ff4444";
+        return `<div style="padding:6px 8px;background:#0a0f13;border:1px solid #1a2530;border-left:2px solid ${r.color};margin-bottom:10px;display:flex;gap:14px;flex-wrap:wrap">
+          <div style="font-size:10px;color:#4a6070;width:100%;letter-spacing:1px;margin-bottom:2px">YOUR STATS WITH THIS SHELL</div>
+          <div><div style="font-size:15px;font-weight:700;color:${col}">${rate}%</div><div style="font-size:10px;color:#4a6070">EXTRACT</div></div>
+          <div><div style="font-size:15px;font-weight:700;color:#c8d8e8">${rs.length}</div><div style="font-size:10px;color:#4a6070">RUNS</div></div>
+          <div><div style="font-size:15px;font-weight:700;color:#ffd600">₵${avgCreds.toLocaleString()}</div><div style="font-size:10px;color:#4a6070">AVG/RUN</div></div>
+        </div>`;
+      })()}
 
       <!-- Footer -->
       <div style="display:flex;align-items:center;justify-content:space-between;
@@ -3265,12 +3315,40 @@ async function tryRestoreSession() {
 }
 
 // ══════════════════════════════════════════
+// SYNC STATUS BADGE
+// ══════════════════════════════════════════
+let _syncStatus = "idle"; // idle | pending | synced | error
+let _syncErrMsg = "";
+let _syncClearTimer = null;
+
+function _setSyncStatus(s, msg) {
+  _syncStatus = s; _syncErrMsg = msg || "";
+  clearTimeout(_syncClearTimer);
+  const el = document.getElementById("sync-badge");
+  if (!el || !authUser) return;
+  const cfg = {
+    pending: { text:"⟳ SYNCING", color:"#ffd600" },
+    synced:  { text:"✓ SAVED",   color:"#39ff14" },
+    error:   { text:"⚠ SYNC ERR",color:"#ff4444" }
+  }[s];
+  if (!cfg) { el.style.display = "none"; return; }
+  el.textContent = cfg.text;
+  el.style.color = cfg.color;
+  el.style.borderColor = cfg.color + "55";
+  el.style.background  = cfg.color + "0d";
+  el.style.display = "flex";
+  el.title = _syncErrMsg || cfg.text;
+  if (s === "synced") _syncClearTimer = setTimeout(()=>{ el.style.display="none"; _syncStatus="idle"; }, 3000);
+}
+
+// ══════════════════════════════════════════
 // PROFILE SAVE (debounced)
 // ══════════════════════════════════════════
 let _pushTimer = null;
 async function pushProfile() {
   if (!authUser || !authToken) return;
   clearTimeout(_pushTimer);
+  _setSyncStatus("pending");
   _pushTimer = setTimeout(async () => {
     try {
       await sbFetch(`/rest/v1/profiles?id=eq.${authUser.id}`, {
@@ -3287,7 +3365,8 @@ async function pushProfile() {
           updated_at: new Date().toISOString()
         })
       });
-    } catch(e) { console.warn("pushProfile failed:", e); }
+      _setSyncStatus("synced");
+    } catch(e) { _setSyncStatus("error", e.message); console.warn("pushProfile failed:", e); }
   }, 1200);
 }
 
@@ -3699,6 +3778,11 @@ function renderSquadPage() {
                color:${squadViewTab==='compare'?'#fff':'var(--text-dim)'};border-bottom:2px solid ${squadViewTab==='compare'?'var(--green)':'transparent'};white-space:nowrap;transition:all .2s">
         SIDE BY SIDE
       </button>
+      <button onclick="squadViewTab='diff';renderSquadPage()"
+        style="padding:11px 18px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:14px;letter-spacing:1px;
+               color:${squadViewTab==='diff'?'#fff':'var(--text-dim)'};border-bottom:2px solid ${squadViewTab==='diff'?'var(--yellow)':'transparent'};white-space:nowrap;transition:all .2s">
+        BUILD DIFF
+      </button>
       ${players.map(p=>{
         const isMe   = p.player_name===myName;
         const ago    = Math.round((Date.now()-new Date(p.updated_at).getTime())/1000);
@@ -3715,8 +3799,9 @@ function renderSquadPage() {
     </div>
 
     <div style="overflow-y:auto">
-      ${squadViewTab===null ? _renderOverview(players,myName) :
+      ${squadViewTab===null   ? _renderOverview(players,myName) :
         squadViewTab==='compare' ? _renderSideBySide(players,myName) :
+        squadViewTab==='diff'    ? _renderDiff(players,myName) :
         _renderPlayerDetail(squadViewTab,myName)}
     </div>`;
 }
@@ -3729,6 +3814,62 @@ function _renderOverview(players, myName) {
 
   return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;padding:18px 20px">
     ${players.map(p=>_playerMiniCard(p, p.player_name===myName)).join("")}
+  </div>`;
+}
+
+function _renderDiff(players, myName) {
+  const me = players.find(p => p.player_name === myName);
+  const others = players.filter(p => p.player_name !== myName);
+  if (!me) return `<div style="color:#4a6070;text-align:center;padding:60px;font-size:15px">Your data is not yet visible in session. Make sure you are synced.</div>`;
+  if (!others.length) return `<div style="color:#4a6070;text-align:center;padding:60px;font-size:15px">No other players in session yet — share your invite link.</div>`;
+
+  const myLV = me.faction_data?.LV || {};
+  // Helper: owned upgrade ids for a player
+  const ownedIds = (fd) => Object.entries(fd?.LV || {}).filter(([,v])=>v>0).map(([k])=>k);
+  const myOwned = new Set(ownedIds(me.faction_data));
+
+  return `<div style="padding:18px 20px">
+    <div style="font-size:10px;color:#4a6070;letter-spacing:2px;margin-bottom:14px">
+      DIFF vs YOUR BUILD —
+      <span style="color:#39ff14">GREEN = they have it, you don't</span> &nbsp;·&nbsp;
+      <span style="color:#ff4444">RED = you have it, they don't</span>
+    </div>
+    ${others.map(p => {
+      const theirOwned = new Set(ownedIds(p.faction_data));
+      const theyHaveNotMe = UG.filter(u => theirOwned.has(u.id) && !myOwned.has(u.id));
+      const iHaveNotThem  = UG.filter(u => myOwned.has(u.id) && !theirOwned.has(u.id));
+      const shared = UG.filter(u => myOwned.has(u.id) && theirOwned.has(u.id));
+      const ago = Math.round((Date.now()-new Date(p.updated_at).getTime())/1000);
+      const live = ago < 8;
+
+      function diffRow(u, color, label) {
+        const fc = FC[u.f]; const c = fc?.color || "#4a6070";
+        return `<div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-left:2px solid ${color};margin-bottom:3px;font-size:13px">
+          <span style="color:${color};font-size:10px;min-width:40px;letter-spacing:1px">${label}</span>
+          <span style="color:${c};font-size:10px;min-width:70px">${u.f}</span>
+          <span style="color:#c8d8e8">${u.name}</span>
+          <span style="color:#4a6070;font-size:11px;margin-left:auto">Lv${FC[u.f]?.[u.id]||1}/${u.levels.length}</span>
+        </div>`;
+      }
+
+      return `<div style="background:#0d1318;border:1px solid #1a2530;margin-bottom:14px">
+        <div style="padding:12px 16px;border-bottom:1px solid #1a2530;display:flex;align-items:center;gap:10px">
+          <div style="width:7px;height:7px;border-radius:50%;background:${live?'var(--green)':'var(--text-dead)'}"></div>
+          <span style="font-family:'Orbitron',monospace;font-size:14px;color:var(--cyan)">${p.player_name}</span>
+          <span style="font-size:11px;color:#4a6070;margin-left:auto">${shared.length} shared · ${theyHaveNotMe.length} they have · ${iHaveNotThem.length} you have</span>
+        </div>
+        <div style="padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div>
+            <div style="font-size:10px;color:#39ff14;letter-spacing:2px;margin-bottom:6px">THEY HAVE — YOU DON'T (${theyHaveNotMe.length})</div>
+            ${theyHaveNotMe.length ? theyHaveNotMe.map(u=>diffRow(u,"#39ff14","+ THEY")).join("") : `<div style="color:#4a6070;font-size:13px">None — you match or exceed their build</div>`}
+          </div>
+          <div>
+            <div style="font-size:10px;color:#ff4444;letter-spacing:2px;margin-bottom:6px">YOU HAVE — THEY DON'T (${iHaveNotThem.length})</div>
+            ${iHaveNotThem.length ? iHaveNotThem.map(u=>diffRow(u,"#ff4444","+ YOU")).join("") : `<div style="color:#4a6070;font-size:13px">None — they have everything you have</div>`}
+          </div>
+        </div>
+      </div>`;
+    }).join("")}
   </div>`;
 }
 
@@ -4036,6 +4177,8 @@ const MAPS = {
 };
 
 let activeMap  = "perimeter";
+let routePlan  = [];   // ordered zone ids for extraction route planner
+let routeMode  = false;
 let pinZone    = null;
 let selectedZone = null;
 
@@ -4063,6 +4206,12 @@ function renderMap() {
           ${Array.from({length:5},(_,i)=>`<div style="width:9px;height:9px;border-radius:2px;background:${i<map.danger?'#ff4444':'#1a2530'}"></div>`).join("")}
           <span style="font-size:16px;color:#4a6070;margin-left:5px">DANGER ${map.danger}/5</span>
         </div>
+        <button onclick="routeMode=!routeMode;if(!routeMode)routePlan=[];renderMap()"
+          style="padding:5px 13px;border:1px solid ${routeMode?'#ffd600':'#1a2530'};
+                 color:${routeMode?'#ffd600':'#4a6070'};background:${routeMode?'#ffd60012':'transparent'};
+                 cursor:pointer;font-family:inherit;font-size:13px;letter-spacing:1px;transition:all .2s">
+          ${routeMode?'✕ CANCEL ROUTE':'🗺 PLAN ROUTE'}
+        </button>
       </div>
     </div>
 
@@ -4070,7 +4219,7 @@ function renderMap() {
       <!-- SVG MAP -->
       <div class="map-svg-area">
         <div style="font-size:15px;color:#3a5060;margin-bottom:10px;letter-spacing:1px">
-          Click any zone to see details &nbsp;·&nbsp; Hover loot pins for tips
+          ${routeMode ? '<span style="color:#ffd600">ROUTE MODE: click zones in order to plan your extraction path</span>' : 'Click any zone to see details &nbsp;·&nbsp; Hover loot pins for tips'}
         </div>
         <svg viewBox="0 0 ${map.vw} ${map.vh}"
           style="width:100%;max-width:${map.vw}px;height:auto;display:block;border:1px solid #1a2530"
@@ -4093,19 +4242,22 @@ function renderMap() {
 
           ${map.zones.map(z=>{
             const sel = selectedZone===z.id;
+            const inRoute = routePlan.includes(z.id);
+            const routeIdx = routePlan.indexOf(z.id);
             return `
-              <g style="cursor:pointer" onclick="selectedZone=selectedZone==='${z.id}'?null:'${z.id}';renderMap()"
+              <g style="cursor:pointer" onclick="if(routeMode){if(routePlan.includes('${z.id}')){routePlan.splice(routePlan.indexOf('${z.id}'),1);}else{routePlan.push('${z.id}');}renderMap();}else{selectedZone=selectedZone==='${z.id}'?null:'${z.id}';renderMap();}"
                 onmouseenter="showMapZoneTT(event,'${activeMap}','${z.id}')"
                 onmouseleave="hideTT()" onmousemove="moveTT(event)">
                 <rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" rx="8"
-                  fill="${z.color}${sel?'28':'10'}" stroke="${z.color}" stroke-width="${sel?2.5:1.2}"
-                  filter="${sel?'url(#glow-f)':''}"/>
+                  fill="${inRoute?z.color+'38':z.color+(sel?'28':'10')}" stroke="${inRoute?'#ffd600':z.color}" stroke-width="${inRoute||sel?2.5:1.2}"
+                  filter="${sel||inRoute?'url(#glow-f)':''}"/>
                 <text x="${z.x+z.w/2}" y="${z.y+z.h/2-7}" text-anchor="middle"
                   font-family="Orbitron,monospace" font-size="11" font-weight="700"
-                  fill="${z.color}" style="pointer-events:none;letter-spacing:.5px">${z.label}</text>
+                  fill="${inRoute?'#ffd600':z.color}" style="pointer-events:none;letter-spacing:.5px">${z.label}</text>
                 <text x="${z.x+z.w/2}" y="${z.y+z.h/2+9}" text-anchor="middle"
                   font-family="monospace" font-size="9.5"
                   fill="${z.tcolor}" opacity=".8" style="pointer-events:none">${z.tier}</text>
+                ${inRoute?`<text x="${z.x+8}" y="${z.y+15}" font-family="Orbitron,monospace" font-size="11" font-weight="700" fill="#ffd600" style="pointer-events:none">${routeIdx+1}</text>`:''}
                 ${z.danger>=4?`<text x="${z.x+z.w-8}" y="${z.y+16}" font-size="13" fill="#ff4444" opacity=".9" style="pointer-events:none">⚠</text>`:''}
                 ${sel?`<rect x="${z.x}" y="${z.y}" width="${z.w}" height="3" rx="1" fill="${z.color}" opacity=".8"/>`:``}
               </g>`;
@@ -4141,8 +4293,61 @@ function renderMap() {
           <div style="font-size:15px;color:#6a8090;line-height:1.8">${map.desc}</div>
         </div>
         <div>
-          ${selectedZone ? _renderZoneDetail(map) : _renderZoneList(map)}
+          ${routeMode ? _renderRoutePlanner(map) : selectedZone ? _renderZoneDetail(map) : _renderZoneList(map)}
         </div>
+      </div>
+    </div>`;
+}
+
+function _renderRoutePlanner(map) {
+  if (!routePlan.length) return `
+    <div style="padding:20px 15px;color:#4a6070;font-size:13px;text-align:center;line-height:1.8">
+      <div style="font-size:22px;margin-bottom:8px;opacity:.3">🗺</div>
+      Click zones on the map in order to build your extraction route.<br>
+      <span style="font-size:12px">Numbered markers will appear on the map.</span>
+    </div>`;
+
+  const zones = routePlan.map(id => map.zones.find(z=>z.id===id)).filter(Boolean);
+  const totalDanger  = zones.reduce((s,z)=>s+z.danger, 0);
+  const avgDanger    = (totalDanger/zones.length).toFixed(1);
+  const allLoot      = [...new Set(zones.flatMap(z=>z.loot))];
+  const dangerCol    = totalDanger >= 15 ? "#ff4444" : totalDanger >= 8 ? "#ffd600" : "#39ff14";
+
+  return `
+    <div style="padding:12px 14px;border-bottom:1px solid #1a2530;background:#0a0f13">
+      <div style="font-family:'Orbitron',monospace;font-size:11px;color:#ffd600;letter-spacing:2px;margin-bottom:8px">ROUTE PLAN</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#4a9eff;font-family:'Orbitron',monospace">${zones.length}</div><div style="font-size:10px;color:#4a6070">ZONES</div></div>
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:${dangerCol};font-family:'Orbitron',monospace">${totalDanger}</div><div style="font-size:10px;color:#4a6070">TOTAL DANGER</div></div>
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#ff6d00;font-family:'Orbitron',monospace">${avgDanger}</div><div style="font-size:10px;color:#4a6070">AVG/ZONE</div></div>
+      </div>
+      <button onclick="routePlan=[];renderMap()"
+        style="width:100%;padding:4px;border:1px solid #ff4444;color:#ff4444;background:transparent;cursor:pointer;font-family:inherit;font-size:12px;letter-spacing:1px;transition:background .15s"
+        onmouseenter="this.style.background='rgba(255,68,68,.08)'" onmouseleave="this.style.background='transparent'">
+        ✕ CLEAR ROUTE
+      </button>
+    </div>
+
+    ${zones.map((z,i)=>`
+      <div style="padding:10px 14px;border-bottom:1px solid #1a2530;display:flex;align-items:center;gap:10px">
+        <div style="width:22px;height:22px;border-radius:50%;background:#ffd60022;border:1px solid #ffd600;
+                    display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;
+                    font-size:11px;font-weight:700;color:#ffd600;flex-shrink:0">${i+1}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Orbitron',monospace;font-size:13px;color:${z.color}">${z.label}</div>
+          <div style="font-size:11px;color:#4a6070;margin-top:1px">${z.loot.slice(0,2).join(" · ")}</div>
+        </div>
+        <div style="display:flex;gap:2px;flex-shrink:0">
+          ${Array.from({length:5},(_,j)=>`<div style="width:5px;height:5px;border-radius:1px;background:${j<z.danger?'#ff4444':'#1a2530'}"></div>`).join("")}
+        </div>
+        <button onclick="routePlan.splice(${i},1);renderMap()"
+          style="font-size:12px;padding:1px 5px;border:1px solid #ff4444;color:#ff4444;background:transparent;cursor:pointer;font-family:inherit;flex-shrink:0">✕</button>
+      </div>`).join("")}
+
+    <div style="padding:12px 14px;background:#0a0f13;border-top:1px solid #1a2530">
+      <div style="font-size:10px;color:#4a6070;letter-spacing:1px;margin-bottom:6px">LOOT ALONG ROUTE</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        ${allLoot.slice(0,12).map(l=>`<span style="font-size:11px;padding:2px 6px;border:1px solid #1a2530;color:#8aa0b0">${l}</span>`).join("")}
       </div>
     </div>`;
 }
@@ -4266,6 +4471,37 @@ function renderRuns(){
         </div>`).join("")}
     </div>
     
+    <!-- Sparkline chart -->
+    ${runLog.length>=2?(()=>{
+      const last = runLog.slice(-20);
+      const maxC = Math.max(...last.map(r=>r.credits||0), 1);
+      const W = 100, H = 48, n = last.length;
+      const bw = Math.max(2, Math.floor((W - n + 1) / n));
+      const gap = Math.floor((W - bw*n) / Math.max(n-1,1));
+      const bars = last.map((r,i)=>{
+        const h = Math.max(2, Math.round((r.credits||0)/maxC*H));
+        const c = {extract:"#39ff14",died:"#ff4444",quit:"#ffd600"}[r.outcome]||"#4a6070";
+        const x = i*(bw+gap);
+        return `<rect x="${x}" y="${H-h}" width="${bw}" height="${h}" fill="${c}" rx="1" opacity=".85">
+          <title>${r.outcome?.toUpperCase()||"?"} · ₵${(r.credits||0).toLocaleString()} · ${r.date||""}</title></rect>`;
+      }).join("");
+      // Trend line (credits)
+      const pts = last.map((r,i)=>`${i*(bw+gap)+bw/2},${H-Math.round((r.credits||0)/maxC*H)}`).join(" ");
+      return `<div style="background:#0d1318;border:1px solid #1a2530;padding:12px 16px;margin-bottom:16px;border-left:3px solid #4a9eff">
+        <div style="font-size:10px;color:#4a6070;letter-spacing:2px;margin-bottom:8px">CREDITS PER RUN — LAST ${last.length} (green=extract · red=died · gold=quit)</div>
+        <div style="display:flex;align-items:flex-end;gap:16px">
+          <svg viewBox="0 0 ${W} ${H}" style="flex:1;height:48px;display:block">
+            ${bars}
+            <polyline points="${pts}" fill="none" stroke="#4a9eff" stroke-width=".8" opacity=".4" stroke-dasharray="2 1"/>
+          </svg>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:18px;font-weight:700;font-family:'Orbitron',monospace;color:#ffd600">₵${Math.max(...last.map(r=>r.credits||0)).toLocaleString()}</div>
+            <div style="font-size:10px;color:#4a6070;letter-spacing:1px">BEST IN SAMPLE</div>
+          </div>
+        </div>
+      </div>`;
+    })():""}
+
     <!-- Run history -->
     ${runLog.length===0?`<div style="text-align:center;padding:40px;color:#4a6070;font-size:15px;letter-spacing:2px">NO RUNS LOGGED YET<br><span style="font-size:16px;margin-top:8px;display:block">Click + LOG RUN after each raid</span></div>`:`
     <div>
