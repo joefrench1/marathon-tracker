@@ -4700,10 +4700,11 @@ function renderProgressTab() {
   const salvCount   = salv.length + salvPlan.length;
   const buildCount  = actives.length + planned.length;
 
-  // Load contracts count from localStorage for badge
-  let contracts = [];
-  try { contracts = JSON.parse(localStorage.getItem("mara_contracts")||"[]"); } catch(e){}
-  const doneContracts = contracts.filter(c=>c.done).length;
+  // Contracts badge from CONTRACTS_DATA + completedContracts
+  const allFactions = Object.keys(CONTRACTS_DATA);
+  const allContractsList = allFactions.flatMap(f => CONTRACTS_DATA[f]);
+  const totalContracts = allContractsList.length;
+  const doneContracts  = allContractsList.filter(c => completedContracts[c.id]).length;
 
   el.innerHTML = `
     <div class="prog-tabs" id="progress-tab-bar">
@@ -4714,7 +4715,7 @@ function renderProgressTab() {
         📋 BUILD ${buildCount?"<span style='color:var(--cyan);margin-left:4px'>"+(actives.length+planned.length)+"</span>":""}
       </button>
       <button class="prog-tab ${progressTab==="contracts"?"on":""}" onclick="switchProgressTab('contracts')">
-        📋 CONTRACTS ${doneContracts?"<span style='color:var(--green);margin-left:4px'>"+doneContracts+"/"+contracts.length+"</span>":""}
+        📋 CONTRACTS <span style='color:${doneContracts===totalContracts?"var(--green)":"var(--text-dead)"};margin-left:4px'>${doneContracts}/${totalContracts}</span>
       </button>
     </div>
     <div class="prog-inner" id="progress-content"></div>`;
@@ -4781,11 +4782,11 @@ function renderSalvInProgress(el) {
 
   let html = "";
   if (salv.length) {
-    html += `<div class="sv-hdr">◈ OWNED MATERIALS <span style="color:var(--orange);font-size:.8rem;margin-left:8px">${salv.length} types</span></div>`;
+    html += `<div class="sv-hdr">◈ SPENT MATERIALS <span style="color:var(--orange);font-size:.8rem;margin-left:8px">${salv.length} types</span> <span style="color:var(--text-dead);font-size:.72rem;margin-left:6px">— already consumed buying owned upgrades</span></div>`;
     html += `<div class="sv-grid">${makeCards(salv, false)}</div>`;
   }
   if (salvPlan.length) {
-    html += `<div class="sv-hdr" style="margin-top:${salv.length?24:0}px">◈ PLANNED MATERIALS <span style="color:var(--purple);font-size:.8rem;margin-left:8px">${salvPlan.length} types</span></div>`;
+    html += `<div class="sv-hdr" style="margin-top:${salv.length?24:0}px">◈ STILL NEEDED <span style="color:var(--purple);font-size:.8rem;margin-left:8px">${salvPlan.length} types to gather</span></div>`;
     html += `<div class="sv-grid">${makeCards(salvPlan, true)}</div>`;
   }
   el.innerHTML = html;
@@ -4833,35 +4834,47 @@ function renderBuildInProgress(el) {
   el.innerHTML = html;
 }
 
+function toggleContractProgress(id) {
+  completedContracts[id] = !completedContracts[id];
+  if (!completedContracts[id]) delete completedContracts[id];
+  saveContracts();
+  renderProgressTab();
+}
+
 function renderContractsInProgress(el) {
-  // Delegate to the contracts module's render but inject into this container
-  let contracts = [];
-  try { contracts = JSON.parse(localStorage.getItem("mara_contracts")||"[]"); } catch(e){}
+  const factions = Object.keys(CONTRACTS_DATA);
+  const allContracts = factions.flatMap(f => CONTRACTS_DATA[f].map(c => ({...c, faction: f})));
+  const totalDone = allContracts.filter(c => completedContracts[c.id]).length;
+  const totalAll  = allContracts.length;
 
-  if (!contracts.length) {
-    el.innerHTML = `<div class="bv-empty">No contracts tracked yet.<br><br>
-      <span style="font-size:.8rem;color:var(--text-dead)">Add contracts to track faction rep progress.</span></div>`;
-    return;
-  }
+  let html = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+    <span style="font-size:.8rem;color:var(--text-dim)">${totalDone}/${totalAll} completed</span>
+    <div style="flex:1;background:var(--border);height:4px;border-radius:2px">
+      <div style="width:${totalAll?Math.round(totalDone/totalAll*100):0}%;height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:2px;transition:width .3s"></div>
+    </div>
+  </div>`;
 
-  const byFaction = {};
-  contracts.forEach(c=>{ (byFaction[c.faction]||(byFaction[c.faction]=[])).push(c); });
-
-  let html = "";
-  for (const [f, cs] of Object.entries(byFaction)) {
-    const col   = FC[f]?.color || "#888";
-    const done  = cs.filter(c=>c.done).length;
+  for (const faction of factions) {
+    const fc  = FC[faction] || {color:"#888"};
+    const cs  = CONTRACTS_DATA[faction];
+    const done = cs.filter(c => completedContracts[c.id]).length;
     html += `<div style="margin-bottom:20px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;font-family:'Orbitron',monospace;font-size:.8rem;color:${col}">
-        ${f} <span style="color:var(--text-dead);font-size:.7rem;font-family:inherit">${done}/${cs.length}</span>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid ${fc.color}44;font-family:'Orbitron',monospace;font-size:.78rem;color:${fc.color};letter-spacing:2px">
+        ${faction} <span style="color:var(--text-dead);font-size:.7rem">${done}/${cs.length}</span>
       </div>`;
-    html += cs.map(c=>`
-      <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid ${c.done?"var(--green)":"var(--border)"};margin-bottom:5px;font-size:.84rem;cursor:pointer;transition:border-color .15s"
-        onclick="toggleContract('${c.id}')">
-        <span style="color:${c.done?"var(--green)":"var(--border2)"};font-size:1rem">${c.done?"✓":"○"}</span>
-        <span style="flex:1;${c.done?"text-decoration:line-through;color:var(--text-dim)":""}">${c.name}</span>
-        <span style="font-size:.72rem;color:var(--text-dead)">${c.rep||""}</span>
-      </div>`).join("");
+    html += cs.map(c => {
+      const isDone = !!completedContracts[c.id];
+      return `<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid ${isDone?"var(--green)":"var(--border)"};margin-bottom:5px;font-size:.84rem;cursor:pointer;transition:border-color .15s;${isDone?"opacity:.6":""}"
+        onclick="toggleContractProgress('${c.id}')">
+        <span style="color:${isDone?"var(--green)":"var(--border2)"};font-size:1rem;width:14px;text-align:center">${isDone?"✓":"○"}</span>
+        <span style="flex:1">
+          <span style="${isDone?"text-decoration:line-through;color:var(--text-dim)":""}">${c.name}</span>
+          <span style="display:block;font-size:.7rem;color:var(--text-dead);margin-top:2px">${c.desc}</span>
+        </span>
+        <span style="font-size:.7rem;color:${fc.color};text-align:right;max-width:120px">${c.reward}</span>
+        <span style="font-size:.65rem;padding:1px 5px;border:1px solid ${fc.color}44;color:var(--text-dead);white-space:nowrap">R${c.rank}+</span>
+      </div>`;
+    }).join("");
     html += `</div>`;
   }
   el.innerHTML = html;
