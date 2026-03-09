@@ -11,7 +11,7 @@ const REC=["nc_saf","ar_cred","ar_inf","ca_cred","ca_sink","nc_shie","nc_rest",
 let LV={};   // owned levels (left-click, faction colour)
 let PL={};   // planned levels (right-click, purple)
 UG.forEach(u=>{LV[u.id]=0; PL[u.id]=0;});
-let curF="CyberAcme",curTab="tree",showHi=false,showRec=false;
+let curF="CyberAcme",curTab="tree";
 const NW=210,NH=138,GX=30,GY=18;
 
 const canUnlock=u=>!u.deps||u.deps.every(d=>LV[d]>0||PL[d]>0);
@@ -120,16 +120,8 @@ function renderCurrent(){
   else if(curTab==="contracts") renderContracts();
   else if(curTab==="ammo")      renderAmmo();
 }
-function toggleHi(){
-  showHi=!showHi;
-  document.getElementById("btn-hi").classList.toggle("ony",showHi);
-  renderTree();
-}
-function toggleRec(){
-  showRec=!showRec;
-  document.getElementById("btn-rec").classList.toggle("ong",showRec);
-  renderTree();
-}
+
+
 
 // ══════════════════════════════════════════
 // FACTION BAR
@@ -164,12 +156,9 @@ function renderTree(){
   fi.style.cssText=`background:${fc.bg};border-bottom-color:${fc.dim};padding:5px 14px;border-bottom:1px solid;display:flex;align-items:center;gap:10px;font-size:16px`;
   fi.innerHTML=`<span class="fi-name" style="color:${fc.color}">${curF}</span>
     <span style="color:#4a6070">Handler: ${fc.handler}</span>
-    ${showRec?`<span style="margin-left:auto;color:#39ff14;font-size:15px">⚡ green = next unlock</span>`:""}`;
+    `;
 
   let nodes=UG.filter(u=>u.f===curF);
-  if(showHi) nodes=nodes.filter(u=>u.hi||LV[u.id]>0);
-
-  const nextRec=showRec?REC.find(id=>!isOn(id)&&nodes.find(u=>u.id===id)):null;
   const maxC=nodes.reduce((m,u)=>Math.max(m,u.col),0);
   const maxR=nodes.reduce((m,u)=>Math.max(m,u.row),0);
   const cW=(maxC+1)*(NW+GX)+GX, cH=(maxR+1)*(NH+GY)+GY+8;
@@ -203,7 +192,7 @@ function renderTree(){
     const isNext=u.id===nextRec;
     const locked=!canUnlock(u)&&!on&&!planned;
     const PLAN_COL="#bf5af2";
-    const hiActive=showHi&&u.hi;
+    const hiActive=false;
     const bc=on?fc.color:planned?PLAN_COL:isNext?"#39ff14":hiActive?"#ffd600":"#1a2530";
     const bg=on?fc.bg:planned?"rgba(191,90,242,.1)":isNext?"rgba(57,255,20,.06)":hiActive?"rgba(255,214,0,.04)":"#0d1318";
     const unverified=u.v===false;

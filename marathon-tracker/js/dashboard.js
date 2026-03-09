@@ -118,7 +118,7 @@ function renderDashboard() {
         <div class="dash-card-title">⚡ Next Recommended Upgrades</div>
         ${nextHtml}
         <div style="margin-top:10px">
-          <button class="btn" style="border-color:var(--border2);color:var(--text-dim);font-size:.75rem;width:100%" onclick="showMain('tree');setTimeout(()=>{showRec=true;document.getElementById('btn-rec')?.classList.add('ong');renderTree();},80)">
+          <button class="btn" style="border-color:var(--border2);color:var(--text-dim);font-size:.75rem;width:100%" onclick="showMain('tree');setTimeout(()=>{renderTree();},80)">
             SHOW ALL ON TREE
           </button>
         </div>
