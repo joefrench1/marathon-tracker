@@ -9,21 +9,18 @@ const SB_URL = "https://ppzulorxyiwkzhfeubhr.supabase.co";
 //   • The "anon" JWT key (starts with eyJ...) from the Legacy API Keys tab
 //   • OR the "publishable" key (starts with sb_publishable_...) from the API Keys tab
 // Both work — the publishable key is newer and recommended.
-const SB_KEY = "PASTE_YOUR_ANON_OR_PUBLISHABLE_KEY_HERE";
+const SB_KEY = "sb_publishable_nL6282I7TKx6zcqa73j2-g_0CatgzXM";
 
 let authUser   = null;   // { id, username }
-let authToken  = null;   // Supabase JWT
+let authToken  = null;   // session token (profile id)
 
 // ── Low-level fetch helper ────────────────
-// Works with both JWT anon key (eyJ...) and publishable key (sb_publishable_...)
-const _isJwt = SB_KEY.startsWith("eyJ");
+// Publishable keys (sb_publishable_...) go in apikey header only — NOT in Authorization Bearer
 async function sbFetch(path, opts = {}, useAuth = true) {
   try {
-    const bearer = useAuth && authToken ? authToken : (_isJwt ? SB_KEY : null);
     const headers = {
       "Content-Type": "application/json",
       "apikey": SB_KEY,
-      ...(bearer ? { "Authorization": "Bearer " + bearer } : {}),
       ...(opts.extraHeaders || {})
     };
     const res = await fetch(SB_URL + path, {
