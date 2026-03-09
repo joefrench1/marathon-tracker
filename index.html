@@ -1140,6 +1140,11 @@ function setLv(id,lv,planned=false){
   else { PL[id]=0; LV[id]=lv; }
   refresh();
 }
+function clearNode(id){
+  hideTT();
+  LV[id]=0; PL[id]=0;
+  refresh();
+}
 function resetAll(){
   hideTT();
   UG.forEach(u=>{LV[u.id]=0; PL[u.id]=0;});
@@ -1273,7 +1278,7 @@ function renderTree(){
     const x=u.col*(NW+GX), y=u.row*(NH+GY);
     const lv=LV[u.id], plv=PL[u.id], maxLv=getMaxLv(u);
     const on=lv>0, planned=plv>0&&lv===0;
-    const isNext=u.id===nextRec;
+    const isNext=false;
     const locked=!canUnlock(u)&&!on&&!planned;
     const PLAN_COL="#bf5af2";
     const hiActive=false;
@@ -1309,6 +1314,7 @@ function renderTree(){
     if(!locked){
       div.onclick=e=>{if(!e.target.classList.contains("pip"))cycleNode(u.id,false);};
       div.oncontextmenu=e=>{e.preventDefault();if(!e.target.classList.contains("pip"))cycleNode(u.id,true);};
+      div.onmousedown=e=>{if(e.button===1){e.preventDefault();clearNode(u.id);}};
     }
 
     div.innerHTML=`
@@ -1804,6 +1810,15 @@ function showPlanHdrTT(e){
 }
 
 // ══════════════════════════════════════════
+
+// Prevent browser's default middle-click auto-scroll on the tree
+document.addEventListener("DOMContentLoaded", () => {
+  const tscroll = document.getElementById("tscroll");
+  if (tscroll) {
+    tscroll.addEventListener("mousedown", e => { if (e.button === 1) e.preventDefault(); });
+    tscroll.addEventListener("auxclick",  e => { if (e.button === 1) e.preventDefault(); });
+  }
+});
 
 // ═══ runners.js ═══
 // RUNNER BUILDS DATA
