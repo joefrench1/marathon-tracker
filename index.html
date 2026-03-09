@@ -1164,13 +1164,13 @@ function getTotalCredsPlanned(){
 // ══════════════════════════════════════════
 function updateHdr(){
   const totalLvs=getActives().reduce((s,u)=>s+LV[u.id],0);
-  document.getElementById("h-lvs").textContent=totalLvs;
-  // Credits header shows planned (right-click) costs only; owned shown on hover
-  document.getElementById("h-cred").textContent="₵"+getTotalCredsPlanned().toLocaleString();
-  document.getElementById("h-salv").textContent=getSalvMap().length;
-  document.getElementById("h-plan").textContent=getSalvMapPlanned().length;
+  const _g=id=>document.getElementById(id);
+  if(_g("h-lvs"))  _g("h-lvs").textContent=totalLvs;
+  if(_g("h-cred")) _g("h-cred").textContent="₵"+getTotalCredsPlanned().toLocaleString();
+  if(_g("h-salv")) _g("h-salv").textContent=getSalvMap().length;
+  if(_g("h-plan")) _g("h-plan").textContent=getSalvMapPlanned().length;
   const maxLvs=UG.reduce((s,u)=>s+u.levels.length,0);
-  document.getElementById("prog-f").style.width=Math.min(100,totalLvs/maxLvs*100)+"%";
+  if(_g("prog-f")) _g("prog-f").style.width=Math.min(100,totalLvs/maxLvs*100)+"%";
 }
 
 // ══════════════════════════════════════════
@@ -2748,8 +2748,11 @@ function renderAuthModalBody(mode) {
 }
 
 function setAuthMsg(msg, type) {
-  // Use the persistent div outside modal-body (survives re-renders)
-  let el = document.getElementById("auth-msg-persistent") 
+  // If the modal is open, use the persistent div inside it; otherwise use
+  // whatever #auth-msg is currently in the document (e.g. the squad-page inline form).
+  const modal = document.getElementById("auth-modal");
+  const modalOpen = modal && modal.style.display === "flex";
+  let el = (modalOpen ? document.getElementById("auth-msg-persistent") : null)
         || document.getElementById("auth-msg");
   if (!el) {
     // Last resort: create and append to modal box
@@ -2759,8 +2762,8 @@ function setAuthMsg(msg, type) {
     el.id = "auth-msg-persistent";
     box.appendChild(el);
   }
-  const color = type==="error"?"#ff006e":type==="success"?"#39ff14":"#4a9eff";
-  el.style.cssText = `margin:8px 0;padding:9px 11px;font-size:15px;border-left:3px solid ${color};color:${color}`;
+  const color = type==="error"?"var(--red)":type==="success"?"var(--green)":"var(--blue)";
+  el.style.cssText = `margin:8px 0;padding:9px 11px;font-size:14px;border-left:3px solid ${color};color:${color};background:${color}11`;
   el.textContent = msg;
 }
 
@@ -2939,6 +2942,47 @@ function toggleSquadPill() {
 }
 
 // ══════════════════════════════════════════
+// SQUAD PAGE HELPERS — inline auth
+// ══════════════════════════════════════════
+let _sqCurrentTab = 'login';
+
+function _sqSwitchTab(tab) {
+  _sqCurrentTab = tab;
+  const li  = document.getElementById('sq-tab-login');
+  const si  = document.getElementById('sq-tab-signup');
+  const lf  = document.getElementById('sq-form-login');
+  const sf  = document.getElementById('sq-form-signup');
+  const btn = document.getElementById('sq-auth-btn');
+  if (!li) return;
+  const isLogin = tab === 'login';
+  const base = 'flex:1;padding:10px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:14px;letter-spacing:1px;transition:all .2s;';
+  li.style.cssText = base + (isLogin ? 'color:var(--cyan);border-bottom:2px solid var(--cyan)' : 'color:var(--text-dim);border-bottom:2px solid transparent');
+  si.style.cssText = base + (isLogin ? 'color:var(--text-dim);border-bottom:2px solid transparent' : 'color:var(--green);border-bottom:2px solid var(--green)');
+  if (lf)  lf.style.display  = isLogin ? 'block' : 'none';
+  if (sf)  sf.style.display  = isLogin ? 'none'  : 'block';
+  if (btn) { btn.textContent = isLogin ? 'SIGN IN →' : 'CREATE ACCOUNT →'; btn.className = `btn ${isLogin?'bb':'bg'}`; btn.style.width = '100%'; btn.style.padding = '12px'; }
+  const msg = document.getElementById('auth-msg');
+  if (msg) { msg.textContent = ''; msg.style.cssText = ''; }
+}
+
+async function _sqDoAuth() {
+  const pendingCode = (document.getElementById('sq-pending-code')?.value?.trim() || '').toUpperCase() || null;
+  if (_sqCurrentTab === 'login') {
+    const u = document.getElementById('sq-l-u')?.value?.trim();
+    const p = document.getElementById('sq-l-p')?.value;
+    await authSignIn(u, p);
+  } else {
+    const u = document.getElementById('sq-r-u')?.value?.trim();
+    const p = document.getElementById('sq-r-p')?.value;
+    await authSignUp(u, p);
+  }
+  if (authUser) {
+    if (pendingCode) await squadJoin(pendingCode);
+    else if (curTab === 'squad') renderSquadPage();
+  }
+}
+
+// ══════════════════════════════════════════
 // SQUAD PAGE — side-by-side builds
 // ══════════════════════════════════════════
 function renderSquadPage() {
@@ -2946,35 +2990,77 @@ function renderSquadPage() {
   if (!el) return;
 
   if (!authUser) {
-    el.innerHTML = `<div style="padding:60px 40px;max-width:580px;margin:0 auto;text-align:center">
-      <div style="font-size:52px;margin-bottom:20px">👥</div>
-      <div style="font-family:'Orbitron',monospace;font-size:18px;color:#00e5ff;letter-spacing:3px;margin-bottom:14px">SQUAD SESSIONS</div>
-      <div style="color:#5a7080;font-size:15px;line-height:2;margin-bottom:28px">
-        Sign in to create a squad session.<br>
-        Share a link — your whole team's builds appear here, side by side in real time.<br>
-        See every teammate's faction progress, owned upgrades, and planned builds at a glance.
+    el.innerHTML = `
+    <div style="max-width:620px;margin:0 auto;padding:40px 24px">
+      <div style="font-family:'Orbitron',monospace;font-size:18px;color:var(--cyan);letter-spacing:3px;margin-bottom:8px">SQUAD SESSIONS</div>
+      <div style="color:var(--text-dim);font-size:15px;margin-bottom:28px;line-height:1.7">Sign in to create or join a session — your squad's builds appear here side by side in real time.</div>
+
+      <div style="background:var(--bg1);border:1px solid var(--border2);padding:28px 28px 24px;margin-bottom:14px">
+        <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:20px">
+          <button id="sq-tab-login" onclick="_sqSwitchTab('login')"
+            style="flex:1;padding:10px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:14px;letter-spacing:1px;color:var(--cyan);border-bottom:2px solid var(--cyan);transition:all .2s">
+            SIGN IN
+          </button>
+          <button id="sq-tab-signup" onclick="_sqSwitchTab('signup')"
+            style="flex:1;padding:10px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:14px;letter-spacing:1px;color:var(--text-dim);border-bottom:2px solid transparent;transition:all .2s">
+            CREATE ACCOUNT
+          </button>
+        </div>
+
+        <div id="sq-form-login">
+          <input id="sq-l-u" class="sinput" placeholder="Username" autocomplete="username">
+          <input id="sq-l-p" class="sinput" type="password" placeholder="Password" autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')_sqDoAuth()">
+        </div>
+        <div id="sq-form-signup" style="display:none">
+          <input id="sq-r-u" class="sinput" placeholder="Username (3–20 chars, shown to squad)" maxlength="20" autocomplete="username">
+          <input id="sq-r-p" class="sinput" type="password" placeholder="Password (min 6 chars)" autocomplete="new-password"
+            onkeydown="if(event.key==='Enter')_sqDoAuth()">
+        </div>
+
+        <div id="auth-msg" style="margin-bottom:8px"></div>
+        <button id="sq-auth-btn" class="btn bb" style="width:100%;padding:12px" onclick="_sqDoAuth()">SIGN IN →</button>
       </div>
-      <button class="btn bb" onclick="openAuthModal('login')" style="margin-right:10px">SIGN IN</button>
-      <button class="btn bg" onclick="openAuthModal('signup')">CREATE ACCOUNT</button>
+
+      <div style="background:var(--bg1);border:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="color:var(--text-dim);font-size:13px;white-space:nowrap">Have a squad code?</div>
+        <input id="sq-pending-code" class="sinput" placeholder="XXXXXX" maxlength="6"
+          style="width:130px;text-align:center;letter-spacing:4px;text-transform:uppercase;margin-bottom:0;flex-shrink:0"
+          oninput="this.value=this.value.toUpperCase()">
+        <div style="color:var(--text-dead);font-size:13px;line-height:1.5">Enter it here — you'll auto-join after signing in above.</div>
+      </div>
     </div>`;
     return;
   }
 
   if (!sessionCode) {
-    el.innerHTML = `<div style="padding:60px 40px;max-width:580px;margin:0 auto;text-align:center">
-      <div style="font-size:52px;margin-bottom:20px">👥</div>
-      <div style="font-family:'Orbitron',monospace;font-size:18px;color:#00e5ff;letter-spacing:3px;margin-bottom:14px">SQUAD SESSIONS</div>
-      <div style="color:#5a7080;font-size:15px;line-height:2;margin-bottom:28px">
-        Signed in as <span style="color:#00e5ff;font-weight:700">${authUser.username}</span>.<br>
-        Create a session and share the link with your squad.<br>
-        Everyone who joins has their build synced here — compare upgrades side by side.
+    el.innerHTML = `
+    <div style="max-width:620px;margin:0 auto;padding:40px 24px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border)">
+        <div style="font-family:'Orbitron',monospace;font-size:18px;color:var(--cyan);letter-spacing:3px;flex:1">SQUAD SESSIONS</div>
+        <div style="display:flex;align-items:center;gap:7px">
+          <div style="width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green)"></div>
+          <span style="color:var(--cyan);font-size:14px">${authUser.username}</span>
+        </div>
+        <button class="btn br" style="font-size:13px;padding:4px 10px" onclick="authSignOut()">SIGN OUT</button>
       </div>
-      <button class="btn bg" onclick="squadCreate()" style="margin-right:10px;font-size:15px;padding:9px 20px">+ CREATE SESSION</button>
-      <div style="display:flex;gap:8px;justify-content:center;margin-top:20px;max-width:340px;margin-left:auto;margin-right:auto">
-        <input id="sq-page-join" class="sinput" placeholder="Enter 6-char session code" maxlength="6"
-          style="text-align:center;letter-spacing:4px;text-transform:uppercase;margin-bottom:0"
-          oninput="this.value=this.value.toUpperCase()">
-        <button class="btn bb" onclick="squadJoin(document.getElementById('sq-page-join').value)" style="white-space:nowrap">JOIN →</button>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--green);padding:24px;display:flex;flex-direction:column">
+          <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--green);letter-spacing:2px;margin-bottom:10px">+ NEW SESSION</div>
+          <div style="color:var(--text-dim);font-size:13px;margin-bottom:20px;line-height:1.8;flex:1">Generate a 6-char code and share it with your squad. Everyone joins with the same code.</div>
+          <button class="btn bg" style="width:100%;padding:12px" onclick="squadCreate()">CREATE SESSION</button>
+        </div>
+
+        <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--cyan);padding:24px;display:flex;flex-direction:column">
+          <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--cyan);letter-spacing:2px;margin-bottom:10px">JOIN SESSION</div>
+          <div style="color:var(--text-dim);font-size:13px;margin-bottom:16px;line-height:1.8;flex:1">Enter the 6-character code from your squad leader.</div>
+          <input id="sq-page-join" class="sinput" placeholder="XXXXXX" maxlength="6"
+            style="text-align:center;letter-spacing:4px;text-transform:uppercase"
+            oninput="this.value=this.value.toUpperCase()"
+            onkeydown="if(event.key==='Enter')squadJoin(document.getElementById('sq-page-join').value)">
+          <button class="btn bb" style="width:100%;padding:12px" onclick="squadJoin(document.getElementById('sq-page-join').value)">JOIN →</button>
+        </div>
       </div>
     </div>`;
     return;
@@ -2984,28 +3070,30 @@ function renderSquadPage() {
   const myName  = authUser.username || authUser.email;
 
   el.innerHTML = `
-    <div style="padding:13px 20px;border-bottom:1px solid #1a2530;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;background:#070d12;z-index:10">
-      <div style="font-family:'Orbitron',monospace;font-size:16px;color:#00e5ff;letter-spacing:3px">👥 SQUAD</div>
-      <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ffd600;letter-spacing:4px">${sessionCode}</div>
-      <div style="display:flex;align-items:center;gap:5px">
-        <div style="width:7px;height:7px;border-radius:50%;background:#39ff14;box-shadow:0 0 6px #39ff14"></div>
-        <span style="font-size:15px;color:#39ff14">LIVE</span>
-        <span style="font-size:15px;color:#4a6070;margin-left:4px">${players.length} player${players.length!==1?"s":""}</span>
+    <div style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);z-index:10;backdrop-filter:blur(10px)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)"></div>
+        <span style="font-size:13px;color:var(--green);letter-spacing:1px">LIVE</span>
       </div>
-      <button id="sq-copy-btn" onclick="copyInviteLink()" class="btn bb" style="margin-left:auto">📋 INVITE LINK</button>
-      <button onclick="squadLeave()" class="btn br">LEAVE SESSION</button>
+      <div style="font-family:'Orbitron',monospace;font-size:15px;color:var(--yellow);letter-spacing:4px;padding:3px 10px;border:1px solid var(--yellow)33;background:var(--yellow)08">${sessionCode}</div>
+      <div style="font-size:13px;color:var(--text-dim)">${players.length} player${players.length!==1?"s":""}</div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <span style="font-size:13px;color:var(--text-dim)">${myName}</span>
+        <button id="sq-copy-btn" onclick="copyInviteLink()" class="btn bb" style="font-size:13px;padding:5px 12px">COPY INVITE</button>
+        <button onclick="squadLeave()" class="btn br" style="font-size:13px;padding:5px 12px">LEAVE</button>
+      </div>
     </div>
 
-    <div style="display:flex;border-bottom:1px solid #1a2530;overflow-x:auto;background:rgba(0,0,0,.2)">
+    <div style="display:flex;border-bottom:1px solid var(--border);overflow-x:auto;background:rgba(0,0,0,.15)">
       <button onclick="squadViewTab=null;renderSquadPage()"
-        style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:15px;letter-spacing:1px;
-               color:${squadViewTab===null?'#fff':'#4a6070'};border-bottom:2px solid ${squadViewTab===null?'#ffd600':'transparent'};white-space:nowrap;transition:all .2s">
-        ⊞ OVERVIEW
+        style="padding:11px 18px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:14px;letter-spacing:1px;
+               color:${squadViewTab===null?'#fff':'var(--text-dim)'};border-bottom:2px solid ${squadViewTab===null?'var(--yellow)':'transparent'};white-space:nowrap;transition:all .2s">
+        OVERVIEW
       </button>
       <button onclick="squadViewTab='compare';renderSquadPage()"
-        style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:15px;letter-spacing:1px;
-               color:${squadViewTab==='compare'?'#fff':'#4a6070'};border-bottom:2px solid ${squadViewTab==='compare'?'#39ff14':'transparent'};white-space:nowrap;transition:all .2s">
-        ⇄ SIDE BY SIDE
+        style="padding:11px 18px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:14px;letter-spacing:1px;
+               color:${squadViewTab==='compare'?'#fff':'var(--text-dim)'};border-bottom:2px solid ${squadViewTab==='compare'?'var(--green)':'transparent'};white-space:nowrap;transition:all .2s">
+        SIDE BY SIDE
       </button>
       ${players.map(p=>{
         const isMe   = p.player_name===myName;
@@ -3013,11 +3101,11 @@ function renderSquadPage() {
         const live   = ago < 8;
         const active = squadViewTab===p.player_name;
         return `<button onclick="squadViewTab='${p.player_name}';renderSquadPage()"
-          style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:15px;
-                 display:flex;align-items:center;gap:7px;color:${active?'#fff':'#4a6070'};
-                 border-bottom:2px solid ${active?'#00e5ff':'transparent'};white-space:nowrap;transition:all .2s;letter-spacing:1px">
-          <div style="width:7px;height:7px;border-radius:50%;background:${isMe?'#00e5ff':live?'#39ff14':'#4a6070'};flex-shrink:0"></div>
-          ${p.player_name}${isMe?" <span style='font-size:16px;color:#00e5ff;border:1px solid #00e5ff;padding:0 4px;margin-left:3px'>YOU</span>":""}
+          style="padding:11px 18px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:14px;
+                 display:flex;align-items:center;gap:6px;color:${active?'#fff':'var(--text-dim)'};
+                 border-bottom:2px solid ${active?'var(--cyan)':'transparent'};white-space:nowrap;transition:all .2s;letter-spacing:1px">
+          <div style="width:6px;height:6px;border-radius:50%;background:${isMe?'var(--cyan)':live?'var(--green)':'var(--text-dead)'};flex-shrink:0"></div>
+          ${p.player_name}${isMe?` <span style='font-size:11px;color:var(--cyan);border:1px solid var(--cyan)33;padding:1px 4px;margin-left:2px;background:var(--cyan)11'>YOU</span>`:''}
         </button>`;
       }).join("")}
     </div>
