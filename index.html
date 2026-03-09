@@ -37,15 +37,9 @@
   </div>
 
   <div class="hdr-actions">
-    <div class="save-menu">
-      <button class="save-menu-btn">💾 SAVE</button>
-      <div class="save-dropdown">
-        <button onclick="openModal('save')">💾 Save Build</button>
-        <button onclick="openModal('load')">📂 Load Build</button>
-        <button onclick="doExport()">⬇ Export .TXT</button>
-      </div>
-    </div>
-    <button class="btn br" onclick="resetAll()" title="Reset all upgrades">↺</button>
+    <button class="btn" style="border-color:var(--border2);color:var(--text-dim)" onclick="openModal('save')" title="Save build">💾</button>
+    <button class="btn" style="border-color:var(--border2);color:var(--text-dim)" onclick="openModal('load')" title="Load build">📂</button>
+    <button class="btn br" onclick="resetAll()" title="Reset all upgrades">↺ RESET</button>
     <div id="auth-widget"></div>
   </div>
 </div>
