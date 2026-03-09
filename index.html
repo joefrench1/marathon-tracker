@@ -522,6 +522,63 @@ body {
 }
 .sq-player:last-child { border-bottom: none; }
 
+/* ── RESPONSIVE SQUAD GRID ──────────────── */
+.sq-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ── MOBILE ─────────────────────────────── */
+@media (max-width: 720px) {
+  /* Header: hide stats to free space */
+  .hstats { display: none; }
+  #hdr { padding: 0 14px; gap: 10px; }
+  .logo { font-size: 1rem; letter-spacing: 2px; }
+  .logo sub { display: none; }
+  .hdr-actions { gap: 6px; }
+  .hdr-actions .btn { font-size: .76rem; padding: 5px 10px; }
+
+  /* Nav: already scrollable, just shrink tabs */
+  #nav { top: 56px; }
+  .nav-tab { padding: 0 13px; font-size: .78rem; }
+
+  /* Tree: ensure smooth touch scroll */
+  #tscroll { -webkit-overflow-scrolling: touch; padding: 12px; }
+  #fbar { padding: 8px 12px; gap: 4px; }
+  .fbtn { font-size: .76rem; padding: 5px 9px; }
+
+  /* Nodes: slightly smaller on mobile */
+  .n-title { font-size: .82rem; }
+
+  /* Auth modal: tighter on small screens */
+  .auth-modal-box { padding: 20px 18px; }
+
+  /* Tooltip: cap width */
+  #tt { max-width: 88vw; min-width: 0; }
+
+  /* Squad pill: pull in from edge */
+  #squad-pill { bottom: 12px; right: 12px; }
+  #squad-pill-panel { right: 12px; width: min(280px, calc(100vw - 24px)); }
+
+  /* Squad page grids collapse to 1 col */
+  .sq-2col { grid-template-columns: 1fr; }
+
+  /* Player detail: smaller font for stat headers */
+  .hdr-username { display: none; }
+}
+
+@media (max-width: 480px) {
+  #hdr { padding: 0 10px; gap: 8px; }
+  .logo { font-size: .88rem; }
+  .hdr-actions .btn { font-size: .72rem; padding: 4px 8px; letter-spacing: 0; }
+  #nav { top: 56px; }
+  .nav-tab { padding: 0 10px; font-size: .74rem; }
+
+  /* Full-width modals on phone */
+  .auth-modal-box { width: 100%; max-width: 100vw; padding: 18px 14px; }
+  #modal { width: 100%; max-width: 100vw; }
+
+  /* Squad page: reduce padding */
+  #sqv > div { padding: 20px 14px !important; }
+}
+
 </style>
 </head>
 <body>
@@ -554,9 +611,7 @@ body {
   </div>
 
   <div class="hdr-actions">
-    <button class="btn" style="border-color:var(--border2);color:var(--text-dim)" onclick="openModal('save')" title="Save build">💾</button>
-    <button class="btn" style="border-color:var(--border2);color:var(--text-dim)" onclick="openModal('load')" title="Load build">📂</button>
-    <button class="btn br" onclick="resetAll()" title="Reset all upgrades">↺ RESET</button>
+    <button class="btn br" onclick="resetAll()" title="Reset all upgrades">↺ RESET BUILD</button>
     <div id="auth-widget"></div>
   </div>
 </div>
@@ -587,7 +642,7 @@ body {
   <div id="fbar"></div>
   <div id="tctrl">
     <span style="font-size:.7rem;color:var(--text-dead)">
-      Left-click = own &nbsp;·&nbsp; Right-click = plan &nbsp;·&nbsp; Click pip = set level
+      Left-click = own &nbsp;·&nbsp; Right-click = plan &nbsp;·&nbsp; <span title="Middle-click resets a node back to zero — handy if you accidentally over-clicked" style="cursor:help;border-bottom:1px dashed var(--text-dead)">Middle-click = clear</span> &nbsp;·&nbsp; Click pip = set level
     </span>
   </div>
   <div id="fi"></div>
@@ -2698,16 +2753,11 @@ function renderAuthWidget() {
   const el = document.getElementById("auth-widget");
   if (!el) return;
   if (!authUser) {
-    el.innerHTML = `
-      <button class="btn by" onclick="openAuthModal('login')" style="font-size:16px;padding:5px 12px">SIGN IN</button>
-      <button class="btn bg" onclick="openAuthModal('signup')" style="font-size:16px;padding:5px 12px">CREATE ACCOUNT</button>`;
+    el.innerHTML = `<button class="btn bc" onclick="openAuthModal('login')" style="font-size:.82rem;padding:6px 14px;letter-spacing:1px">SIGN IN</button>`;
   } else {
     el.innerHTML = `
-      <div style="text-align:right;line-height:1.5">
-        <div style="font-family:'Orbitron',monospace;font-size:16px;color:#00e5ff">${authUser.username || authUser.email}</div>
-        <div style="font-size:15px;color:#39ff14">● BUILD AUTO-SAVING</div>
-      </div>
-      <button class="btn br" onclick="authSignOut()" style="font-size:16px;padding:4px 10px">SIGN OUT</button>`;
+      <span style="font-family:'Orbitron',monospace;font-size:.75rem;color:var(--cyan);letter-spacing:1px;white-space:nowrap" class="hdr-username">${authUser.username}</span>
+      <button class="btn br" onclick="authSignOut()" style="font-size:.78rem;padding:5px 10px">SIGN OUT</button>`;
   }
 }
 
@@ -3045,7 +3095,7 @@ function renderSquadPage() {
         <button class="btn br" style="font-size:13px;padding:4px 10px" onclick="authSignOut()">SIGN OUT</button>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="sq-2col">
         <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--green);padding:24px;display:flex;flex-direction:column">
           <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--green);letter-spacing:2px;margin-bottom:10px">+ NEW SESSION</div>
           <div style="color:var(--text-dim);font-size:13px;margin-bottom:20px;line-height:1.8;flex:1">Generate a 6-char code and share it with your squad. Everyone joins with the same code.</div>
