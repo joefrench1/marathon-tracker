@@ -1,0 +1,563 @@
+// ── Squad globals ─────────────────────────
+let sessionCode  = null;
+let squadPlayers = {};
+let sqPollTimer  = null;
+let squadViewTab = null;
+let widgetOpen   = false;
+
+function renderAuthWidget() {
+  const el = document.getElementById("auth-widget");
+  if (!el) return;
+  if (!authUser) {
+    el.innerHTML = `
+      <button class="btn by" onclick="openAuthModal('login')" style="font-size:16px;padding:5px 12px">SIGN IN</button>
+      <button class="btn bg" onclick="openAuthModal('signup')" style="font-size:16px;padding:5px 12px">CREATE ACCOUNT</button>`;
+  } else {
+    el.innerHTML = `
+      <div style="text-align:right;line-height:1.5">
+        <div style="font-family:'Orbitron',monospace;font-size:16px;color:#00e5ff">${authUser.username || authUser.email}</div>
+        <div style="font-size:15px;color:#39ff14">● BUILD AUTO-SAVING</div>
+      </div>
+      <button class="btn br" onclick="authSignOut()" style="font-size:16px;padding:4px 10px">SIGN OUT</button>`;
+  }
+}
+
+function openAuthModal(mode) {
+  document.getElementById("auth-modal").style.display = "flex";
+  renderAuthModalBody(mode);
+}
+function closeAuthModal() {
+  document.getElementById("auth-modal").style.display = "none";
+}
+
+function renderAuthModalBody(mode) {
+  const el = document.getElementById("auth-modal-body");
+  if (!el) return;
+  if (mode === "login") {
+    el.innerHTML = `
+      <div style="font-family:'Orbitron',monospace;font-size:15px;color:#00e5ff;letter-spacing:2px;margin-bottom:6px">SIGN IN</div>
+      <div style="font-size:15px;color:#4a6070;margin-bottom:16px;line-height:1.7">Sign in to sync your build and join squad sessions.</div>
+      <input id="a-uname" class="sinput" placeholder="Username" autocomplete="username">
+      <input id="a-pw"    class="sinput" placeholder="Password" type="password" autocomplete="current-password">
+      <div id="auth-msg"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn" style="border-color:#4a6070;color:#4a6070;flex:1" onclick="renderAuthModalBody('signup')">Create account</button>
+        <button class="btn bb" style="flex:1" onclick="authSignIn(document.getElementById('a-uname').value.trim(),document.getElementById('a-pw').value)">SIGN IN →</button>
+      </div>`;
+  } else {
+    el.innerHTML = `
+      <div style="font-family:'Orbitron',monospace;font-size:15px;color:#39ff14;letter-spacing:2px;margin-bottom:6px">CREATE ACCOUNT</div>
+      <div style="font-size:15px;color:#4a6070;margin-bottom:16px;line-height:1.7">Choose a username and password. Your build syncs to your account automatically.</div>
+      <input id="a-uname" class="sinput" placeholder="Username (3–20 chars, shown to squad)" maxlength="20" autocomplete="username">
+      <input id="a-pw"    class="sinput" placeholder="Password (min 6 chars)" type="password" autocomplete="new-password">
+      <div id="auth-msg"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn" style="border-color:#4a6070;color:#4a6070;flex:1" onclick="renderAuthModalBody('login')">Sign in instead</button>
+        <button class="btn bg" style="flex:1" onclick="_doSignUp()">CREATE →</button>
+      </div>`;
+  }
+}
+
+function setAuthMsg(msg, type) {
+  let el = document.getElementById("auth-msg");
+  if (!el) {
+    const body = document.getElementById("auth-modal-body");
+    if (!body) return;
+    el = document.createElement("div");
+    el.id = "auth-msg";
+    body.appendChild(el);
+  }
+  el.style.cssText = `margin-top:8px;padding:9px 11px;font-size:15px;border-left:3px solid ${type==="error"?"#ff006e":type==="success"?"#39ff14":"#4a9eff"};color:${type==="error"?"#ff006e":type==="success"?"#39ff14":"#8aa0b0"}`;
+  el.textContent = msg;
+}
+
+function _doSignUp() {
+  const uname = document.getElementById("a-uname")?.value?.trim();
+  const pw    = document.getElementById("a-pw")?.value;
+  authSignUp(uname, pw);
+}
+
+// ══════════════════════════════════════════
+// SQUAD SESSIONS
+// ══════════════════════════════════════════
+function _genCode() {
+  const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return Array.from({length:6},()=>chars[Math.floor(Math.random()*32)]).join("");
+}
+
+async function squadCreate() {
+  if (!authUser) { openAuthModal("login"); return; }
+  sessionCode = _genCode();
+  await _squadUpsertRow();
+  _startPolling();
+  updateSquadPill();
+  if (curTab==="squad") renderSquadPage();
+}
+
+async function squadJoin(code) {
+  if (!authUser) { openAuthModal("login"); return; }
+  sessionCode = code.toUpperCase().trim();
+  if (!sessionCode) return;
+  await _squadUpsertRow();
+  _startPolling();
+  updateSquadPill();
+  if (curTab==="squad") renderSquadPage();
+}
+
+async function _squadUpsertRow() {
+  const name = authUser.username || authUser.email;
+  // delete then insert for clean upsert
+  await sbFetch(`/rest/v1/sessions?session_code=eq.${sessionCode}&player_name=eq.${encodeURIComponent(name)}`,
+    { method:"DELETE" });
+  await sbFetch("/rest/v1/sessions", {
+    method: "POST",
+    extraHeaders: { "Prefer": "return=minimal" },
+    body: JSON.stringify({
+      session_code: sessionCode,
+      player_name: name,
+      faction_data: { LV, PL },
+      updated_at: new Date().toISOString()
+    })
+  });
+}
+
+async function squadLeave() {
+  if (sessionCode && authUser) {
+    const name = authUser.username || authUser.email;
+    await sbFetch(`/rest/v1/sessions?session_code=eq.${sessionCode}&player_name=eq.${encodeURIComponent(name)}`,
+      { method:"DELETE" });
+  }
+  if (sqPollTimer) clearInterval(sqPollTimer);
+  sqPollTimer = null;
+  sessionCode = null; squadPlayers = {}; squadViewTab = null;
+  updateSquadPill();
+  if (curTab==="squad") renderSquadPage();
+}
+
+async function _squadPushData() {
+  if (!sessionCode || !authUser) return;
+  const name = authUser.username || authUser.email;
+  await sbFetch(`/rest/v1/sessions?session_code=eq.${sessionCode}&player_name=eq.${encodeURIComponent(name)}`, {
+    method: "PATCH",
+    extraHeaders: { "Prefer": "return=minimal" },
+    body: JSON.stringify({ faction_data:{ LV, PL }, updated_at: new Date().toISOString() })
+  });
+}
+
+function _startPolling() {
+  _loadSquad();
+  if (sqPollTimer) clearInterval(sqPollTimer);
+  sqPollTimer = setInterval(_loadSquad, 3000);
+}
+
+async function _loadSquad() {
+  if (!sessionCode) return;
+  const rows = await sbFetch(`/rest/v1/sessions?session_code=eq.${sessionCode}&select=player_name,faction_data,updated_at&order=updated_at`);
+  if (!Array.isArray(rows)) return;
+  squadPlayers = {};
+  rows.forEach(r => { squadPlayers[r.player_name] = r; });
+  updateSquadPill();
+  if (curTab==="squad") renderSquadPage();
+}
+
+function copyInviteLink() {
+  if (!sessionCode) return;
+  const url = `${location.origin}${location.pathname}?session=${sessionCode}`;
+  navigator.clipboard.writeText(url).catch(()=>{});
+  const btn = document.getElementById("sq-copy-btn");
+  if (btn) { const old=btn.textContent; btn.textContent="✓ COPIED!"; setTimeout(()=>btn.textContent=old, 2000); }
+}
+
+// ══════════════════════════════════════════
+// SQUAD PILL (collapsed bottom-right pill)
+// ══════════════════════════════════════════
+let pillOpen = false;
+
+function updateSquadPill() {
+  const pill   = document.getElementById("squad-pill");
+  const dot    = document.getElementById("squad-pill-dot");
+  const label  = document.getElementById("squad-pill-label");
+  const count  = document.getElementById("squad-pill-count");
+  const navDot = document.getElementById("squad-nav-dot");
+  if (!pill) return;
+
+  const players   = Object.values(squadPlayers);
+  const connected = !!sessionCode;
+
+  pill.classList.toggle("connected", connected);
+  if (dot)    dot.className  = "squad-dot " + (connected ? "online" : "offline");
+  if (navDot) navDot.className = "squad-dot " + (connected ? "online" : "offline");
+  if (label)  label.textContent = connected ? sessionCode : "SQUAD";
+  if (count) {
+    count.style.display = (players.length && connected) ? "inline" : "none";
+    count.textContent = players.length;
+  }
+  if (pillOpen) renderSquadPillBody();
+}
+function updateSquadWidget() { updateSquadPill(); } // alias
+
+function renderSquadPillBody() {
+  const el = document.getElementById("squad-widget-body");
+  if (!el) return;
+  const players = Object.values(squadPlayers);
+  const myName  = authUser?.username;
+
+  el.innerHTML = !authUser ? `
+    <div style="color:var(--text-dim);font-size:.82rem;margin-bottom:12px;line-height:1.7">Sign in to create or join a squad and share builds live.</div>
+    <button class="sq-btn" style="border-color:var(--green);color:var(--green)" onclick="openAuthModal('login')">SIGN IN TO USE SQUAD</button>
+  ` : !sessionCode ? `
+    <div style="color:var(--text-dim);font-size:.82rem;margin-bottom:12px;line-height:1.7">Create or join a session to share builds live with your team.</div>
+    <button class="sq-btn" style="border-color:var(--green);color:var(--green)" onclick="squadCreate()">+ CREATE SESSION</button>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <input id="sq-join-input" class="sq-input" placeholder="6-char code" maxlength="6" style="flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+      <button class="sq-btn" onclick="squadJoin(document.getElementById('sq-join-input').value)" style="width:auto;padding:0 12px;flex-shrink:0;margin:0">JOIN</button>
+    </div>
+  ` : `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <span style="font-family:'Orbitron',monospace;font-size:1rem;color:var(--cyan);letter-spacing:3px">${sessionCode}</span>
+      <button id="sq-copy-btn" class="sq-btn" onclick="copyInviteLink()" style="width:auto;padding:2px 10px;font-size:.7rem;margin:0">📋 COPY</button>
+    </div>
+    <div style="margin-bottom:10px">
+      ${players.map(p=>{
+        const isMe = p.player_name===myName;
+        const ago  = Math.round((Date.now()-new Date(p.updated_at).getTime())/1000);
+        const live = ago < 8;
+        return `<div class="sq-player">
+          <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${isMe?"var(--cyan)":live?"var(--green)":"var(--text-dead)"}"></div>
+          <span style="color:${isMe?"var(--cyan)":"var(--text)"}">${p.player_name}</span>
+          <span style="margin-left:auto;font-size:.7rem;color:var(--text-dead)">${isMe?"YOU":live?"live":ago+"s ago"}</span>
+        </div>`;
+      }).join("")}
+    </div>
+    <button class="sq-btn" onclick="showMain('squad')" style="border-color:var(--cyan);color:var(--cyan)">VIEW SQUAD BUILDS →</button>
+    <button class="sq-btn" onclick="squadLeave()" style="border-color:var(--red);color:var(--red)">LEAVE SESSION</button>
+  `;
+}
+
+function toggleSquadPill() {
+  pillOpen = !pillOpen;
+  const panel   = document.getElementById("squad-pill-panel");
+  const pill    = document.getElementById("squad-pill");
+  const chevron = document.getElementById("squad-pill-chevron");
+  if (panel)   panel.classList.toggle("open", pillOpen);
+  if (pill)    pill.classList.toggle("open", pillOpen);
+  if (chevron) chevron.textContent = pillOpen ? "▼" : "▲";
+  if (pillOpen) renderSquadPillBody();
+}
+
+// ══════════════════════════════════════════
+// SQUAD PAGE — side-by-side builds
+// ══════════════════════════════════════════
+function renderSquadPage() {
+  const el = document.getElementById("sqv");
+  if (!el) return;
+
+  if (!authUser) {
+    el.innerHTML = `<div style="padding:60px 40px;max-width:580px;margin:0 auto;text-align:center">
+      <div style="font-size:52px;margin-bottom:20px">👥</div>
+      <div style="font-family:'Orbitron',monospace;font-size:18px;color:#00e5ff;letter-spacing:3px;margin-bottom:14px">SQUAD SESSIONS</div>
+      <div style="color:#5a7080;font-size:15px;line-height:2;margin-bottom:28px">
+        Sign in to create a squad session.<br>
+        Share a link — your whole team's builds appear here, side by side in real time.<br>
+        See every teammate's faction progress, owned upgrades, and planned builds at a glance.
+      </div>
+      <button class="btn bb" onclick="openAuthModal('login')" style="margin-right:10px">SIGN IN</button>
+      <button class="btn bg" onclick="openAuthModal('signup')">CREATE ACCOUNT</button>
+    </div>`;
+    return;
+  }
+
+  if (!sessionCode) {
+    el.innerHTML = `<div style="padding:60px 40px;max-width:580px;margin:0 auto;text-align:center">
+      <div style="font-size:52px;margin-bottom:20px">👥</div>
+      <div style="font-family:'Orbitron',monospace;font-size:18px;color:#00e5ff;letter-spacing:3px;margin-bottom:14px">SQUAD SESSIONS</div>
+      <div style="color:#5a7080;font-size:15px;line-height:2;margin-bottom:28px">
+        Signed in as <span style="color:#00e5ff;font-weight:700">${authUser.username}</span>.<br>
+        Create a session and share the link with your squad.<br>
+        Everyone who joins has their build synced here — compare upgrades side by side.
+      </div>
+      <button class="btn bg" onclick="squadCreate()" style="margin-right:10px;font-size:15px;padding:9px 20px">+ CREATE SESSION</button>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:20px;max-width:340px;margin-left:auto;margin-right:auto">
+        <input id="sq-page-join" class="sinput" placeholder="Enter 6-char session code" maxlength="6"
+          style="text-align:center;letter-spacing:4px;text-transform:uppercase;margin-bottom:0"
+          oninput="this.value=this.value.toUpperCase()">
+        <button class="btn bb" onclick="squadJoin(document.getElementById('sq-page-join').value)" style="white-space:nowrap">JOIN →</button>
+      </div>
+    </div>`;
+    return;
+  }
+
+  const players = Object.values(squadPlayers);
+  const myName  = authUser.username || authUser.email;
+
+  el.innerHTML = `
+    <div style="padding:13px 20px;border-bottom:1px solid #1a2530;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;background:#070d12;z-index:10">
+      <div style="font-family:'Orbitron',monospace;font-size:16px;color:#00e5ff;letter-spacing:3px">👥 SQUAD</div>
+      <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ffd600;letter-spacing:4px">${sessionCode}</div>
+      <div style="display:flex;align-items:center;gap:5px">
+        <div style="width:7px;height:7px;border-radius:50%;background:#39ff14;box-shadow:0 0 6px #39ff14"></div>
+        <span style="font-size:15px;color:#39ff14">LIVE</span>
+        <span style="font-size:15px;color:#4a6070;margin-left:4px">${players.length} player${players.length!==1?"s":""}</span>
+      </div>
+      <button id="sq-copy-btn" onclick="copyInviteLink()" class="btn bb" style="margin-left:auto">📋 INVITE LINK</button>
+      <button onclick="squadLeave()" class="btn br">LEAVE SESSION</button>
+    </div>
+
+    <div style="display:flex;border-bottom:1px solid #1a2530;overflow-x:auto;background:rgba(0,0,0,.2)">
+      <button onclick="squadViewTab=null;renderSquadPage()"
+        style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:15px;letter-spacing:1px;
+               color:${squadViewTab===null?'#fff':'#4a6070'};border-bottom:2px solid ${squadViewTab===null?'#ffd600':'transparent'};white-space:nowrap;transition:all .2s">
+        ⊞ OVERVIEW
+      </button>
+      <button onclick="squadViewTab='compare';renderSquadPage()"
+        style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:15px;letter-spacing:1px;
+               color:${squadViewTab==='compare'?'#fff':'#4a6070'};border-bottom:2px solid ${squadViewTab==='compare'?'#39ff14':'transparent'};white-space:nowrap;transition:all .2s">
+        ⇄ SIDE BY SIDE
+      </button>
+      ${players.map(p=>{
+        const isMe   = p.player_name===myName;
+        const ago    = Math.round((Date.now()-new Date(p.updated_at).getTime())/1000);
+        const live   = ago < 8;
+        const active = squadViewTab===p.player_name;
+        return `<button onclick="squadViewTab='${p.player_name}';renderSquadPage()"
+          style="padding:12px 20px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:15px;
+                 display:flex;align-items:center;gap:7px;color:${active?'#fff':'#4a6070'};
+                 border-bottom:2px solid ${active?'#00e5ff':'transparent'};white-space:nowrap;transition:all .2s;letter-spacing:1px">
+          <div style="width:7px;height:7px;border-radius:50%;background:${isMe?'#00e5ff':live?'#39ff14':'#4a6070'};flex-shrink:0"></div>
+          ${p.player_name}${isMe?" <span style='font-size:16px;color:#00e5ff;border:1px solid #00e5ff;padding:0 4px;margin-left:3px'>YOU</span>":""}
+        </button>`;
+      }).join("")}
+    </div>
+
+    <div style="overflow-y:auto">
+      ${squadViewTab===null ? _renderOverview(players,myName) :
+        squadViewTab==='compare' ? _renderSideBySide(players,myName) :
+        _renderPlayerDetail(squadViewTab,myName)}
+    </div>`;
+}
+
+function _renderOverview(players, myName) {
+  if (!players.length) return `<div style="color:#4a6070;text-align:center;padding:60px;font-size:16px">
+    Waiting for players to join…<br>
+    <span style="font-size:15px;margin-top:10px;display:block">Share the invite link to bring your squad in</span>
+  </div>`;
+
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;padding:18px 20px">
+    ${players.map(p=>_playerMiniCard(p, p.player_name===myName)).join("")}
+  </div>`;
+}
+
+function _renderSideBySide(players, myName) {
+  if (players.length < 2) return `<div style="color:#4a6070;text-align:center;padding:60px;font-size:15px">
+    Need at least 2 players in session to compare builds side by side.
+  </div>`;
+
+  // Show all players' faction progress side by side
+  const factionKeys = Object.keys(FC);
+
+  return `
+    <div style="padding:16px 20px">
+      <div style="font-size:15px;color:#4a6070;margin-bottom:14px;letter-spacing:1px">
+        COMPARING ${players.length} BUILDS · Faction completion bars shown side by side
+      </div>
+
+      <!-- Player summary row -->
+      <div style="display:grid;grid-template-columns:130px repeat(${players.length}, 1fr);gap:0;margin-bottom:16px;border:1px solid #1a2530">
+        <div style="padding:11px 13px;background:#0a1218;border-right:1px solid #1a2530;font-size:16px;color:#4a6070;display:flex;align-items:center">PLAYER</div>
+        ${players.map(p=>{
+          const isMe = p.player_name===myName;
+          const fd   = p.faction_data||{};
+          const pLV  = fd.LV||{};
+          const owned = UG.filter(u=>(pLV[u.id]||0)>0);
+          const totalC = owned.reduce((s,u)=>{let c=0;for(let i=0;i<pLV[u.id];i++)c+=u.levels[i].credits;return s+c;},0);
+          const ago    = Math.round((Date.now()-new Date(p.updated_at).getTime())/1000);
+          const live   = ago < 8;
+          return `<div style="padding:11px 13px;background:${isMe?'rgba(0,229,255,.04)':'#0d1318'};border-right:1px solid #1a2530;border-left:${isMe?'2px solid #00e5ff':'none'}">
+            <div style="font-family:'Orbitron',monospace;font-size:15px;color:${isMe?'#00e5ff':'#c8d8e8'};margin-bottom:5px;display:flex;align-items:center;gap:6px">
+              <div style="width:6px;height:6px;border-radius:50%;background:${live?'#39ff14':'#4a6070'};flex-shrink:0"></div>
+              ${p.player_name}
+            </div>
+            <div style="font-size:15px;color:#ffd600">₵${totalC.toLocaleString()}</div>
+            <div style="font-size:16px;color:#39ff14">${owned.length} upgrades</div>
+          </div>`;
+        }).join("")}
+      </div>
+
+      <!-- Faction comparison rows -->
+      ${factionKeys.map(f=>{
+        const fc = FC[f];
+        const tot = UG.filter(u=>u.f===f).reduce((s,u)=>s+u.levels.length,0);
+        if (!tot) return "";
+
+        // Check if any player has this faction
+        const anyHas = players.some(p=>{
+          const pLV = (p.faction_data||{}).LV||{};
+          return UG.filter(u=>u.f===f).some(u=>(pLV[u.id]||0)>0);
+        });
+
+        return `<div style="border:1px solid #1a2530;margin-bottom:8px">
+          <div style="display:grid;grid-template-columns:130px repeat(${players.length}, 1fr);gap:0">
+            <div style="padding:10px 13px;background:#0a1218;border-right:1px solid #1a2530;border-left:3px solid ${fc.color};display:flex;align-items:center">
+              <div style="font-family:'Orbitron',monospace;font-size:16px;color:${fc.color};letter-spacing:1px">${f}</div>
+            </div>
+            ${players.map((p,pi)=>{
+              const fd   = p.faction_data||{};
+              const pLV  = fd.LV||{};
+              const pPL  = fd.PL||{};
+              const fa   = UG.filter(u=>u.f===f&&(pLV[u.id]||0)>0);
+              const fp   = UG.filter(u=>u.f===f&&(pPL[u.id]||0)>0&&!(pLV[u.id]||0));
+              const lvs  = fa.reduce((s,u)=>s+(pLV[u.id]||0),0);
+              const pct  = Math.round(lvs/tot*100);
+              const isMe = p.player_name===myName;
+              return `<div style="padding:10px 13px;border-right:1px solid #1a2530;background:${isMe?'rgba(0,229,255,.02)':'transparent'}">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+                  <div style="flex:1;height:5px;background:#1a2530;border-radius:3px">
+                    <div style="height:100%;width:${pct}%;background:${fc.color};border-radius:3px;transition:width .4s"></div>
+                  </div>
+                  <div style="font-size:16px;color:${pct>0?fc.color:'#2a3a48'};width:32px;text-align:right;font-weight:700">${pct}%</div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:3px">
+                  ${fa.map(u=>`<span style="font-size:16px;padding:1px 6px;border:1px solid ${fc.color}22;color:${fc.color};background:${fc.color}11">${u.name}</span>`).join("")}
+                  ${fp.map(u=>`<span style="font-size:16px;padding:1px 6px;border:1px solid #bf5af222;color:#bf5af2;background:#bf5af211">${u.name} ◈</span>`).join("")}
+                  ${!fa.length&&!fp.length?`<span style="font-size:16px;color:#2a3a48">—</span>`:""}
+                </div>
+              </div>`;
+            }).join("")}
+          </div>
+        </div>`;
+      }).join("")}
+    </div>`;
+}
+
+function _playerMiniCard(p, isMe) {
+  const fd   = p.faction_data || {};
+  const pLV  = fd.LV || {};
+  const pPL  = fd.PL || {};
+  const owned   = UG.filter(u=>(pLV[u.id]||0)>0);
+  const planned = UG.filter(u=>(pPL[u.id]||0)>0&&!(pLV[u.id]||0));
+  const totalC  = owned.reduce((s,u)=>{ let c=0; for(let i=0;i<pLV[u.id];i++) c+=u.levels[i].credits; return s+c; },0);
+  const ago     = Math.round((Date.now()-new Date(p.updated_at).getTime())/1000);
+  const live    = ago < 8;
+
+  const fBars = Object.keys(FC).map(f=>{
+    const fa = owned.filter(u=>u.f===f);
+    if (!fa.length) return "";
+    const tot = UG.filter(u=>u.f===f).reduce((s,u)=>s+u.levels.length,0);
+    const lvs = fa.reduce((s,u)=>s+(pLV[u.id]||0),0);
+    const pct = Math.round(lvs/tot*100);
+    return `<div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+      <div style="font-size:16px;color:${FC[f].color};width:68px;flex-shrink:0;font-family:'Orbitron',monospace;overflow:hidden;white-space:nowrap">${f.substring(0,8)}</div>
+      <div style="flex:1;height:4px;background:#1a2530;border-radius:2px">
+        <div style="height:100%;width:${pct}%;background:${FC[f].color};border-radius:2px"></div>
+      </div>
+      <div style="font-size:16px;color:#4a6070;width:28px;text-align:right">${pct}%</div>
+    </div>`;
+  }).filter(Boolean).join("");
+
+  return `<div onclick="squadViewTab='${p.player_name}';renderSquadPage()"
+    style="background:#0d1318;border:1px solid ${isMe?'#00e5ff':'#1a2530'};border-top:3px solid ${isMe?'#00e5ff':'#2a3a48'};padding:16px;cursor:pointer;transition:all .2s"
+    onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 16px rgba(0,0,0,.5)'"
+    onmouseleave="this.style.transform='';this.style.boxShadow=''">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+      <div style="width:8px;height:8px;border-radius:50%;background:${live?'#39ff14':'#4a6070'};flex-shrink:0;box-shadow:${live?'0 0 6px #39ff14':'none'}"></div>
+      <div style="font-family:'Orbitron',monospace;font-size:15px;color:${isMe?'#00e5ff':'#c8d8e8'};flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.player_name}</div>
+      ${isMe?'<span style="font-size:16px;padding:1px 6px;border:1px solid #00e5ff;color:#00e5ff">YOU</span>':''}
+    </div>
+    <div style="display:flex;gap:14px;margin-bottom:11px;font-size:15px">
+      <span style="color:#ffd600">₵${totalC.toLocaleString()}</span>
+      <span style="color:#39ff14">${owned.length} owned</span>
+      ${planned.length?`<span style="color:#bf5af2">${planned.length} planned</span>`:""}
+      <span style="color:#4a6070;margin-left:auto">${ago<60?ago+"s":Math.floor(ago/60)+"m"} ago</span>
+    </div>
+    ${fBars}
+    <div style="margin-top:11px;font-size:16px;color:#4a6070;letter-spacing:1px;text-align:center;border-top:1px solid #1a2530;padding-top:8px">CLICK FOR FULL BUILD →</div>
+  </div>`;
+}
+
+function _renderPlayerDetail(playerName, myName) {
+  const p = squadPlayers[playerName];
+  if (!p) return `<div style="color:#4a6070;padding:40px;text-align:center">Player not found</div>`;
+  const fd   = p.faction_data || {};
+  const pLV  = fd.LV || {};
+  const pPL  = fd.PL || {};
+  const owned   = UG.filter(u=>(pLV[u.id]||0)>0);
+  const planned = UG.filter(u=>(pPL[u.id]||0)>0&&!(pLV[u.id]||0));
+  const totalC  = owned.reduce((s,u)=>{ let c=0; for(let i=0;i<pLV[u.id];i++) c+=u.levels[i].credits; return s+c; },0);
+  const isMe    = playerName===myName;
+  const ago     = Math.round((Date.now()-new Date(p.updated_at).getTime())/1000);
+  const live    = ago < 8;
+
+  return `
+    <div style="padding:18px 20px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid #1a2530">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div style="width:10px;height:10px;border-radius:50%;background:${live?'#39ff14':'#4a6070'};box-shadow:${live?'0 0 6px #39ff14':'none'}"></div>
+          <div style="font-family:'Orbitron',monospace;font-size:18px;color:${isMe?'#00e5ff':'#c8d8e8'}">${playerName}</div>
+          ${isMe?'<span style="font-size:16px;padding:2px 7px;border:1px solid #00e5ff;color:#00e5ff">YOU</span>':''}
+        </div>
+        <div style="display:flex;gap:18px;margin-left:auto;flex-wrap:wrap">
+          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#ffd600">₵${totalC.toLocaleString()}</div><div style="font-size:16px;color:#4a6070">INVESTED</div></div>
+          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#39ff14">${owned.length}</div><div style="font-size:16px;color:#4a6070">OWNED</div></div>
+          ${planned.length?`<div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#bf5af2">${planned.length}</div><div style="font-size:16px;color:#4a6070">PLANNED</div></div>`:''}
+          <div style="text-align:center"><div style="font-size:15px;color:#4a6070">${ago<60?ago+"s":Math.floor(ago/60)+"m"} ago</div><div style="font-size:16px;color:#4a6070">UPDATED</div></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px">
+        ${Object.keys(FC).map(f=>{
+          const fa = owned.filter(u=>u.f===f);
+          const fp = planned.filter(u=>u.f===f);
+          if (!fa.length&&!fp.length) return "";
+          const fc  = FC[f];
+          const tot = UG.filter(u=>u.f===f).reduce((s,u)=>s+u.levels.length,0);
+          const lvs = fa.reduce((s,u)=>s+(pLV[u.id]||0),0);
+          const pct = Math.round(lvs/tot*100);
+          return `<div style="background:#0d1318;border:1px solid #1a2530;border-left:3px solid ${fc.color};padding:13px 15px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="font-family:'Orbitron',monospace;font-size:15px;color:${fc.color};letter-spacing:2px">${f}</div>
+              <div style="flex:1;height:4px;background:#1a2530;border-radius:2px">
+                <div style="height:100%;width:${pct}%;background:${fc.color};border-radius:2px"></div>
+              </div>
+              <div style="font-size:16px;color:#4a6070;font-weight:700">${pct}%</div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px">
+              ${fa.map(u=>`<span style="font-size:16px;padding:3px 9px;border:1px solid ${fc.color};color:${fc.color};background:${fc.color}11">${u.name}${pLV[u.id]>1?` Lv${pLV[u.id]}`:""}</span>`).join("")}
+              ${fp.map(u=>`<span style="font-size:16px;padding:3px 9px;border:1px solid #bf5af2;color:#bf5af2;background:#bf5af211">${u.name}${pPL[u.id]>1?` Lv${pPL[u.id]}`:""} ◈</span>`).join("")}
+            </div>
+          </div>`;
+        }).join("")}
+      </div>
+      ${!owned.length&&!planned.length?`<div style="color:#4a6070;font-size:15px;padding:30px;text-align:center">No upgrades selected yet</div>`:""}
+    </div>`;
+}
+
+
+// ══════════════════════════════════════════
+// SEND BUILD TO SQUAD (called from tree ctrl)
+// ══════════════════════════════════════════
+function sendBuildToSquad() {
+  if (!sessionCode) {
+    // If not in session, prompt to go to squad tab
+    showMain('squad');
+    return;
+  }
+  _squadPushData();
+  const btn = document.getElementById("btn-squad-send");
+  if (btn) { const o = btn.textContent; btn.textContent = "✓ SENT!"; setTimeout(()=>btn.textContent=o, 2000); }
+}
+
+// maybeSync (called by old refresh path in core.js)
+function maybeSync() {
+  if (authUser && sessionCode) _squadPushData();
+}
+
+// ══════════════════════════════════════════
+// REFRESH OVERRIDE — push to profile + squad
+// ══════════════════════════════════════════
+const _baseRefresh = window.refresh;
+window.refresh = function() {
+  renderCurrent();
+  updateHdr();
+  if (authUser)    pushProfile();
+  if (sessionCode) _squadPushData();
+};
