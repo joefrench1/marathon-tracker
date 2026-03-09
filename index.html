@@ -5012,21 +5012,24 @@ function renderToolsContent() {
 // ══════════════════════════════════════════
 // LIVE PLAYER COUNT — Steam Web API
 // App ID 3065800 = Marathon (Bungie)
+// Routed through allorigins.win to avoid CORS block on direct browser requests
 // ══════════════════════════════════════════
 
 (function initLivePlayerCount() {
-  const STEAM_URL = "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=3065800";
-  const REFRESH_MS = 5 * 60 * 1000; // 5 minutes (Steam API update cadence)
+  const STEAM_URL   = "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=3065800";
+  const PROXY_URL   = "https://api.allorigins.win/get?url=" + encodeURIComponent(STEAM_URL);
+  const REFRESH_MS  = 5 * 60 * 1000; // 5 minutes
 
   async function fetchPlayers() {
-    const widget = document.getElementById("live-players-widget");
+    const widget  = document.getElementById("live-players-widget");
     const countEl = document.getElementById("lpw-count");
     if (!widget || !countEl) return;
 
     try {
-      const res  = await fetch(STEAM_URL);
-      const data = await res.json();
-      const n    = data?.response?.player_count;
+      const res    = await fetch(PROXY_URL);
+      const outer  = await res.json();
+      const data   = JSON.parse(outer.contents);
+      const n      = data?.response?.player_count;
       if (typeof n === "number") {
         countEl.textContent = n.toLocaleString();
         widget.classList.remove("lpw-loading", "lpw-error");
