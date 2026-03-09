@@ -1821,674 +1821,940 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ═══ runners.js ═══
-// RUNNER BUILDS DATA
+// ══════════════════════════════════════════
+// RUNNERS PAGE
 // ══════════════════════════════════════════
 const RUNNERS=[
 {id:"destroyer",name:"DESTROYER",icon:"🛡️",color:"#ff4444",tier:"A",
  role:"Tank / Frontline",playstyle:"Aggressive frontline fighter. Push first, absorb pressure, enable your squad with barricades and missile suppression.",
- solo:"B — struggles without teammates to enable",squad:"A — essential frontline anchor",
+ solo:"B",squad:"A",
  prime:"Search & Destroy — shoulder-mounted homing missiles that lock and chase targets",
  tactical:"Riot Barricade — deployable energy shield, blocks incoming fire for you and teammates",
  traits:["Thruster — burst forward dash for closing gaps or escaping","Tactical Sprint — extended sprint that builds less heat"],
  tips:["Deploy Riot Barricade before pushing a corner so teammates can safely follow","Use Search & Destroy on runners who break cover — missiles track through repositions","Pair with Triage behind you for sustained frontline pressure","Thruster + Tactical Sprint lets you close gaps faster than enemies expect"],
- weapons:[{name:"WSTR Combat Shotgun",role:"Primary — close range delete",tier:"S"},{name:"Bully SMG",role:"Primary alt — mid range pressure",tier:"A"},{name:"Hardline PR",role:"Secondary — punish exposed targets",tier:"A"}],
+ weapons:[{name:"WSTR Combat Shotgun",role:"Close range delete",tier:"S"},{name:"Bully SMG",role:"Mid range pressure",tier:"A"},{name:"Hardline PR",role:"Punish exposed targets",tier:"A"}],
  upgrades:{priority:["nc_saf","nc_rest","ca_sink","ca_firm","ca_cred"],reason:"Shields and heat management are critical — Destroyer burns heat fast with movement abilities"},
  cores:["Thruster Mk II (Enhanced) — extends Thruster range","Barricade Boost (Deluxe) — faster Riot Barricade recharge"],
  synergy:"Triage (sustains your pushes) + Recon (feeds you intel on when to move)"
 },
 {id:"vandal",name:"VANDAL",icon:"⚡",color:"#ffd600",tier:"A",
  role:"Mobility / Flanker",playstyle:"High-speed disruptor. Double jump, enhanced slide, and a Disrupt Cannon to break formations. Punish slow enemies and create chaos.",
- solo:"B — high skill ceiling, mobility can isolate you",squad:"A — flanking and distraction specialist",
+ solo:"B",squad:"A",
  prime:"Amplify — increased movement speed, weapon handling, reduced heat from movement abilities",
- tactical:"Disrupt Cannon — energy blast that pushes enemies out of cover and deals damage. Can also self-boost for movement",
+ tactical:"Disrupt Cannon — energy blast that pushes enemies out of cover and deals damage",
  traits:["Microjets — double jump (generates heat)","Power Slide — faster, longer slide (generates heat)"],
  tips:["Heat management is everything — overheating mid-fight is a death sentence","Use Amplify to chain Microjets + Power Slide bursts to disorient enemies","Disrupt Cannon is excellent for knocking runners off objectives or into bad positions","Pair with Heat_Sink.exe and Quick_Vent.exe upgrades to extend your movement window"],
- weapons:[{name:"BRRT SMG",role:"Primary — fast TTK for flanks",tier:"S"},{name:"WSTR Combat Shotgun",role:"Primary alt — ambush closer",tier:"S"},{name:"Overrun AR",role:"Secondary — versatile fallback",tier:"S"}],
+ weapons:[{name:"BRRT SMG",role:"Fast TTK for flanks",tier:"S"},{name:"WSTR Combat Shotgun",role:"Ambush closer",tier:"S"},{name:"Overrun AR",role:"Versatile fallback",tier:"S"}],
  upgrades:{priority:["ca_sink","ca_qvent","ca_acool","ca_slide","ca_firm"],reason:"Vandal uses heat constantly — maximising heat capacity and recovery is the core build priority"},
  cores:["Amplify Extension (Enhanced) — longer Amplify duration","Microjets Mk II (Deluxe) — reduced heat per jump"],
  synergy:"Destroyer (anchors while you flank) + Thief (loot in the chaos you create)"
 },
 {id:"triage",name:"TRIAGE",icon:"💊",color:"#39ff14",tier:"S",
  role:"Support / Medic",playstyle:"Squad lifeline. Med-Drone for persistent healing, Shareware to share consumables, Reboot+ to revive from range. Irreplaceable in squads.",
- solo:"C — abilities mostly wasted without teammates",squad:"S — the strongest squad shell in the game",
- prime:"Reboot+ (Capacitive Gauntlets) — fully revive downed teammates from range, or EMP enemies to break shields",
- tactical:"Med-Drone — deployable healing drone that attaches to a teammate, providing constant health and shield regen",
- traits:["Battery Overcharge — EMPs enemies when you break their shields","Shareware.exe — any consumable you use is also applied to teammates with Med-Drone attached"],
- tips:["Always attach Med-Drone before using consumables — Shareware only works if drone is already on target","Reboot+ can revive thirsted teammates (already fully killed) — this is game-changing in PvP","Battery Overcharge EMPs complements Destroyer's push windows perfectly","Stay mid-range behind Destroyer, not in the frontline"],
- weapons:[{name:"Hardline PR",role:"Primary — safe mid-range poke",tier:"A"},{name:"BR33 Volley Rifle",role:"Primary alt — versatile burst",tier:"S"},{name:"Overrun AR",role:"Secondary — reliable fallback",tier:"S"}],
+ solo:"C",squad:"S",
+ prime:"Reboot+ (Capacitive Gauntlets) — fully revive downed teammates from range, or EMP enemies",
+ tactical:"Med-Drone — deployable healing drone that attaches to a teammate, providing health and shield regen",
+ traits:["Battery Overcharge — EMPs enemies when you break their shields","Shareware.exe — any consumable you use is applied to teammates with Med-Drone"],
+ tips:["Always attach Med-Drone before using consumables — Shareware only works if drone is already on target","Reboot+ can revive thirsted teammates — this is game-changing in PvP","Battery Overcharge EMPs complements Destroyer's push windows perfectly","Stay mid-range behind Destroyer, not in the frontline"],
+ weapons:[{name:"Hardline PR",role:"Safe mid-range poke",tier:"A"},{name:"BR33 Volley Rifle",role:"Versatile burst",tier:"S"},{name:"Overrun AR",role:"Reliable fallback",tier:"S"}],
  upgrades:{priority:["nc_saf","nc_saf2","nc_shie","nc_rest","nc_rest2","nc_regen"],reason:"Full NuCaloric investment maximises survivability so you stay alive to support your squad"},
  cores:["No Good Deed (Superior) — burst healing when Med-Drone attaches to ally","Samaritan (Prestige) — sharing consumable reduces Med-Drone cooldown"],
  synergy:"Destroyer (sustain his pushes from behind) + Recon (know when to reposition safely)"
 },
 {id:"recon",name:"RECON",icon:"👁️",color:"#4a9eff",tier:"S",
  role:"Intel / Support",playstyle:"Information is your weapon. Echo Pulse reveals all nearby enemies. Your squad always knows what's coming before shots are fired.",
- solo:"A — self-sufficient with great awareness",squad:"S — intel wins fights before they start",
+ solo:"A",squad:"S",
  prime:"Echo Pulse — sends sonar pulses that reveal all nearby player locations through walls",
  tactical:"Tracker Mine — deployable sensor mine that pings and tracks enemies who walk near it",
  traits:["Ghost Ping — your pings stay on enemies briefly after they leave line of sight","Threat Assessment — highlights nearby enemies with low health"],
  tips:["Echo Pulse before every push — never walk into a room blind","Tracker Mines at choke points give persistent map awareness","Ghost Ping + Echo Pulse combination makes you essentially omniscient in a zone","Pair with Assassin who can convert your intel into guaranteed first strikes"],
- weapons:[{name:"BR33 Volley Rifle",role:"Primary — mid-range dominant",tier:"S"},{name:"Hardline PR",role:"Primary alt — longer range control",tier:"A"},{name:"Longshot",role:"Secondary — punish exposed runners",tier:"A"}],
+ weapons:[{name:"BR33 Volley Rifle",role:"Mid-range dominant",tier:"S"},{name:"Hardline PR",role:"Longer range control",tier:"A"},{name:"Longshot",role:"Punish exposed runners",tier:"A"}],
  upgrades:{priority:["ca_inf","ca_cred","mi_flex","sg_tac","ca_firm"],reason:"Credit accumulation and agility upgrades — Recon wins by information, not brute force"},
  cores:["Echo Amplifier (Enhanced) — larger Echo Pulse radius","Deep Scan (Deluxe) — reveals enemy health bars on pulse"],
  synergy:"Destroyer (clean covered entries) + Assassin (turn intel into precision ambushes)"
 },
 {id:"assassin",name:"ASSASSIN",icon:"🌑",color:"#bf5af2",tier:"A",
  role:"Stealth / Flanker",playstyle:"Strike before the fight starts. Active Camo for invisible repositioning, Smoke Screen for escapes. Punishes isolated targets ruthlessly.",
- solo:"A — excellent self-sufficient stealth loop",squad:"A — flanking disrupts enemy focus from teammates",
+ solo:"A",squad:"A",
  prime:"Smoke Screen — throws smoke grenades to block sightlines and enable repositioning",
  tactical:"Active Camo — full invisibility, cancelled by any action. Perfect for repositioning or initiating",
  traits:["Shadow Dive — dive creates a field of smoke","Shroud — become invisible while inside your own smoke"],
  tips:["Smoke first, reposition under Active Camo, take a guaranteed shot, vanish — this is the core loop","Never spray and pray — Assassin collapses if you fight on their terms instead of yours","Smoke + Shroud means you can become invisible mid-fight when inside your own smoke","In squads, your flank forces enemies to split attention — critical timing with Destroyer pushes"],
- weapons:[{name:"WSTR Combat Shotgun",role:"Primary — backstab delete",tier:"S"},{name:"BRRT SMG",role:"Primary alt — extended engagements",tier:"S"},{name:"Longshot",role:"Secondary — picked off from smoke edge",tier:"A"}],
+ weapons:[{name:"WSTR Combat Shotgun",role:"Backstab delete",tier:"S"},{name:"BRRT SMG",role:"Extended engagements",tier:"S"},{name:"Longshot",role:"Picked off from smoke edge",tier:"A"}],
  upgrades:{priority:["ar_kni","ar_str","ar_shot","ca_firm","ca_cred"],reason:"Arachne upgrades for combat capability, Firm Stance for movement — Assassin dies in 2 shots if caught"},
  cores:["Extended Camo (Enhanced) — longer Active Camo duration","Smoke Amplifier (Deluxe) — larger, denser smoke field"],
  synergy:"Recon (convert intel into guaranteed kills) + Triage (revive you when flank fails)"
 },
 {id:"thief",name:"THIEF",icon:"💰",color:"#ff6d00",tier:"B",
  role:"Looter / Scout",playstyle:"The extraction specialist. Butterfly drone marks enemies and steals their loot. Grapple for rapid movement between containers. Profit over combat.",
- solo:"A — best solo extraction shell in the game",squad:"B — less impactful in direct combat",
+ solo:"A",squad:"B",
  prime:"Pickpocket Drone — pilotable flying drone that attacks UESC drones and players, causing them to drop loot",
  tactical:"Grapple — dart launcher for grappling to surfaces or enemies. Fastest mobility tool in the game",
  traits:["Enhanced Loot Visor — better container highlighting, see rare items through walls","Quick Fingers — faster container looting speed"],
  tips:["Pickpocket Drone on UESC cargo drones is free high-tier loot with no combat risk","Grapple is the best escape tool in the game — always have a grapple exit planned","Use Enhanced Loot Visor to prioritise which containers are worth the risk","Best combined with CyberAcme Scavenger/Loot Siphon upgrades for maximum efficiency"],
- weapons:[{name:"Overrun AR",role:"Primary — safe and reliable",tier:"S"},{name:"Bully SMG",role:"Primary alt — if forced into close fights",tier:"A"},{name:"Hardline PR",role:"Secondary — pick off threats before looting",tier:"A"}],
+ weapons:[{name:"Overrun AR",role:"Safe and reliable",tier:"S"},{name:"Bully SMG",role:"Forced close fights",tier:"A"},{name:"Hardline PR",role:"Pick off threats before looting",tier:"A"}],
  upgrades:{priority:["ca_scav","ca_lsip","ca_exp","ca_cred","ca_lock"],reason:"CyberAcme loot upgrades synergise directly with Thief's kit — maximise loot efficiency"},
  cores:["Drone Mk II (Enhanced) — faster Pickpocket Drone","Extended Grapple (Deluxe) — longer grapple range"],
  synergy:"Vandal (creates chaos while you loot safely) + Assassin (keeps enemy vision suppressed)"
 },
 {id:"rook",name:"ROOK",icon:"♜",color:"#c8d8e8",tier:"B",
  role:"Scavenger / Free Loadout",playstyle:"Solo scavenger mode only. No vault gear, basic loadout — but nothing to lose. Best for learning maps, recovery runs after a wipe, or low-risk loot grinding.",
- solo:"B — unique risk-free loop, but gear disadvantaged",squad:"— (solo only)",
+ solo:"B",squad:"—",
  prime:"Signal Mask — brief invisibility to other players. Useful for escaping hostile runners",
  tactical:"Scanner — highlights nearby containers and items through walls",
- traits:["Salvage Expert — faster looting from all container types","Supply Run — bonus loot quality from first container opened per run"],
- tips:["Never fight geared runners — you will lose. Loot, evade, extract","Focus on containers in low-traffic areas while other squads fight each other","CyberAcme faction upgrades dramatically improve your starting gear and extraction potential","Carrier+ capstone gives you a Deluxe Backpack from run start — transformative for Rook"],
- weapons:[{name:"Overrun AR",role:"Starting weapon — make it work",tier:"S"},{name:"Bully SMG",role:"First upgrade priority if found",tier:"A"},{name:"Any found shotgun",role:"Close range insurance",tier:"varies"}],
- upgrades:{priority:["ca_carr","ca_carr2","ca_scav","ca_lsip","ca_exp"],reason:"Carrier line is essential — better backpack means more loot per run. CyberAcme loot upgrades double your per-run haul"},
- cores:["Supply Cache (Enhanced) — bonus starting ammo","Rook's Luck (Deluxe) — increased first-container loot quality"],
- synergy:"Solo only — but benefits enormously from high CyberAcme faction rank"
-}
-];
+ traits:["Salvage Protocol — increased loot from broken containers","Resupply — collect ammo from downed runners faster"],
+ tips:["Never engage a geared squad — you will lose","Use Scanner before entering rooms to locate loot fast","Signal Mask is a panic button, not an initiation tool","Best map: Overflow or South Relay for safe loot loops"],
+ weapons:[{name:"CE Tactical Sidearm",role:"Starting weapon",tier:"C"},{name:"Overrun AR",role:"First upgrade priority",tier:"S"},{name:"WSTR Combat Shotgun",role:"When found — keep it",tier:"S"}],
+ upgrades:{priority:["ca_scav","ca_lsip","ca_exp","ca_carr","ca_carr2"],reason:"Pure loot upgrades — Rook's value is entirely in how fast and efficiently you extract salvage"},
+ cores:["Salvage Boost (Enhanced) — faster broken container loot","Quick Exit (Deluxe) — reduced extraction time"],
+ synergy:"Solo only — Rook has no squad synergies by design"
+}];
 
-// Upgrades to auto-select per runner (maps to upgrade IDs + level)
 const RUNNER_UPGRADE_LOADS={
-  destroyer:[{id:"nc_saf",lv:1},{id:"nc_shie",lv:1},{id:"nc_rest",lv:1},{id:"ca_sink",lv:3},{id:"ca_firm",lv:3},{id:"ca_cred",lv:2},{id:"ca_qvent",lv:1}],
-  vandal:   [{id:"ca_sink",lv:3},{id:"ca_qvent",lv:2},{id:"ca_acool",lv:2},{id:"ca_slide",lv:1},{id:"ca_firm",lv:2},{id:"ca_carr",lv:1}],
-  triage:   [{id:"nc_saf",lv:1},{id:"nc_saf2",lv:1},{id:"nc_shie",lv:1},{id:"nc_rest",lv:1},{id:"nc_rest2",lv:1},{id:"nc_regen",lv:2},{id:"nc_rein",lv:2}],
-  recon:    [{id:"ca_inf",lv:2},{id:"ca_cred",lv:2},{id:"ca_firm",lv:1},{id:"nc_saf",lv:1},{id:"nc_rest",lv:1}],
-  assassin: [{id:"ar_kni",lv:1},{id:"ar_str",lv:1},{id:"ar_shot",lv:1},{id:"ca_firm",lv:2},{id:"ca_cred",lv:2},{id:"nc_saf",lv:1}],
-  thief:    [{id:"ca_scav",lv:3},{id:"ca_lsip",lv:2},{id:"ca_exp",lv:2},{id:"ca_cred",lv:2},{id:"ca_lock",lv:1},{id:"ca_carr",lv:1}],
-  rook:     [{id:"ca_carr",lv:1},{id:"ca_carr2",lv:1},{id:"ca_scav",lv:3},{id:"ca_lsip",lv:2},{id:"ca_exp",lv:3}]
+  destroyer:[{id:"nc_saf",lv:3},{id:"nc_rest",lv:2},{id:"ca_sink",lv:1},{id:"ca_firm",lv:1},{id:"ca_cred",lv:2}],
+  vandal:   [{id:"ca_sink",lv:1},{id:"ca_qvent",lv:1},{id:"ca_acool",lv:1},{id:"ca_slide",lv:1},{id:"ca_firm",lv:1}],
+  triage:   [{id:"nc_saf",lv:3},{id:"nc_rest",lv:3},{id:"nc_shie",lv:2},{id:"nc_regen",lv:2}],
+  recon:    [{id:"ca_inf",lv:2},{id:"ca_cred",lv:3},{id:"ca_firm",lv:1}],
+  assassin: [{id:"ar_kni",lv:2},{id:"ar_str",lv:2},{id:"ar_shot",lv:2},{id:"ca_firm",lv:1}],
+  thief:    [{id:"ca_scav",lv:2},{id:"ca_lsip",lv:2},{id:"ca_exp",lv:1},{id:"ca_cred",lv:2},{id:"ca_lock",lv:1}],
+  rook:     [{id:"ca_scav",lv:2},{id:"ca_lsip",lv:2},{id:"ca_exp",lv:1},{id:"ca_carr",lv:2}]
 };
 
-let activeRunner=null;
+let activeRunner = null;
 
-function renderRunners(){
-  const el=document.getElementById("rv");
-  if(activeRunner){renderRunnerDetail(el);return;}
-  const tierCol={S:"#39ff14",A:"#ffd600",B:"#ff6d00"};
-  el.innerHTML=`
-    <div class="rv-hdr">🏃 RUNNER BUILDS</div>
-    <div class="rv-sub">Select a shell to see recommended builds, upgrades, weapons and cores. Click "LOAD BUILD" to auto-select upgrades in the tree.</div>
-    <div class="runner-grid">
-      ${RUNNERS.map(r=>`
-        <div class="runner-card" style="border-top-color:${r.color}" onclick="selectRunner('${r.id}')">
-          <div class="runner-card-hdr">
-            <div class="runner-icon" style="background:${r.color}22;border:1px solid ${r.color}44">${r.icon}</div>
-            <div>
-              <div style="font-family:'Orbitron',monospace;font-size:15px;color:${r.color};letter-spacing:2px">${r.name}</div>
-              <div style="font-size:16px;color:#4a6070;margin-top:2px">${r.role}</div>
-            </div>
-            <span class="runner-tier" style="border-color:${tierCol[r.tier]||"#4a6070"};color:${tierCol[r.tier]||"#4a6070"}">${r.tier}-TIER</span>
-          </div>
-          <div class="runner-card-body">
-            <div style="font-size:16px;color:#8aa0b0;line-height:1.6;margin-bottom:8px">${r.playstyle}</div>
-            <div style="display:flex;gap:8px;font-size:15px">
-              <span style="color:#4a6070">SOLO: <span style="color:${tierCol[r.solo[0]]||"#c8d8e8"}">${r.solo.split(" — ")[0]}</span></span>
-              <span style="color:#4a6070">SQUAD: <span style="color:${tierCol[r.squad[0]]||"#c8d8e8"}">${r.squad.split(" — ")[0]}</span></span>
-            </div>
-          </div>
-        </div>`).join("")}
+function renderRunners() {
+  const el = document.getElementById("rv");
+  if (!el) return;
+  if (activeRunner) { renderRunnerDetail(el); return; }
+
+  el.innerHTML = `
+    <div style="padding:20px 24px">
+      <div style="font-family:'Orbitron',monospace;font-size:11px;color:#4a6070;letter-spacing:3px;margin-bottom:16px">SELECT RUNNER SHELL</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px">
+        ${RUNNERS.map(r => renderRunnerCard(r)).join("")}
+      </div>
     </div>`;
 }
 
-function selectRunner(id){activeRunner=id;renderRunners();}
+function renderRunnerCard(r) {
+  const tierCol = {S:"#39ff14",A:"#ffd600",B:"#ff6d00","—":"#4a6070"}[r.tier]||"#4a6070";
+  const soloCol = {S:"#39ff14",A:"#ffd600",B:"#ff6d00",C:"#ff4444","—":"#4a6070"}[r.solo]||"#4a6070";
+  const squadCol = {S:"#39ff14",A:"#ffd600",B:"#ff6d00",C:"#ff4444","—":"#4a6070"}[r.squad]||"#4a6070";
 
-function renderRunnerDetail(el){
-  const r=RUNNERS.find(x=>x.id===activeRunner);
-  if(!r)return;
-  const load=RUNNER_UPGRADE_LOADS[r.id]||[];
-  // Calculate costs for this build
-  let totalCreds=0;const salvNeeds={};
-  load.forEach(({id,lv})=>{
-    const u=UG.find(x=>x.id===id);
-    if(!u)return;
-    for(let i=0;i<Math.min(lv,u.levels.length);i++){
-      totalCreds+=u.levels[i].credits;
-      u.levels[i].salvage.forEach(s=>{salvNeeds[s.i]=(salvNeeds[s.i]||0)+s.q;});
+  return `<div class="runner-card" onclick="activeRunner='${r.id}';renderRunners()"
+    style="background:#0d1318;border:1px solid #1a2530;border-left:3px solid ${r.color};
+    cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;padding:0;overflow:hidden"
+    onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 24px rgba(0,0,0,.6)';this.style.borderColor='${r.color}'"
+    onmouseleave="this.style.transform='';this.style.boxShadow='';this.style.borderColor='${r.color}44'">
+
+    <div style="padding:16px 18px 12px;border-left:3px solid ${r.color};border-left:none">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <div style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+          font-size:24px;background:${r.color}18;border:1px solid ${r.color}44;flex-shrink:0">${r.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Orbitron',monospace;font-size:15px;color:${r.color};letter-spacing:2px">${r.name}</div>
+          <div style="font-size:13px;color:#4a6070;margin-top:1px">${r.role}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:10px;color:#4a6070;letter-spacing:1px;margin-bottom:2px">TIER</div>
+          <div style="font-family:'Orbitron',monospace;font-size:18px;color:${tierCol};font-weight:700">${r.tier}</div>
+        </div>
+      </div>
+
+      <!-- Playstyle -->
+      <div style="font-size:13px;color:#8aa0b0;line-height:1.6;margin-bottom:12px;
+        padding:8px 10px;background:#0a0f13;border-left:2px solid ${r.color}55">${r.playstyle}</div>
+
+      <!-- Rating bars -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">
+        ${renderRatingPill("SOLO", r.solo, soloCol)}
+        ${renderRatingPill("SQUAD", r.squad, squadCol)}
+      </div>
+
+      <!-- Abilities quick view -->
+      <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
+        <div style="font-size:10px;color:#4a6070;letter-spacing:2px;margin-bottom:2px">ABILITIES</div>
+        <div style="font-size:12px;color:#c8d8e8;padding:4px 8px;background:#0a0f13;border-left:2px solid #ffd600">
+          <span style="color:#ffd600;font-size:10px;letter-spacing:1px">PRIME  </span>${r.prime.split(" — ")[0]}
+        </div>
+        <div style="font-size:12px;color:#c8d8e8;padding:4px 8px;background:#0a0f13;border-left:2px solid #4a9eff">
+          <span style="color:#4a9eff;font-size:10px;letter-spacing:1px">TACT  </span>${r.tactical.split(" — ")[0]}
+        </div>
+      </div>
+
+      <!-- Weapons -->
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">
+        <div style="width:100%;font-size:10px;color:#4a6070;letter-spacing:2px;margin-bottom:2px">WEAPONS</div>
+        ${r.weapons.map(w => {
+          const wc = {S:"#39ff14",A:"#ffd600",B:"#ff6d00"}[w.tier]||"#4a6070";
+          return `<span style="font-size:11px;padding:2px 7px;border:1px solid ${wc}33;color:${wc};background:${wc}0d">${w.name}</span>`;
+        }).join("")}
+      </div>
+
+      <!-- Footer -->
+      <div style="display:flex;align-items:center;justify-content:space-between;
+        padding-top:10px;border-top:1px solid #1a2530">
+        <div style="font-size:11px;color:#4a6070">
+          ${r.traits.length} traits &nbsp;·&nbsp; ${r.tips.length} tips
+        </div>
+        <div style="font-size:11px;color:${r.color};letter-spacing:1px">VIEW DETAILS →</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderRatingPill(label, val, col) {
+  const barW = {S:100,A:80,B:55,C:30,"—":0}[val]||0;
+  return `<div style="background:#0a0f13;padding:6px 8px;border:1px solid #1a2530">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <span style="font-size:10px;color:#4a6070;letter-spacing:1px">${label}</span>
+      <span style="font-family:'Orbitron',monospace;font-size:13px;color:${col};font-weight:700">${val}</span>
+    </div>
+    <div style="height:2px;background:#1a2530;border-radius:1px">
+      <div style="height:2px;width:${barW}%;background:${col};border-radius:1px;transition:width .4s"></div>
+    </div>
+  </div>`;
+}
+
+function renderRunnerDetail(el) {
+  const r = RUNNERS.find(x => x.id === activeRunner);
+  if (!r) { activeRunner = null; renderRunners(); return; }
+
+  const load = RUNNER_UPGRADE_LOADS[r.id] || [];
+  let totalCreds = 0;
+  const salvMap = {};
+  load.forEach(({id, lv}) => {
+    const u = UG.find(x => x.id === id);
+    if (!u) return;
+    for (let i = 0; i < lv; i++) {
+      if (!u.levels[i]) continue;
+      totalCreds += u.levels[i].credits || 0;
+      (u.levels[i].salvage || []).forEach(s => {
+        salvMap[s.i] = (salvMap[s.i] || 0) + s.q;
+      });
     }
   });
-  const salvRows=Object.entries(salvNeeds).sort((a,b)=>b[1]-a[1]).map(([item,qty])=>{
-    const loc=SL[item];const rc=loc?RC[loc.rarity]:"#4a6070";
-    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 5px;border-left:2px solid ${rc};margin-bottom:3px;font-size:16px">
-      <span style="color:#c8d8e8">◈ ${item}</span><span style="color:#ffd600;font-weight:700">×${qty}</span>
+  const salvRows = Object.entries(salvMap).map(([item, qty]) => {
+    const loc = SL[item]; const rc = loc ? RC[loc.rarity] : "#4a6070";
+    return `<div style="display:flex;justify-content:space-between;padding:3px 8px;border-left:2px solid ${rc};margin-bottom:2px">
+      <span style="color:#c8d8e8;font-size:14px">${item}</span>
+      <span style="color:${rc};font-weight:700;font-size:14px">×${qty}</span>
     </div>`;
   }).join("");
 
-  el.innerHTML=`
-    <div style="padding:20px">
-      <div class="rd-back" onclick="activeRunner=null;renderRunners()">← BACK TO ALL RUNNERS</div>
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
-        <div style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;background:${r.color}22;border:2px solid ${r.color}66">${r.icon}</div>
-        <div>
-          <div style="font-family:'Orbitron',monospace;font-size:18px;color:${r.color};letter-spacing:3px">${r.name}</div>
-          <div style="font-size:16px;color:#4a6070;margin-top:2px">${r.role}</div>
-        </div>
-        <div style="margin-left:auto;text-align:right">
-          <div style="font-size:16px;color:#4a6070">SOLO / SQUAD</div>
-          <div style="font-size:15px;font-weight:700">${r.solo.split(" — ")[0]} / ${r.squad.split(" — ")[0]}</div>
-        </div>
-      </div>
-      <div style="font-size:16px;color:#8aa0b0;line-height:1.7;margin-bottom:16px;border-left:3px solid ${r.color};padding-left:12px">${r.playstyle}</div>
+  const soloCol  = {S:"#39ff14",A:"#ffd600",B:"#ff6d00",C:"#ff4444","—":"#4a6070"}[r.solo]||"#4a6070";
+  const squadCol = {S:"#39ff14",A:"#ffd600",B:"#ff6d00",C:"#ff4444","—":"#4a6070"}[r.squad]||"#4a6070";
 
-      <div class="rd-grid">
-        <div class="rd-box">
-          <div class="rd-box-hdr" style="color:${r.color}">⚡ ABILITIES</div>
-          <div style="margin-bottom:8px"><div style="font-size:15px;color:#ffd600;letter-spacing:1px;margin-bottom:3px">PRIME</div><div style="font-size:16px;color:#c8d8e8">${r.prime}</div></div>
-          <div style="margin-bottom:8px"><div style="font-size:15px;color:#4a9eff;letter-spacing:1px;margin-bottom:3px">TACTICAL</div><div style="font-size:16px;color:#c8d8e8">${r.tactical}</div></div>
-          <div><div style="font-size:15px;color:#39ff14;letter-spacing:1px;margin-bottom:3px">TRAITS</div>
-            ${r.traits.map(t=>`<div style="font-size:16px;color:#c8d8e8;margin-bottom:2px">• ${t}</div>`).join("")}
+  el.innerHTML = `
+    <div style="padding:20px 24px;max-width:960px">
+
+      <!-- Back -->
+      <button onclick="activeRunner=null;renderRunners()" style="background:none;border:1px solid #1a2530;
+        color:#4a6070;font-family:'Share Tech Mono',monospace;font-size:13px;padding:6px 14px;
+        cursor:pointer;margin-bottom:20px;letter-spacing:1px"
+        onmouseenter="this.style.color='#c8d8e8';this.style.borderColor='#4a6070'"
+        onmouseleave="this.style.color='#4a6070';this.style.borderColor='#1a2530'">← ALL RUNNERS</button>
+
+      <!-- Hero header -->
+      <div style="background:#0d1318;border:1px solid #1a2530;border-left:4px solid ${r.color};
+        padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;gap:20px">
+        <div style="width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+          font-size:36px;background:${r.color}18;border:2px solid ${r.color}55;flex-shrink:0">${r.icon}</div>
+        <div style="flex:1">
+          <div style="font-family:'Orbitron',monospace;font-size:22px;color:${r.color};letter-spacing:4px;margin-bottom:4px">${r.name}</div>
+          <div style="font-size:14px;color:#4a6070;letter-spacing:2px;margin-bottom:10px">${r.role.toUpperCase()}</div>
+          <div style="font-size:14px;color:#8aa0b0;line-height:1.7;border-left:2px solid ${r.color}44;padding-left:12px">${r.playstyle}</div>
+        </div>
+        <div style="display:grid;grid-template-rows:1fr 1fr;gap:8px;flex-shrink:0;min-width:100px">
+          <div style="text-align:center;padding:10px 16px;background:#0a0f13;border:1px solid #1a2530">
+            <div style="font-size:10px;color:#4a6070;letter-spacing:1px">SOLO</div>
+            <div style="font-family:'Orbitron',monospace;font-size:22px;color:${soloCol};font-weight:700">${r.solo}</div>
+          </div>
+          <div style="text-align:center;padding:10px 16px;background:#0a0f13;border:1px solid #1a2530">
+            <div style="font-size:10px;color:#4a6070;letter-spacing:1px">SQUAD</div>
+            <div style="font-family:'Orbitron',monospace;font-size:22px;color:${squadCol};font-weight:700">${r.squad}</div>
           </div>
         </div>
-        <div class="rd-box">
-          <div class="rd-box-hdr" style="color:#ffd600">🔫 RECOMMENDED WEAPONS</div>
-          ${r.weapons.map(w=>{
-            const wc={S:"#39ff14",A:"#ffd600",B:"#ff6d00"}[w.tier]||"#4a6070";
-            return`<div style="margin-bottom:8px;padding:5px 8px;border-left:2px solid ${wc}">
-              <div style="font-size:16px;color:#fff;font-weight:700">${w.name} <span style="font-size:15px;padding:1px 4px;border:1px solid ${wc};color:${wc}">${w.tier}</span></div>
-              <div style="font-size:15px;color:#4a6070;margin-top:2px">${w.role}</div>
+      </div>
+
+      <!-- Main grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+
+        <!-- Abilities -->
+        <div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:${r.color};letter-spacing:3px;margin-bottom:14px">⚡ ABILITIES</div>
+          <div style="margin-bottom:12px;padding:10px 12px;background:#0a0f13;border-left:3px solid #ffd600">
+            <div style="font-size:10px;color:#ffd600;letter-spacing:2px;margin-bottom:5px">PRIME ABILITY</div>
+            <div style="font-size:14px;color:#c8d8e8;line-height:1.6">${r.prime}</div>
+          </div>
+          <div style="margin-bottom:12px;padding:10px 12px;background:#0a0f13;border-left:3px solid #4a9eff">
+            <div style="font-size:10px;color:#4a9eff;letter-spacing:2px;margin-bottom:5px">TACTICAL</div>
+            <div style="font-size:14px;color:#c8d8e8;line-height:1.6">${r.tactical}</div>
+          </div>
+          <div style="padding:10px 12px;background:#0a0f13;border-left:3px solid #39ff14">
+            <div style="font-size:10px;color:#39ff14;letter-spacing:2px;margin-bottom:5px">TRAITS</div>
+            ${r.traits.map(t => `<div style="font-size:14px;color:#c8d8e8;margin-bottom:4px;line-height:1.5">• ${t}</div>`).join("")}
+          </div>
+        </div>
+
+        <!-- Weapons -->
+        <div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:#ffd600;letter-spacing:3px;margin-bottom:14px">🔫 RECOMMENDED WEAPONS</div>
+          ${r.weapons.map(w => {
+            const wc = {S:"#39ff14",A:"#ffd600",B:"#ff6d00"}[w.tier]||"#4a6070";
+            const gw = WEAPONS_DATA ? WEAPONS_DATA.find(x=>x.name===w.name) : null;
+            return `<div style="margin-bottom:10px;padding:10px 12px;background:#0a0f13;border-left:3px solid ${wc};cursor:${gw?'pointer':'default'}"
+              ${gw?`onclick="gunsSubPage='weapons';selectedWeapon='${gw.id}';showMain('guns');renderGuns()"
+              onmouseenter="this.style.background='#0d1318'" onmouseleave="this.style.background='#0a0f13'"`:""}>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
+                <div style="font-size:14px;color:#fff;font-weight:700">${w.name}</div>
+                <span style="font-family:'Orbitron',monospace;font-size:13px;color:${wc};border:1px solid ${wc}44;padding:1px 6px">${w.tier}</span>
+              </div>
+              <div style="font-size:13px;color:#4a6070">${w.role}${gw?" · <span style='color:"+wc+"'>Click to view →</span>":""}</div>
             </div>`;
           }).join("")}
         </div>
-        <div class="rd-box">
-          <div class="rd-box-hdr" style="color:#bf5af2">💎 CORES</div>
-          ${r.cores.map(c=>`<div style="font-size:16px;color:#c8d8e8;margin-bottom:6px;padding:4px 8px;border-left:2px solid #bf5af2">• ${c}</div>`).join("")}
-          <div style="margin-top:10px"><div style="font-size:15px;color:#4a6070;letter-spacing:1px;margin-bottom:4px">BEST SYNERGY</div>
-            <div style="font-size:16px;color:#8aa0b0">${r.synergy}</div>
+
+        <!-- Tips -->
+        <div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:#39ff14;letter-spacing:3px;margin-bottom:14px">💡 COMBAT TIPS</div>
+          ${r.tips.map((t, i) => `
+            <div style="display:flex;gap:10px;margin-bottom:10px;padding-bottom:10px;${i<r.tips.length-1?'border-bottom:1px solid #0d1318':''}">
+              <div style="font-family:'Orbitron',monospace;font-size:11px;color:#39ff14;padding-top:3px;flex-shrink:0">0${i+1}</div>
+              <div style="font-size:14px;color:#8aa0b0;line-height:1.6">${t}</div>
+            </div>`).join("")}
+        </div>
+
+        <!-- Cores + Synergy -->
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px;flex:1">
+            <div style="font-family:'Orbitron',monospace;font-size:11px;color:#bf5af2;letter-spacing:3px;margin-bottom:14px">💎 CORES</div>
+            ${r.cores.map(c => `<div style="font-size:14px;color:#c8d8e8;margin-bottom:8px;padding:8px 10px;
+              background:#0a0f13;border-left:2px solid #bf5af255;line-height:1.5">• ${c}</div>`).join("")}
+          </div>
+          <div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px">
+            <div style="font-family:'Orbitron',monospace;font-size:11px;color:#00e5ff;letter-spacing:3px;margin-bottom:10px">🤝 BEST SYNERGY</div>
+            <div style="font-size:14px;color:#8aa0b0;line-height:1.7;padding:8px 10px;background:#0a0f13;border-left:2px solid #00e5ff44">${r.synergy}</div>
           </div>
         </div>
-        <div class="rd-box">
-          <div class="rd-box-hdr" style="color:#ff6d00">📦 BUILD COSTS</div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #1a2530">
-            <span style="color:#4a6070;font-size:16px">Total Credits</span>
-            <span style="color:#ffd600;font-weight:700">₵${totalCreds.toLocaleString()}</span>
+      </div>
+
+      <!-- Build costs + Priority upgrades -->
+      <div style="display:grid;grid-template-columns:240px 1fr;gap:12px;margin-bottom:12px">
+        <div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:#ff6d00;letter-spacing:3px;margin-bottom:14px">📦 BUILD COSTS</div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #1a2530">
+            <span style="color:#4a6070;font-size:14px">Total Credits</span>
+            <span style="color:#ffd600;font-weight:700;font-size:14px">₵${totalCreds.toLocaleString()}</span>
           </div>
-          ${salvRows||`<div style="color:#4a6070;font-size:16px">No salvage needed</div>`}
+          ${salvRows || `<div style="color:#4a6070;font-size:14px">No salvage required</div>`}
+        </div>
+        <div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:#00e5ff;letter-spacing:3px;margin-bottom:6px">⬆ PRIORITY UPGRADES</div>
+          <div style="font-size:13px;color:#4a6070;margin-bottom:12px">${r.upgrades.reason}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            ${load.map(({id, lv}) => {
+              const u = UG.find(x => x.id === id);
+              if (!u) return "";
+              const fc = FC[u.f];
+              return `<span style="font-size:13px;padding:4px 10px;border:1px solid ${fc.color}66;
+                color:${fc.color};background:${fc.color}11">${u.name} <span style="opacity:.7">Lv${lv}</span></span>`;
+            }).join("")}
+          </div>
         </div>
       </div>
 
-      <div class="rd-box" style="margin-bottom:14px">
-        <div class="rd-box-hdr" style="color:#39ff14">💡 TIPS</div>
-        ${r.tips.map(t=>`<div style="font-size:16px;color:#8aa0b0;margin-bottom:6px;padding-left:10px;border-left:2px solid #1a2530">• ${t}</div>`).join("")}
-      </div>
-
-      <div class="rd-box" style="margin-bottom:14px">
-        <div class="rd-box-hdr" style="color:#00e5ff">⬆ PRIORITY UPGRADES FOR THIS BUILD</div>
-        <div style="margin-bottom:8px;font-size:16px;color:#4a6070">${r.upgrades.reason}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:4px">
-          ${load.map(({id,lv})=>{
-            const u=UG.find(x=>x.id===id);
-            if(!u)return"";
-            const fc=FC[u.f];
-            return`<span style="font-size:15px;padding:3px 8px;border:1px solid ${fc.color};color:${fc.color};background:${fc.color}11">${u.name} Lv${lv}</span>`;
-          }).join("")}
-        </div>
-      </div>
-
-      <button class="rd-load-btn" onclick="loadRunnerBuild('${r.id}')">
-        ⬆ LOAD THIS BUILD INTO UPGRADE TREE
+      <!-- Load build button -->
+      <button onclick="loadRunnerBuild('${r.id}')" style="width:100%;padding:14px;background:${r.color}18;
+        border:1px solid ${r.color}66;color:${r.color};font-family:'Orbitron',monospace;font-size:13px;
+        letter-spacing:3px;cursor:pointer;transition:all .2s"
+        onmouseenter="this.style.background='${r.color}33';this.style.borderColor='${r.color}'"
+        onmouseleave="this.style.background='${r.color}18';this.style.borderColor='${r.color}66'">
+        ⬆ LOAD BUILD INTO UPGRADE TREE
       </button>
     </div>`;
 }
 
-function loadRunnerBuild(id){
-  const load=RUNNER_UPGRADE_LOADS[id]||[];
-  UG.forEach(u=>{LV[u.id]=0;PL[u.id]=0;});
-  load.forEach(({id:uid,lv})=>{
-    if(LV[uid]!==undefined) LV[uid]=lv;
-  });
+function loadRunnerBuild(id) {
+  const load = RUNNER_UPGRADE_LOADS[id] || [];
+  UG.forEach(u => { LV[u.id] = 0; PL[u.id] = 0; });
+  load.forEach(({id:uid, lv}) => { if (LV[uid] !== undefined) LV[uid] = lv; });
   refresh();
-  activeRunner=null;
+  activeRunner = null;
   showMain("tree");
 }
 
-// ══════════════════════════════════════════
-
 // ═══ guns.js ═══
+// ══════════════════════════════════════════
 // GUNS & ITEMS PAGE
 // ══════════════════════════════════════════
 const RARITY_COL={Standard:"#8aa0b0",Enhanced:"#39ff14",Deluxe:"#4a9eff",Superior:"#bf5af2",Prestige:"#ffd600"};
 const AMMO_COL={"Light Rounds":"#c8d8e8","Heavy Rounds":"#ffd600","MIPS Rounds":"#4a9eff","Volt Battery":"#39ff14","Volt Cells":"#ff6d00","Shells":"#ff4444"};
 
+// ── MODS DATABASE ─────────────────────────
+const MODS_DATA = [
+  // CHIP MODS
+  {id:"chip_motionsense", name:"Motionsense Chip",    slot:"Chip",    rarity:"Enhanced",
+   stats:{handling:+8,range:+5}, desc:"Improves target acquisition speed and reduces weapon sway during movement.",
+   weapons:["Overrun AR","M77 Assault Rifle","Impact HAR","Hardline PR","BR33 Volley Rifle","Copperhead RF"],
+   tip:"Best all-round chip mod. Works on most ARs and PRs."},
+  {id:"chip_keen",        name:"Keen Scout Chip",     slot:"Chip",    rarity:"Enhanced",
+   stats:{range:+12,handling:+4}, desc:"Extended optic magnification assist. Marks targets at range.",
+   weapons:["BRRT SMG","WSTR Combat Shotgun","Overrun AR","Misriah 2442"],
+   tip:"Good for aggressive flankers who need fast target acquisition."},
+  {id:"chip_flash",       name:"Flash Draw Chip",     slot:"Chip",    rarity:"Enhanced",
+   stats:{handling:+15,reload:-0.3}, desc:"Neural-link weapon raise speed enhancement. Speeds up ADS and weapon swap.",
+   weapons:["Magnum MC","Outland","CE Tactical Sidearm","Longshot"],
+   tip:"Essential for snipers — reduces time to first shot significantly."},
+  {id:"chip_torch",       name:"Torch Bug Chip",      slot:"Chip",    rarity:"Deluxe",
+   stats:{dmg:+6,rof:+30}, desc:"Embedded overcharge circuit. Briefly overclocks fire rate on trigger pull.",
+   weapons:["V22 Volt Thrower","V75 Scar AR","V85 Circuit Breaker"],
+   tip:"Volt weapons only. Overcharge window lasts 1.5 seconds before cooldown."},
+  {id:"chip_extended",    name:"Extended Charge Chip", slot:"Chip",   rarity:"Superior",
+   stats:{dmg:+18,mag:+1}, desc:"Deep charge cell increases maximum charge level and damage ceiling.",
+   weapons:["Ares RG","V99 Channel Rifle"],
+   tip:"Mandatory on railguns. Unlocks an extra charge tier."},
+  {id:"chip_prestige_ce", name:"Prestige Chip",        slot:"Chip",   rarity:"Prestige",
+   stats:{handling:+10,dmg:+8}, desc:"Invisibility on kill + auto-reload on kill proc. Game-changing for Rook.",
+   weapons:["CE Tactical Sidearm"],
+   tip:"The only reason to use CE Tactical. Invisibility proc is genuinely strong."},
+
+  // MAGAZINE MODS
+  {id:"mag_feather",      name:"Extended Feather Mag", slot:"Magazine", rarity:"Enhanced",
+   stats:{mag:+8,reload:+0.2}, desc:"Lightweight extended magazine. Adds 8 rounds with minimal weight penalty.",
+   weapons:["Overrun AR","M77 Assault Rifle","BRRT SMG","Bully SMG","Hardline PR","BR33 Volley Rifle","Retaliator LMG","Conquest LMG","WSTR Combat Shotgun","Misriah 2442","Longshot","Copperhead RF"],
+   tip:"Near-mandatory on BRRT SMG. 20 rounds at 860 RPM goes fast."},
+  {id:"mag_hollow",       name:"Hollow-Case Rounds",   slot:"Magazine", rarity:"Deluxe",
+   stats:{dmg:+10,mag:-2,rof:+20}, desc:"Lighter propellant increases velocity and fire rate at cost of capacity.",
+   weapons:["Bully SMG","Impact HAR","M77 Assault Rifle","Magnum MC"],
+   tip:"High risk-reward. Best on Bully where damage already hits hard."},
+
+  // BARREL MODS
+  {id:"barrel_precision", name:"Precision Barrel",     slot:"Barrel",  rarity:"Enhanced",
+   stats:{range:+18,dmg:+5,handling:-4}, desc:"Extended rifled barrel. Tightens spread and adds effective range.",
+   weapons:["Impact HAR","BR33 Volley Rifle","Bully SMG","Outland","Magnum MC","Misriah 2442","WSTR Combat Shotgun"],
+   tip:"Best barrel mod for mid-range fighters. The handling penalty is minimal."},
+  {id:"barrel_choke",     name:"Choke Barrel",          slot:"Barrel",  rarity:"Deluxe",
+   stats:{range:+25,dmg:+8,rof:-10}, desc:"Constriction choke reduces shotgun spread significantly at distance.",
+   weapons:["WSTR Combat Shotgun","Misriah 2442","V85 Circuit Breaker"],
+   tip:"Transforms shotguns into mid-range threats. Essential for precision shotgun players."},
+  {id:"barrel_chargev99", name:"Extended Charge Barrel", slot:"Barrel", rarity:"Superior",
+   stats:{dmg:+15,range:+20,handling:-8}, desc:"Heavy reinforced barrel for volt charge weapons. Maximises charge damage output.",
+   weapons:["V99 Channel Rifle","Ares RG"],
+   tip:"Pairs with Extended Charge Chip for maximum railgun burst."},
+
+  // OPTIC MODS
+  {id:"optic_midsight",   name:"Midsight Optic",        slot:"Optic",   rarity:"Enhanced",
+   stats:{range:+15,handling:+6}, desc:"Mid-zoom optical scope with target assist reticle. Standard for precision roles.",
+   weapons:["Hardline PR","Copperhead RF","BR33 Volley Rifle","Longshot","Outland","V99 Channel Rifle"],
+   tip:"The default choice for any precision rifle build."},
+  {id:"optic_midsight_dlx",name:"Midsight Optic Deluxe", slot:"Optic",  rarity:"Deluxe",
+   stats:{range:+28,handling:+8,dmg:+4}, desc:"Enhanced optical scope with enemy highlight assist and ghost-zero reticle.",
+   weapons:["Longshot","Outland","V99 Channel Rifle","Hardline PR"],
+   tip:"Upgrade from standard Midsight when you find one. Highlight assist is genuinely useful."},
+
+  // GRIP MODS
+  {id:"grip_combat",      name:"Combat Grip",           slot:"Grip",    rarity:"Enhanced",
+   stats:{handling:+12,rof:+15,range:-3}, desc:"Ergonomic recoil-dampening grip. Faster reacquisition between shots.",
+   weapons:["Overrun AR","M77 Assault Rifle","BRRT SMG","Bully SMG","V22 Volt Thrower","V75 Scar AR","Retaliator LMG","Conquest LMG"],
+   tip:"Best grip mod for automatic weapons with high recoil."},
+
+  // SHIELD MODS (LMG only)
+  {id:"shield_lmg",       name:"Shield Mod",            slot:"Shield",  rarity:"Deluxe",
+   stats:{handling:-5}, desc:"Deployable micro-shield emitter. Brief shield projection reduces incoming fire damage.",
+   weapons:["Retaliator LMG","Conquest LMG"],
+   tip:"LMG exclusive slot. The shield projection lasts ~2 seconds per activation."},
+
+  // HEATSINK MODS (Volt weapons)
+  {id:"chip_heatsink",    name:"Tapered Heatsink Chip", slot:"Chip",    rarity:"Enhanced",
+   stats:{handling:+6,rof:+25}, desc:"Volt heat dissipation chip. Reduces overheat buildup rate by 15%.",
+   weapons:["V75 Scar AR","V85 Circuit Breaker","V22 Volt Thrower","V99 Channel Rifle"],
+   tip:"Essential for Vandal running volt weapons. Pairs with heat management upgrades."},
+];
+
+// ── WEAPONS DATABASE ──────────────────────
 const WEAPONS_DATA=[
-  // ── ASSAULT RIFLES ──
   {id:"overrun",name:"Overrun AR",type:"Assault Rifle",tier:"S",ammo:"Light Rounds",
    dmg:28,rof:680,mag:30,range:65,handling:72,reload:2.1,
    desc:"The most common weapon on Tau Ceti. High fire rate, decent handling, poor damage. Reliable starter gun — easy to mod into something respectable.",
    find:["All maps — containers, enemy drops, Armory"],
-   mods:["Chip","Magazine","Grip","Barrel"],
-   bestMods:["Extended Feather Mag","Combat Grip","Precision Barrel"],
+   mods:["Chip","Magazine","Grip"],
    bestFor:["Rook","Recon","Triage"],tip:"Best all-rounder. With a Magazine Mod this becomes a top-tier sustained DPS weapon.",emoji:"🔫"},
   {id:"m77",name:"M77 Assault Rifle",type:"Assault Rifle",tier:"S",ammo:"Light Rounds",
    dmg:38,rof:580,mag:25,range:72,handling:68,reload:2.3,
-   desc:"Strong damage output, solid range, predictable recoil. One of the best all-rounders in the game. Fits Chip+Grip+Magazine making it very moddable.",
+   desc:"Strong damage output, solid range, predictable recoil. One of the best all-rounders in the game.",
    find:["Perimeter — UESC outpost crates","Priority Target events","Armory (Rank 5+)"],
    mods:["Chip","Magazine","Grip"],
-   bestMods:["Combat Grip","Extended Feather Mag","Motionsense Chip"],
    bestFor:["Destroyer","Recon","Vandal"],tip:"Meta pick. The 3-slot mod setup lets you tune this gun precisely to your playstyle.",emoji:"🔫"},
   {id:"impact",name:"Impact HAR",type:"Assault Rifle",tier:"A",ammo:"Heavy Rounds",
    dmg:48,rof:480,mag:20,range:68,handling:58,reload:2.6,
-   desc:"Heavy assault rifle with reinforced frame. Higher damage per bullet than M77 but slower. Good for methodical players who land shots.",
+   desc:"Heavy assault rifle with reinforced frame. Higher damage per bullet than M77 but slower.",
    find:["Dire Marsh — military zones","Superior+ containers"],
    mods:["Chip","Barrel","Magazine"],
-   bestMods:["Precision Barrel","Hollow-Case Rounds","Motionsense Chip"],
-   bestFor:["Destroyer","Assassin"],tip:"Pairs well with a close-range shotgun secondary. Lets you play mid-range dominant.",emoji:"🔫"},
+   bestFor:["Destroyer","Assassin"],tip:"Pairs well with a close-range shotgun secondary.",emoji:"🔫"},
   {id:"v75",name:"V75 Scar AR",type:"Assault Rifle",tier:"B",ammo:"Volt Battery",
    dmg:35,rof:600,mag:28,range:60,handling:66,reload:2.4,
-   desc:"Volt-actuated AR with tracking projectiles. Sustained fire overheats and lowers fire rate — burst fire to maintain optimal RPM. Breaks shields, triggers Triage EMP.",
+   desc:"Volt-actuated AR with tracking projectiles. Sustained fire overheats and lowers fire rate — burst fire to maintain optimal RPM.",
    find:["All maps — volt weapon caches","Traxus faction rewards"],
    mods:["Chip","Magazine","Grip"],
-   bestMods:["Extended Feather Mag","Tapered Heatsink Chip"],
    bestFor:["Triage (EMP synergy)","Vandal"],tip:"Volt drain rule: reload only when empty or you lose remaining charge.",emoji:"⚡"},
-  // ── SMGs ──
   {id:"brrt",name:"BRRT SMG",type:"SMG",tier:"S",ammo:"Light Rounds",
    dmg:22,rof:860,mag:20,range:38,handling:82,reload:1.7,
-   desc:"Fastest sustained fire rate of any SMG. Devastating in CQC, melts shields fast. 20-round mag feels small at 860 RPM — Magazine Mod is near-mandatory.",
+   desc:"Fastest sustained fire rate of any SMG. Devastating in CQC, melts shields fast.",
    find:["All maps — common drop","Armory (Rank 1)"],
    mods:["Chip","Magazine","Grip"],
-   bestMods:["Extended Feather Mag","Combat Grip","Keen Scout Chip"],
    bestFor:["Vandal","Assassin","Thief"],tip:"With a Mag Mod this jumps to S+ tier. Essential flanking weapon.",emoji:"🔫"},
   {id:"bully",name:"Bully SMG",type:"SMG",tier:"A",ammo:"Heavy Rounds",
    dmg:34,rof:580,mag:18,range:42,handling:74,reload:1.9,
-   desc:"Slower fire rate than BRRT but hits much harder per bullet. Rewards good tracking and aim. Great early game pick for aggressive players.",
+   desc:"Slower fire rate than BRRT but hits much harder per bullet.",
    find:["Perimeter — patrol crates","Boss drops"],
    mods:["Chip","Magazine","Barrel"],
-   bestMods:["Hollow-Case Rounds","Precision Barrel"],
    bestFor:["Destroyer","Vandal"],tip:"Heavy Rounds ammo can be a supply problem — always watch your reserves.",emoji:"🔫"},
   {id:"v22",name:"V22 Volt Thrower",type:"SMG",tier:"B",ammo:"Volt Battery",
    dmg:26,rof:720,mag:24,range:35,handling:84,reload:1.6,
-   desc:"Auto-lock smart targeting system makes this easy to use. Overheat mechanic slows fire rate if you hold the trigger too long — burst fire.",
+   desc:"Auto-lock smart targeting system makes this easy to use.",
    find:["Volt caches","MIDA faction armory"],
    mods:["Chip","Grip"],
-   bestMods:["Combat Grip","Torch Bug Chip"],
    bestFor:["Vandal","Recon"],tip:"Legendary Chip Mod embeds slow projectiles that detonate simultaneously for burst damage.",emoji:"⚡"},
-  // ── SHOTGUNS ──
   {id:"wstr",name:"WSTR Combat Shotgun",type:"Shotgun",tier:"S",ammo:"Shells",
-   dmg:172,rof:90,mag:6,range:18,handling:65,reload:3.2,
-   pellets:10,spread:8,
-   desc:"Point-blank dominance. Nothing beats burst output inside 4 meters. Double-barrel design — point blank this has 172.5 firepower with 10 pellets. Falls off sharply at range.",
+   dmg:172,rof:90,mag:6,range:18,handling:65,reload:3.2,pellets:10,spread:8,
+   desc:"Point-blank dominance. Nothing beats burst output inside 4 meters.",
    find:["All maps — shotgun crates","Lockdown events"],
    mods:["Chip","Magazine","Barrel"],
-   bestMods:["Choke Barrel (range+spread)","Extended Feather Mag","Keen Scout Chip"],
-   bestFor:["Destroyer","Assassin","Vandal"],tip:"The meta combo: shotgun close + AR/PR mid-long. Classic loadout that dominates.",emoji:"💥"},
+   bestFor:["Destroyer","Assassin","Vandal"],tip:"The meta combo: shotgun close + AR/PR mid-long.",emoji:"💥"},
   {id:"misriah",name:"Misriah 2442",type:"Shotgun",tier:"A",ammo:"Shells",
-   dmg:140,rof:120,mag:5,range:22,handling:68,reload:2.9,
-   pellets:8,spread:12,
-   desc:"Pump-action. Faster follow-up shots than WSTR and slightly more forgiving at distance. Good choice if you struggle with WSTR's tight effective range.",
+   dmg:140,rof:120,mag:5,range:22,handling:68,reload:2.9,pellets:8,spread:12,
+   desc:"Pump-action. Faster follow-up shots than WSTR and slightly more forgiving at distance.",
    find:["Perimeter","Priority Target rewards"],
    mods:["Chip","Barrel","Magazine"],
-   bestMods:["Precision Barrel","Choke Barrel"],
    bestFor:["Destroyer","Rook"],tip:"With a Choke mod this is dangerous at surprisingly long ranges for a shotgun.",emoji:"💥"},
   {id:"v85",name:"V85 Circuit Breaker",type:"Shotgun",tier:"A",ammo:"Volt Battery",
-   dmg:185,rof:75,mag:4,range:15,handling:58,reload:3.8,
-   pellets:12,spread:6,
-   desc:"Highest firepower stat in the shotgun category. Requires charge management — full charge delivers devastating burst. Tight spread makes it lethal at short range.",
+   dmg:185,rof:75,mag:4,range:15,handling:58,reload:3.8,pellets:12,spread:6,
+   desc:"Highest firepower stat in the shotgun category. Requires charge management.",
    find:["Superior+ containers","Cryo Archive"],
    mods:["Chip","Barrel"],
-   bestMods:["Tapered Heatsink","Choke Barrel"],
-   bestFor:["Destroyer","Vandal"],tip:"Volt drain rule: never reload on a partial battery. Master the charge timing.",emoji:"⚡"},
-  // ── PRECISION RIFLES ──
+   bestFor:["Destroyer","Vandal"],tip:"Volt drain rule: never reload on a partial battery.",emoji:"⚡"},
   {id:"hardline",name:"Hardline PR",type:"Precision Rifle",tier:"S",ammo:"MIPS Rounds",
    dmg:85,rof:200,mag:12,range:88,handling:62,reload:2.4,
-   desc:"Semi-auto precision powerhouse. Excellent damage per shot at mid-to-long range. Works in nearly every loadout as a reliable secondary.",
+   desc:"Semi-auto precision powerhouse. Excellent damage per shot at mid-to-long range.",
    find:["All maps — precision rifle caches","Armory (Rank 3+)"],
    mods:["Chip","Magazine","Optic"],
-   bestMods:["Midsight Optic","Extended Feather Mag","Motionsense Chip"],
-   bestFor:["Recon","Triage","Destroyer"],tip:"The most universally strong weapon in the game. If in doubt, run Hardline PR.",emoji:"🎯"},
+   bestFor:["Recon","Triage","Destroyer"],tip:"The most universally strong weapon in the game.",emoji:"🎯"},
   {id:"copperhead",name:"Copperhead RF",type:"Precision Rifle",tier:"A",ammo:"Light Rounds",
    dmg:65,rof:280,mag:15,range:78,handling:70,reload:2.1,
-   desc:"Lighter precision rifle using common Light Rounds. Better ammo economy than Hardline. Good for players who want a PR without MIPS dependency.",
+   desc:"Lighter precision rifle using common Light Rounds. Better ammo economy than Hardline.",
    find:["Dire Marsh","Armory refreshes"],
    mods:["Chip","Magazine","Optic"],
-   bestMods:["Midsight Optic Deluxe","Keen Scout Chip"],
-   bestFor:["Recon","Thief"],tip:"Light Rounds ammo is everywhere — great for long runs where ammo conservation matters.",emoji:"🎯"},
+   bestFor:["Recon","Thief"],tip:"Light Rounds ammo is everywhere — great for long runs.",emoji:"🎯"},
   {id:"br33",name:"BR33 Volley Rifle",type:"Precision Rifle",tier:"A",ammo:"MIPS Rounds",
    dmg:72,rof:240,mag:10,range:82,handling:65,reload:2.3,
-   desc:"Burst-fire precision rifle. Fire 3 rounds per trigger pull. Higher DPS ceiling than Hardline if all bursts land, but punishing if you miss.",
+   desc:"Burst-fire precision rifle. Fire 3 rounds per trigger pull.",
    find:["Priority events","Superior containers"],
    mods:["Chip","Optic","Barrel"],
-   bestMods:["Precision Barrel","Midsight Optic"],
-   bestFor:["Recon","Assassin"],tip:"Burst fire means accuracy is paramount. Great at medium range where you can control engagements.",emoji:"🎯"},
-  // ── SNIPER RIFLES ──
+   bestFor:["Recon","Assassin"],tip:"Burst fire means accuracy is paramount.",emoji:"🎯"},
   {id:"longshot",name:"Longshot",type:"Sniper Rifle",tier:"A",ammo:"MIPS Rounds",
    dmg:150,rof:80,mag:5,range:98,handling:45,reload:3.1,
-   desc:"Semi-auto sniper rifle. Follow-up shot potential makes it more forgiving than bolt-action options. Strong across all long-range scenarios.",
+   desc:"Semi-auto sniper rifle. Follow-up shot potential makes it more forgiving.",
    find:["High-ground zones","MIDA rewards"],
    mods:["Chip","Optic","Magazine"],
-   bestMods:["Midsight Optic Deluxe","Extended Feather Mag"],
-   bestFor:["Recon","Assassin"],tip:"Pairs with Recon's Echo Pulse perfectly — reveal with pulse, pick off from long range.",emoji:"🔭"},
+   bestFor:["Recon","Assassin"],tip:"Pairs with Recon's Echo Pulse perfectly.",emoji:"🔭"},
   {id:"outland",name:"Outland",type:"Sniper Rifle",tier:"A",ammo:"MIPS Rounds",
    dmg:210,rof:40,mag:3,range:100,handling:38,reload:3.8,
-   desc:"Bolt-action precision. Highest damage per shot in the sniper category. Cannot afford to miss — slow rechamber punishes every mistake. Will be the bane of ranked lobbies.",
+   desc:"Bolt-action precision. Highest damage per shot in the sniper category.",
    find:["Cryo Archive","Prestige supply crates"],
    mods:["Chip","Optic"],
-   bestMods:["Midsight Optic Deluxe","Flash Draw Chip"],
-   bestFor:["Recon"],tip:"Bring this only when you're confident in your aim. Missing means you die.",emoji:"🔭"},
+   bestFor:["Recon"],tip:"Bring this only when you're confident in your aim.",emoji:"🔭"},
   {id:"v99",name:"V99 Channel Rifle",type:"Sniper Rifle",tier:"A",ammo:"Volt Cells",
    dmg:180,rof:55,mag:4,range:96,handling:42,reload:3.5,
-   desc:"Charge-based volt sniper with the highest precision multiplier in the class. Adds a 3rd charge level: fully charged delivers piercing, ricocheting rounds with massive damage.",
+   desc:"Charge-based volt sniper with the highest precision multiplier.",
    find:["Volt caches — rare","Cryo Archive"],
    mods:["Chip","Optic","Barrel"],
-   bestMods:["Extended Charge Chip","Midsight Optic Deluxe"],
-   bestFor:["Recon"],tip:"Third charge level allows round piercing and ricochet — devastating in corridors.",emoji:"⚡"},
-  // ── LMGs ──
+   bestFor:["Recon"],tip:"Third charge level allows round piercing and ricochet.",emoji:"⚡"},
   {id:"retaliator",name:"Retaliator LMG",type:"LMG",tier:"A",ammo:"Heavy Rounds",
    dmg:42,rof:620,mag:60,range:55,handling:40,reload:4.2,
-   desc:"High capacity suppression weapon. Excellent for area denial and sustained fire. Poor mobility and reload make it a commitment.",
+   desc:"High capacity suppression weapon. Excellent for area denial and sustained fire.",
    find:["Military zones","Lockdown events"],
    mods:["Chip","Magazine","Shield"],
-   bestMods:["Extended Feather Mag","Combat Grip","Motionsense Chip"],
-   bestFor:["Destroyer"],tip:"Shield mod slot unique to LMGs — adds a deployable shield effect for short periods.",emoji:"🔫"},
+   bestFor:["Destroyer"],tip:"Shield mod slot unique to LMGs — adds a deployable shield effect.",emoji:"🔫"},
   {id:"conquest",name:"Conquest LMG",type:"LMG",tier:"B",ammo:"Light Rounds",
    dmg:30,rof:700,mag:75,range:50,handling:38,reload:4.8,
-   desc:"Lightest LMG in the category. High ammo capacity, common ammo type, but damage is too low to justify the bulk. Typically discarded for specialised weapons.",
+   desc:"Lightest LMG in the category. High ammo capacity, common ammo type.",
    find:["Common containers"],
    mods:["Chip","Magazine","Shield"],
-   bestMods:["Extended Feather Mag","Shield Mod"],
-   bestFor:["Destroyer (crowd control)"],tip:"Best used for AI clearing, not PvP. Its ammo economy is the only real advantage.",emoji:"🔫"},
-  // ── RAILGUNS ──
+   bestFor:["Destroyer (crowd control)"],tip:"Best used for AI clearing, not PvP.",emoji:"🔫"},
   {id:"ares",name:"Ares RG",type:"Railgun",tier:"S",ammo:"Volt Cells",
    dmg:280,rof:25,mag:2,range:100,handling:35,reload:5.0,
-   desc:"Magnetically accelerated projectiles. Extreme damage, zero damage falloff at range. Limited ammo, strict timing, and Volt Cell scarcity are the costs. Worth it.",
+   desc:"Magnetically accelerated projectiles. Extreme damage, zero damage falloff at range.",
    find:["Cryo Archive","Prestige supply events"],
    mods:["Chip","Barrel"],
-   bestMods:["Extended Charge Chip","Precision Barrel"],
-   bestFor:["Recon","Destroyer"],tip:"Volt Cells are rare — never waste a shot. Pre-charge while moving between positions.",emoji:"⚡"},
-  // ── PISTOLS ──
+   bestFor:["Recon","Destroyer"],tip:"Volt Cells are rare — never waste a shot.",emoji:"⚡"},
   {id:"magnum",name:"Magnum MC",type:"Pistol",tier:"A",ammo:"Heavy Rounds",
    dmg:75,rof:160,mag:8,range:45,handling:80,reload:1.4,
-   desc:"Hand cannon energy. Hits hard, especially headshots. Best range of any pistol. Meta doesn't favour sidearms vs dual primaries, but fun and viable for skilled players.",
+   desc:"Hand cannon energy. Hits hard, especially headshots.",
    find:["Armory (Rank 1)","All containers"],
    mods:["Chip","Barrel"],
-   bestMods:["Precision Barrel","Flash Draw Chip"],
-   bestFor:["Any as backup"],tip:"Dual primary (AR+Shotgun or AR+PR) almost always outperforms pistol secondary — use only if you prefer the feel.",emoji:"🔫"},
+   bestFor:["Any as backup"],tip:"Dual primary almost always outperforms pistol — use if you prefer the feel.",emoji:"🔫"},
   {id:"ce_tactical",name:"CE Tactical Sidearm",type:"Pistol",tier:"C",ammo:"Light Rounds",
    dmg:32,rof:240,mag:12,range:35,handling:88,reload:1.2,
-   desc:"Beginner pistol. Fast, forgiving, accurate for its class — but damage is far too low to threaten geared players. Rook's starting weapon. Prestige tier has legendary invisibility-on-kill Chip.",
+   desc:"Beginner pistol. Fast, forgiving, accurate — but damage is too low for geared players.",
    find:["Starter loadout","All containers (Common)"],
    mods:["Chip","Magazine"],
-   bestMods:["Prestige Chip (invisibility on kill + reload)"],
-   bestFor:["Rook (early game)"],tip:"The Prestige Chip Mod (invisibility on reload after kill) is genuinely game-changing for Rook.",emoji:"🔫"},
+   bestFor:["Rook (early game)"],tip:"Prestige Chip Mod (invisibility on reload after kill) is genuinely game-changing for Rook.",emoji:"🔫"},
 ];
 
 const ITEMS_DATA=[
-  // HEALING
-  {id:"patch_dep",name:"Depleted Patch Kit",cat:"Healing",col:"#8aa0b0",effect:"Restores a small amount of health. Cannot be exfiltrated — use immediately, never vault.",find:"Everywhere",tip:"Pop on sight, never hoard. They disappear on extract.",emoji:"💊"},
-  {id:"patch_std",name:"Patch Kit",cat:"Healing",col:"#39ff14",effect:"Moderate health restore. Reliable mid-fight recovery.",find:"Medical Cabinets, Armory",tip:"Stack 3 before every raid. Triage Shareware.exe applies this to drone targets.",emoji:"💊"},
-  {id:"patch_adv",name:"Advanced Patch Kit",cat:"Healing",col:"#4a9eff",effect:"Large health restore. Top-tier healing item for high-stakes runs.",find:"Superior containers, Armory (Rank 8+)",tip:"Save for after hard fights. With Triage Shareware, this heals the whole squad.",emoji:"💊"},
-  {id:"pangea",name:"Pangea Kit",cat:"Healing",col:"#ffd600",effect:"Fully restores both health AND shields. Removes all hazardous status effects. Best single item in the game.",find:"Rare — Cryo Archive, boss drops",tip:"Use after a multi-fight where you have both health and shield damage. Prestige loot.",emoji:"💊"},
+  {id:"patch_dep",name:"Depleted Patch Kit",cat:"Healing",col:"#8aa0b0",effect:"Restores a small amount of health. Cannot be exfiltrated — use immediately.",find:"Everywhere",tip:"Pop on sight, never hoard. They disappear on extract.",emoji:"💊"},
+  {id:"patch_std",name:"Patch Kit",cat:"Healing",col:"#39ff14",effect:"Moderate health restore. Reliable mid-fight recovery.",find:"Medical Cabinets, Armory",tip:"Stack 3 before every raid. Triage Shareware applies this to drone targets.",emoji:"💊"},
+  {id:"patch_adv",name:"Advanced Patch Kit",cat:"Healing",col:"#4a9eff",effect:"Large health restore. Top-tier healing item.",find:"Superior containers, Armory (Rank 8+)",tip:"Save for after hard fights. With Triage Shareware, this heals the whole squad.",emoji:"💊"},
+  {id:"pangea",name:"Pangea Kit",cat:"Healing",col:"#ffd600",effect:"Fully restores both health AND shields. Removes all hazardous status effects.",find:"Rare — Cryo Archive, boss drops",tip:"Use after a multi-fight. Prestige loot.",emoji:"💊"},
   {id:"shield_dep",name:"Depleted Shield Charge",cat:"Shields",col:"#8aa0b0",effect:"Minor shield restore. Cannot be exfiltrated.",find:"Everywhere",tip:"Same rule as Depleted Patch Kit — pop and drop.",emoji:"🛡️"},
   {id:"shield_std",name:"Shield Charge",cat:"Shields",col:"#39ff14",effect:"Restores shield energy to full. Takes 2 seconds to register — stay covered.",find:"Medical Cabinets, Armory",tip:"Standard loadout item. Stack 3 per run.",emoji:"🛡️"},
-  {id:"shield_adv",name:"Large Shield Charge",cat:"Shields",col:"#4a9eff",effect:"Restores shields fully + grants temporary Overshield. Aggressive re-engage tool.",find:"Armory (Rank 10+), Superior containers",tip:"Use this before a push, not after you're already low.",emoji:"🛡️"},
-  {id:"self_revive",name:"Self Revive",cat:"Utility",col:"#bf5af2",effect:"Revive yourself when downed. Game-changing for solo play and squad situations where teammates are occupied.",find:"Superior/Prestige containers",tip:"The single most valuable utility item in the game for solo runs.",emoji:"💉"},
-  {id:"mechanics_kit",name:"Mechanic's Kit",cat:"Cleanse",col:"#ff6d00",effect:"Clears Frost, Overheat, Toxin, and Immobilize effects. Temporarily boosts Hardware stat.",find:"Situational drops in-raid",tip:"Keep one for high-hazard areas. Situational — don't pre-load unless going to hazard zones.",emoji:"🔧"},
-  {id:"mechanic_adv",name:"Advanced Mechanic's Kit",cat:"Cleanse",col:"#ffd600",effect:"Same as Mechanic's Kit but Hardware stat boost lasts significantly longer.",find:"Superior containers",tip:"Worth pre-loading for Cryo Archive or high-tier raids where debuffs are frequent.",emoji:"🔧"},
-  {id:"energy_amp",name:"Energy Amp",cat:"Boost",col:"#39ff14",effect:"Temporarily improves ability recharge rate. Use immediately on find — no reason to hold it.",find:"Dropped in-raid",tip:"Consume on the spot. Triage gets enormous value from this via Shareware.exe.",emoji:"⚡"},
-  {id:"cardio_kick",name:"Cardio Kick",cat:"Boost",col:"#00e5ff",effect:"Increases Heat Capacity and Agility temporarily. Extends Vandal and Destroyer movement windows significantly.",find:"Dropped in-raid",tip:"Consume immediately. With Triage Shareware, this buffs your whole squad's movement.",emoji:"⚡"},
-  {id:"os_debug",name:"OS Debug",cat:"Cleanse",col:"#4a9eff",effect:"Clears Hack status effects and software-based debuffs.",find:"Tech containers, UESC facility drops",tip:"Situational. Only pre-load if you expect MIDA-type enemies or electronic hazard areas.",emoji:"💻"},
+  {id:"shield_adv",name:"Large Shield Charge",cat:"Shields",col:"#4a9eff",effect:"Restores shields fully + grants temporary Overshield.",find:"Armory (Rank 10+), Superior containers",tip:"Use this before a push, not after you're already low.",emoji:"🛡️"},
+  {id:"self_revive",name:"Self Revive",cat:"Utility",col:"#bf5af2",effect:"Revive yourself when downed. Game-changing for solo play.",find:"Superior/Prestige containers",tip:"The single most valuable utility item for solo runs.",emoji:"💉"},
+  {id:"mechanics_kit",name:"Mechanic's Kit",cat:"Cleanse",col:"#ff6d00",effect:"Clears Frost, Overheat, Toxin, and Immobilize effects.",find:"Situational drops in-raid",tip:"Keep one for high-hazard areas.",emoji:"🔧"},
+  {id:"energy_amp",name:"Energy Amp",cat:"Boost",col:"#39ff14",effect:"Temporarily improves ability recharge rate.",find:"Dropped in-raid",tip:"Consume on the spot. Triage gets enormous value via Shareware.",emoji:"⚡"},
+  {id:"cardio_kick",name:"Cardio Kick",cat:"Boost",col:"#00e5ff",effect:"Increases Heat Capacity and Agility temporarily.",find:"Dropped in-raid",tip:"Consume immediately. With Triage Shareware, this buffs your whole squad's movement.",emoji:"⚡"},
 ];
 
-let gunsSubPage="weapons";
-let selectedWeapon=null;
-let favouriteLoadouts=JSON.parse(localStorage.getItem("mara_fav_guns")||"[]");
+let gunsSubPage = "weapons";
+let selectedWeapon = null;
+// gunMods: { weaponId: { slotName: modId } }
+let gunMods = JSON.parse(sessionStorage.getItem("mara_gun_mods")||"{}");
+function saveGunMods(){ try{sessionStorage.setItem("mara_gun_mods",JSON.stringify(gunMods));}catch(e){} }
 
-function saveGunFavourites(){
-  try{localStorage.setItem("mara_fav_guns",JSON.stringify(favouriteLoadouts));}catch(e){}
+function renderGuns() {
+  const el = document.getElementById("gv");
+  if (!el) return;
+  if      (gunsSubPage==="weapons") renderWeapons(el);
+  else if (gunsSubPage==="mods")    renderModsPage(el);
+  else                              renderItemsPage(el);
 }
 
-function renderGuns(){
-  const el=document.getElementById("gv");
-  if(gunsSubPage==="weapons") renderWeapons(el);
-  else renderItemsPage(el);
+// ── NAV BAR ───────────────────────────────
+function gunsNav(active) {
+  return `<div style="position:sticky;top:0;z-index:10;background:#070d12;border-bottom:1px solid #1a2530;
+    display:flex;align-items:center;gap:0;padding:0 20px">
+    ${["weapons","mods","items"].map(p => {
+      const labels={weapons:"WEAPONS",mods:"MODS",items:"ITEMS"};
+      const on = active===p;
+      return `<button onclick="gunsSubPage='${p}';selectedWeapon=${p==='mods'?'null':'selectedWeapon'};renderGuns()"
+        style="background:none;border:none;border-bottom:2px solid ${on?'#00e5ff':'transparent'};
+        color:${on?'#00e5ff':'#4a6070'};font-family:'Share Tech Mono',monospace;font-size:13px;
+        letter-spacing:2px;padding:14px 18px;cursor:pointer;transition:color .2s"
+        onmouseenter="if(!${on})this.style.color='#8aa0b0'"
+        onmouseleave="if(!${on})this.style.color='#4a6070'">${labels[p]}</button>`;
+    }).join("")}
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <input id="gun-search" placeholder="Search…" value="${window._gunSearch||""}"
+        oninput="window._gunSearch=this.value;renderGuns()"
+        style="background:#0d1318;border:1px solid #1a2530;color:#c8d8e8;font-family:'Share Tech Mono',monospace;
+        font-size:13px;padding:6px 10px;width:140px;outline:none">
+      <select onchange="window._gunFilter=this.value;renderGuns()"
+        style="background:#0d1318;border:1px solid #1a2530;color:#8aa0b0;font-family:'Share Tech Mono',monospace;font-size:12px;padding:6px 8px">
+        <option value="All" ${(window._gunFilter||"All")==="All"?"selected":""}>All Types</option>
+        ${[...new Set(WEAPONS_DATA.map(w=>w.type))].map(t=>`<option value="${t}" ${window._gunFilter===t?"selected":""}>${t}</option>`).join("")}
+      </select>
+      <select onchange="window._gunTier=this.value;renderGuns()"
+        style="background:#0d1318;border:1px solid #1a2530;color:#8aa0b0;font-family:'Share Tech Mono',monospace;font-size:12px;padding:6px 8px">
+        ${["All","S","A","B","C"].map(t=>`<option value="${t}" ${(window._gunTier||"All")===t?"selected":""}>${t==="All"?"All Tiers":t+" Tier"}</option>`).join("")}
+      </select>
+    </div>
+  </div>`;
 }
 
-function renderWeapons(el){
-  const types=[...new Set(WEAPONS_DATA.map(w=>w.type))];
-  let filterType=window._gunFilter||"All";
-  let filterTier=window._gunTier||"All";
-  let search=(window._gunSearch||"").toLowerCase();
-
-  let filtered=WEAPONS_DATA.filter(w=>{
-    if(filterType!=="All"&&w.type!==filterType)return false;
-    if(filterTier!=="All"&&w.tier!==filterTier)return false;
-    if(search&&!w.name.toLowerCase().includes(search)&&!w.type.toLowerCase().includes(search))return false;
+// ── WEAPONS TAB ───────────────────────────
+function renderWeapons(el) {
+  let filter = window._gunFilter||"All", tier = window._gunTier||"All";
+  let search = (window._gunSearch||"").toLowerCase();
+  let filtered = WEAPONS_DATA.filter(w=>{
+    if(filter!=="All"&&w.type!==filter) return false;
+    if(tier!=="All"&&w.tier!==tier) return false;
+    if(search&&!w.name.toLowerCase().includes(search)&&!w.type.toLowerCase().includes(search)) return false;
     return true;
   });
 
-  el.innerHTML=`
-    <div class="guns-nav" style="position:sticky;top:0;z-index:10;background:#070d12">
-      <div class="guns-nav-left">
-        <button class="guns-nav-btn on" onclick="gunsSubPage='weapons';renderGuns()">WEAPONS</button>
-        <button class="guns-nav-btn" onclick="gunsSubPage='items';renderGuns()">ITEMS</button>
-      </div>
-      <div class="guns-filters">
-        <input id="gun-search" placeholder="Search…" value="${window._gunSearch||""}" oninput="window._gunSearch=this.value;renderGuns()">
-        <select onchange="window._gunFilter=this.value;renderGuns()">
-          <option value="All" ${filterType==="All"?"selected":""}>All Types</option>
-          ${types.map(t=>`<option value="${t}" ${filterType===t?"selected":""}>${t}</option>`).join("")}
-        </select>
-        <select onchange="window._gunTier=this.value;renderGuns()">
-          ${["All","S","A","B","C"].map(t=>`<option value="${t}" ${filterTier===t?"selected":""}>${t==="All"?"All Tiers":t+"-Tier"}</option>`).join("")}
-        </select>
-      </div>
-    </div>
-    <div style="padding:16px 20px">
-      ${selectedWeapon?renderWeaponDetail():`
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
-          ${filtered.map(w=>renderWeaponCard(w)).join("")}
-        </div>
-        ${favouriteLoadouts.length?`
-          <div style="margin-top:20px">
-            <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ffd600;letter-spacing:2px;margin-bottom:10px">★ SAVED LOADOUTS</div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">
-              ${favouriteLoadouts.map((f,i)=>renderSavedLoadout(f,i)).join("")}
-            </div>
-          </div>`:""}
-      `}
-    </div>`;
+  el.innerHTML = gunsNav("weapons") + `<div style="padding:16px 20px">` +
+    (selectedWeapon ? renderWeaponDetail() :
+    `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px">
+      ${filtered.map(w=>renderWeaponCard(w)).join("")}
+    </div>`) + `</div>`;
 }
 
-function renderWeaponCard(w){
-  const tc={S:"#39ff14",A:"#ffd600",B:"#ff6d00",C:"#ff4444"}[w.tier]||"#4a6070";
-  const ac=AMMO_COL[w.ammo]||"#4a6070";
-  return`<div style="background:#0d1318;border:1px solid #1a2530;border-top:3px solid ${tc};cursor:pointer;transition:all .2s;padding:12px 14px" onclick="selectedWeapon='${w.id}';renderGuns()"
-    onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 16px rgba(0,0,0,.5)'"
+function renderWeaponCard(w) {
+  const tc = {S:"#39ff14",A:"#ffd600",B:"#ff6d00",C:"#ff4444"}[w.tier]||"#4a6070";
+  const ac = AMMO_COL[w.ammo]||"#4a6070";
+  const activeMods = gunMods[w.id] ? Object.values(gunMods[w.id]).filter(Boolean).length : 0;
+  return `<div onclick="selectedWeapon='${w.id}';renderGuns()"
+    style="background:#0d1318;border:1px solid #1a2530;border-top:3px solid ${tc};cursor:pointer;
+    transition:transform .15s,box-shadow .15s;padding:14px 16px"
+    onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,0,0,.5)'"
     onmouseleave="this.style.transform='';this.style.boxShadow=''">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-      <span style="font-size:20px">${w.emoji}</span>
-      <div style="flex:1">
-        <div style="font-family:'Orbitron',monospace;font-size:16px;color:#c8d8e8;letter-spacing:1px">${w.name}</div>
-        <div style="font-size:15px;color:#4a6070;margin-top:1px">${w.type}</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <span style="font-size:22px">${w.emoji}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Orbitron',monospace;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w.name}</div>
+        <div style="font-size:11px;color:#4a6070;margin-top:1px">${w.type}</div>
       </div>
-      <span style="font-size:15px;padding:2px 6px;border:1px solid ${tc};color:${tc}">${w.tier}</span>
+      <div style="font-family:'Orbitron',monospace;font-size:16px;color:${tc};font-weight:700">${w.tier}</div>
     </div>
-    <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
-      <span style="font-size:15px;padding:1px 5px;border:1px solid ${ac};color:${ac}">${w.ammo}</span>
+    <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+      <span style="font-size:11px;padding:2px 6px;border:1px solid ${ac}33;color:${ac}">${w.ammo}</span>
+      <span style="font-size:11px;padding:2px 6px;border:1px solid #1a2530;color:#4a6070">${w.type}</span>
+      ${activeMods?`<span style="font-size:11px;padding:2px 6px;border:1px solid #bf5af244;color:#bf5af2">${activeMods} MOD${activeMods>1?"S":""}</span>`:""}
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
-      ${renderStatBar("DMG",w.dmg,250,"#ff4444")}
-      ${renderStatBar("ROF",w.rof,900,"#39ff14")}
-      ${renderStatBar("MAG",w.mag,75,"#4a9eff")}
-      ${renderStatBar("RANGE",w.range,100,"#ffd600")}
-      ${renderStatBar("HANDLING",w.handling,100,"#bf5af2")}
-      ${renderStatBar("RELOAD",100-(w.reload/5*100),100,"#ff6d00")}
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px">
+      ${renderStatBar("DMG", w.dmg, 300)}
+      ${renderStatBar("ROF", w.rof, 1000)}
+      ${renderStatBar("RNG", w.range, 100)}
     </div>
-    <div style="font-size:8.5px;color:#4a6070;margin-top:8px;line-height:1.5;border-top:1px solid #1a2530;padding-top:6px">${w.desc.substring(0,90)}…</div>
+    <div style="font-size:12px;color:#4a6070;line-height:1.5;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${w.desc}</div>
   </div>`;
 }
 
-function renderStatBar(label,val,max,col){
-  const pct=Math.min(100,Math.round(val/max*100));
-  return`<div>
-    <div style="font-size:15px;color:#4a6070;margin-bottom:2px">${label}</div>
-    <div style="height:3px;background:#1a2530;border-radius:1px">
-      <div style="height:100%;width:${pct}%;background:${col};border-radius:1px"></div>
+function renderStatBar(label, val, max) {
+  const pct = Math.min(100, Math.round(val/max*100));
+  const col = pct>70?"#39ff14":pct>40?"#ffd600":"#ff6d00";
+  return `<div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+      <span style="font-size:10px;color:#4a6070">${label}</span>
+      <span style="font-size:10px;color:#8aa0b0">${val}</span>
+    </div>
+    <div style="height:3px;background:#1a2530;border-radius:2px">
+      <div style="height:3px;width:${pct}%;background:${col};border-radius:2px"></div>
     </div>
   </div>`;
 }
 
-function renderWeaponDetail(){
-  const w=WEAPONS_DATA.find(x=>x.id===selectedWeapon);if(!w)return"";
-  const tc={S:"#39ff14",A:"#ffd600",B:"#ff6d00",C:"#ff4444"}[w.tier]||"#4a6070";
-  const ac=AMMO_COL[w.ammo]||"#4a6070";
-  const isFav=favouriteLoadouts.some(f=>f.weaponId===w.id);
-  return`
-    <div style="cursor:pointer;font-size:16px;color:#4a6070;margin-bottom:14px;letter-spacing:1px" onclick="selectedWeapon=null;renderGuns()">← BACK TO ALL WEAPONS</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+function renderWeaponDetail() {
+  const w = WEAPONS_DATA.find(x=>x.id===selectedWeapon);
+  if (!w) { selectedWeapon=null; return ""; }
+  const tc = {S:"#39ff14",A:"#ffd600",B:"#ff6d00",C:"#ff4444"}[w.tier]||"#4a6070";
+  const ac = AMMO_COL[w.ammo]||"#4a6070";
+
+  // Compute modded stats
+  const mods = gunMods[w.id] || {};
+  let ms = {dmg:w.dmg,rof:w.rof,mag:w.mag,range:w.range,handling:w.handling,reload:w.reload};
+  Object.values(mods).forEach(mid => {
+    if (!mid) return;
+    const m = MODS_DATA.find(x=>x.id===mid);
+    if (!m) return;
+    Object.entries(m.stats).forEach(([k,v]) => { if(ms[k]!==undefined) ms[k] = Math.round((ms[k]+v)*10)/10; });
+  });
+
+  // Rarity
+  const rarityOrder = ["Standard","Enhanced","Deluxe","Superior","Prestige"];
+  const modRarities = Object.values(mods).filter(Boolean).map(mid=>{
+    const m = MODS_DATA.find(x=>x.id===mid); return m ? rarityOrder.indexOf(m.rarity) : 0;
+  });
+  const maxRarIdx = modRarities.length ? Math.max(...modRarities) : 0;
+  const rarity = maxRarIdx > 0 ? rarityOrder[maxRarIdx] : "Standard";
+  const rarCol = RARITY_COL[rarity];
+
+  // Compatible mods for this weapon
+  const compatMods = MODS_DATA.filter(m => m.weapons.includes(w.name) && w.mods.includes(m.slot));
+
+  return `<div>
+    <button onclick="selectedWeapon=null;renderGuns()"
+      style="background:none;border:1px solid #1a2530;color:#4a6070;font-family:'Share Tech Mono',monospace;
+      font-size:12px;padding:5px 12px;cursor:pointer;margin-bottom:16px;letter-spacing:1px"
+      onmouseenter="this.style.color='#c8d8e8';this.style.borderColor='#4a6070'"
+      onmouseleave="this.style.color='#4a6070';this.style.borderColor='#1a2530'">← ALL WEAPONS</button>
+
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:16px">
+
+      <!-- Left: weapon info + mod slots -->
       <div>
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-          <span style="font-size:36px">${w.emoji}</span>
-          <div>
-            <div style="font-family:'Orbitron',monospace;font-size:16px;color:#c8d8e8;letter-spacing:2px">${w.name}</div>
-            <div style="font-size:16px;color:#4a6070;margin-top:2px">${w.type}</div>
-            <div style="display:flex;gap:6px;margin-top:5px">
-              <span style="font-size:15px;padding:2px 6px;border:1px solid ${tc};color:${tc}">${w.tier}-TIER</span>
-              <span style="font-size:15px;padding:2px 6px;border:1px solid ${ac};color:${ac}">${w.ammo}</span>
+        <!-- Header -->
+        <div style="background:#0d1318;border:1px solid #1a2530;border-top:3px solid ${tc};padding:18px 20px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+            <span style="font-size:36px">${w.emoji}</span>
+            <div style="flex:1">
+              <div style="font-family:'Orbitron',monospace;font-size:18px;color:#fff;margin-bottom:4px">${w.name}</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <span style="font-size:12px;padding:2px 8px;border:1px solid ${tc}44;color:${tc}">${w.tier}-Tier</span>
+                <span style="font-size:12px;padding:2px 8px;border:1px solid ${ac}44;color:${ac}">${w.ammo}</span>
+                <span style="font-size:12px;padding:2px 8px;border:1px solid ${rarCol}44;color:${rarCol}">◈ ${rarity}</span>
+              </div>
             </div>
           </div>
+          <div style="font-size:14px;color:#8aa0b0;line-height:1.7;margin-bottom:14px">${w.desc}</div>
+
+          <!-- Stats comparison -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+            ${[["DMG",w.dmg,ms.dmg,300],["ROF",w.rof,ms.rof,1000],["MAG",w.mag,ms.mag,100],
+               ["RNG",w.range,ms.range,100],["HDL",w.handling,ms.handling,100],["RLD",w.reload,ms.reload,5]].map(([l,base,mod,mx])=>{
+              const diff = Math.round((mod-base)*10)/10;
+              const dc = diff>0?"#39ff14":diff<0?"#ff4444":"#4a6070";
+              const pct = Math.min(100,Math.round(mod/mx*100));
+              const col = pct>70?"#39ff14":pct>40?"#ffd600":"#ff6d00";
+              return `<div style="background:#0a0f13;padding:8px 10px">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+                  <span style="font-size:10px;color:#4a6070;letter-spacing:1px">${l}</span>
+                  <span style="font-size:13px;color:#c8d8e8;font-weight:700">${mod}${diff!==0?`<span style="font-size:11px;color:${dc};margin-left:3px">${diff>0?"+":""}${diff}</span>`:""}</span>
+                </div>
+                <div style="height:3px;background:#1a2530;border-radius:2px">
+                  <div style="height:3px;width:${pct}%;background:${col};border-radius:2px;transition:width .3s"></div>
+                </div>
+              </div>`;
+            }).join("")}
+          </div>
         </div>
-        <div style="font-size:9.5px;color:#8aa0b0;line-height:1.7;margin-bottom:12px;padding:10px;background:#0d1318;border:1px solid #1a2530;border-left:3px solid ${tc}">${w.desc}</div>
-        <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px">
-          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ffd600;margin-bottom:10px">📊 BASE STATS</div>
-          ${[["Damage",w.dmg,250,"#ff4444"],["Fire Rate (RPM)",w.rof,900,"#39ff14"],["Magazine",w.mag,75,"#4a9eff"],["Range",w.range,100,"#ffd600"],["Handling",w.handling,100,"#bf5af2"],["Reload Speed",(100-(w.reload/5*100)).toFixed(0),100,"#ff6d00"]].map(([l,v,m,c])=>`
-            <div style="margin-bottom:8px">
-              <div style="display:flex;justify-content:space-between;font-size:8.5px;margin-bottom:3px">
-                <span style="color:#4a6070">${l}</span><span style="color:${c}">${l==="Reload Speed"?w.reload+"s":v}</span>
-              </div>
-              <div style="height:4px;background:#1a2530;border-radius:2px">
-                <div style="height:100%;width:${Math.min(100,Math.round(Number(v)/m*100))}%;background:${c};border-radius:2px"></div>
-              </div>
-            </div>`).join("")}
-          ${w.pellets?`<div style="display:flex;gap:14px;font-size:8.5px;color:#4a6070;margin-top:4px">
-            <span>Pellets: <span style="color:#c8d8e8">${w.pellets}</span></span>
-            <span>Spread: <span style="color:#c8d8e8">${w.spread}°</span></span>
-          </div>`:""}
-        </div>
-        <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px">
-          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#00e5ff;margin-bottom:8px">📍 WHERE TO FIND</div>
-          ${w.find.map(f=>`<div style="font-size:16px;color:#8aa0b0;margin-bottom:4px;padding-left:8px;border-left:2px solid #1a2530">• ${f}</div>`).join("")}
+
+        <!-- Mod slots -->
+        <div style="background:#0d1318;border:1px solid #1a2530;padding:18px 20px;margin-bottom:12px">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:#bf5af2;letter-spacing:3px;margin-bottom:14px">🔧 MOD SLOTS</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            ${w.mods.map(slot => {
+              const equipped = mods[slot];
+              const equippedMod = equipped ? MODS_DATA.find(x=>x.id===equipped) : null;
+              const rc = equippedMod ? RARITY_COL[equippedMod.rarity] : "#4a6070";
+              const slotMods = compatMods.filter(m=>m.slot===slot);
+              return `<div style="border:1px solid ${equippedMod?rc+'44':'#1a2530'};padding:10px 14px;background:#0a0f13">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${equippedMod?'8':'0'}px">
+                  <div>
+                    <span style="font-size:10px;color:#4a6070;letter-spacing:2px;margin-right:8px">${slot.toUpperCase()}</span>
+                    ${equippedMod
+                      ? `<span style="font-size:14px;color:${rc}">${equippedMod.name}</span>`
+                      : `<span style="font-size:13px;color:#2a3540">— empty —</span>`}
+                  </div>
+                  ${equippedMod
+                    ? `<button onclick="gunMods['${w.id}']=gunMods['${w.id}']||{};delete gunMods['${w.id}']['${slot}'];saveGunMods();renderGuns()"
+                        style="background:none;border:1px solid #ff006e44;color:#ff006e;font-size:11px;padding:2px 8px;cursor:pointer">✕ REMOVE</button>`
+                    : ""}
+                </div>
+                ${equippedMod ? `<div style="font-size:13px;color:#4a6070;line-height:1.5;margin-bottom:6px">${equippedMod.desc}</div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    ${Object.entries(equippedMod.stats).map(([k,v])=>{
+                      const dc=v>0?"#39ff14":"#ff4444";
+                      return `<span style="font-size:11px;padding:1px 6px;border:1px solid ${dc}44;color:${dc}">${k.toUpperCase()} ${v>0?"+":""}${v}</span>`;
+                    }).join("")}
+                  </div>` : ""}
+                ${slotMods.length > 0 && !equippedMod ? `
+                  <div style="margin-top:6px;display:flex;flex-direction:column;gap:4px">
+                    ${slotMods.map(m=>{
+                      const mc = RARITY_COL[m.rarity];
+                      return `<button onclick="gunMods['${w.id}']=gunMods['${w.id}']||{};gunMods['${w.id}']['${slot}']='${m.id}';saveGunMods();renderGuns()"
+                        style="background:#070d12;border:1px solid ${mc}33;color:${mc};font-family:'Share Tech Mono',monospace;
+                        font-size:12px;padding:6px 10px;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;justify-content:space-between"
+                        onmouseenter="this.style.background='${mc}11';this.style.borderColor='${mc}66'"
+                        onmouseleave="this.style.background='#070d12';this.style.borderColor='${mc}33'">
+                        <span>${m.name} <span style="font-size:10px;color:#4a6070;margin-left:4px">${m.rarity}</span></span>
+                        <span style="font-size:11px;color:#4a6070">${Object.entries(m.stats).map(([k,v])=>`${k} ${v>0?"+":""}${v}`).join("  ")}</span>
+                      </button>`;
+                    }).join("")}
+                  </div>` : ""}
+              </div>`;
+            }).join("")}
+          </div>
+          ${Object.values(mods).some(Boolean)?`
+            <button onclick="gunMods['${w.id}']={};saveGunMods();renderGuns()"
+              style="margin-top:10px;background:none;border:1px solid #ff006e33;color:#ff006e44;
+              font-family:'Share Tech Mono',monospace;font-size:12px;padding:6px 14px;cursor:pointer;letter-spacing:1px;width:100%"
+              onmouseenter="this.style.color='#ff006e';this.style.borderColor='#ff006e66'"
+              onmouseleave="this.style.color='#ff006e44';this.style.borderColor='#ff006e33'">↺ CLEAR ALL MODS</button>`:""}
         </div>
       </div>
-      <div>
-        <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px">
-          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#bf5af2;margin-bottom:8px">🔩 MOD SLOTS</div>
-          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">
-            ${w.mods.map(m=>`<span style="font-size:15px;padding:3px 8px;border:1px solid #bf5af2;color:#bf5af2">${m}</span>`).join("")}
-          </div>
-          <div style="font-family:'Orbitron',monospace;font-size:15px;color:#39ff14;margin-bottom:6px">★ BEST MODS</div>
-          ${w.bestMods.map(m=>`<div style="font-size:16px;color:#8aa0b0;margin-bottom:4px;padding:4px 8px;border-left:2px solid #39ff14">◈ ${m}</div>`).join("")}
+
+      <!-- Right: find locations + best for + tip -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:#4a9eff;letter-spacing:3px;margin-bottom:12px">📍 WHERE TO FIND</div>
+          ${w.find.map(f=>`<div style="font-size:13px;color:#8aa0b0;padding:4px 0;border-bottom:1px solid #0d1318">• ${f}</div>`).join("")}
         </div>
-        <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px">
-          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ff6d00;margin-bottom:8px">🏃 BEST FOR</div>
-          <div style="display:flex;flex-wrap:wrap;gap:5px">
-            ${w.bestFor.map(r=>`<span style="font-size:15px;padding:3px 8px;border:1px solid #ff6d00;color:#ff6d00">${r}</span>`).join("")}
-          </div>
+        <div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:#39ff14;letter-spacing:3px;margin-bottom:12px">✓ BEST FOR</div>
+          ${w.bestFor.map(r=>`<div style="font-size:13px;color:#c8d8e8;padding:3px 8px;border-left:2px solid #39ff1444;margin-bottom:4px">${r}</div>`).join("")}
         </div>
-        <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px;border-left:3px solid #ffd600">
-          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#ffd600;margin-bottom:6px">💡 PRO TIP</div>
-          <div style="font-size:9.5px;color:#8aa0b0;line-height:1.6">${w.tip}</div>
+        <div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:#ffd600;letter-spacing:3px;margin-bottom:10px">💡 TIP</div>
+          <div style="font-size:13px;color:#8aa0b0;line-height:1.7">${w.tip}</div>
         </div>
-        <div style="background:#0d1318;border:1px solid #1a2530;padding:12px;margin-bottom:10px">
-          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#4a9eff;margin-bottom:8px">RARITY EFFECTS</div>
-          ${["Standard","Enhanced","Deluxe","Superior","Prestige"].map((r,i)=>{
-            const rc=RARITY_COL[r];
-            const bonuses=["Base stats, basic Chip","Better Chip, 1 pre-slotted mod","Improved Chip perks, 2 mods","Powerful Chip ability, 3 mods","Unique legendary Chip — game-changing perk"][i];
-            return`<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:5px">
-              <span style="font-size:15px;padding:1px 5px;border:1px solid ${rc};color:${rc};flex-shrink:0;margin-top:1px">${r.toUpperCase()}</span>
-              <span style="font-size:8.5px;color:#8aa0b0">${bonuses}</span>
+        ${compatMods.length?`<div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px">
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:#bf5af2;letter-spacing:3px;margin-bottom:12px">🔧 ALL COMPATIBLE MODS</div>
+          ${compatMods.map(m=>{
+            const mc=RARITY_COL[m.rarity];
+            return `<div style="font-size:12px;color:${mc};padding:3px 0;border-bottom:1px solid #0d1318">
+              ${m.name} <span style="color:#4a6070">${m.slot}</span>
             </div>`;
           }).join("")}
-        </div>
-        <button onclick="saveLoadout('${w.id}')" style="width:100%;padding:8px;border:1px solid ${isFav?"#ff006e":"#ffd600"};color:${isFav?"#ff006e":"#ffd600"};background:transparent;cursor:pointer;font-family:inherit;font-size:16px;letter-spacing:1px;transition:all .2s">
-          ${isFav?"✕ REMOVE FROM FAVOURITES":"★ SAVE TO FAVOURITES"}
-        </button>
+        </div>`:""}
       </div>
-    </div>`;
-}
-
-function renderSavedLoadout(f,i){
-  const w=WEAPONS_DATA.find(x=>x.id===f.weaponId);
-  if(!w)return"";
-  const tc={S:"#39ff14",A:"#ffd600",B:"#ff6d00",C:"#ff4444"}[w.tier]||"#4a6070";
-  return`<div style="background:#0d1318;border:1px solid #1a2530;border-left:3px solid #ffd600;padding:10px 12px;display:flex;align-items:center;gap:10px">
-    <span style="font-size:18px">${w.emoji}</span>
-    <div style="flex:1">
-      <div style="font-size:16px;color:${tc}">${w.name}</div>
-      <div style="font-size:15px;color:#4a6070">${w.type} · ${w.tier}-Tier</div>
     </div>
-    <button onclick="selectedWeapon='${w.id}';renderGuns()" style="font-size:15px;padding:3px 8px;border:1px solid #1a2530;color:#c8d8e8;background:transparent;cursor:pointer;font-family:inherit">VIEW</button>
-    <button onclick="favouriteLoadouts.splice(${i},1);saveGunFavourites();renderGuns()" style="font-size:15px;padding:3px 8px;border:1px solid #ff006e;color:#ff006e;background:transparent;cursor:pointer;font-family:inherit">✕</button>
   </div>`;
 }
 
-function saveLoadout(weaponId){
-  const exists=favouriteLoadouts.findIndex(f=>f.weaponId===weaponId);
-  if(exists>=0) favouriteLoadouts.splice(exists,1);
-  else favouriteLoadouts.push({weaponId,saved:new Date().toISOString()});
-  saveGunFavourites();
-  renderGuns();
-}
+// ── MODS TAB ──────────────────────────────
+function renderModsPage(el) {
+  const slots = [...new Set(MODS_DATA.map(m=>m.slot))];
+  const filter = window._modFilter || "All";
+  const search = (window._gunSearch||"").toLowerCase();
+  let filtered = MODS_DATA.filter(m=>{
+    if(filter!=="All"&&m.slot!==filter) return false;
+    if(search&&!m.name.toLowerCase().includes(search)) return false;
+    return true;
+  });
 
-function renderItemsPage(el){
-  const cats=[...new Set(ITEMS_DATA.map(i=>i.cat))];
-  el.innerHTML=`
-    <div class="guns-nav" style="position:sticky;top:0;z-index:10;background:#070d12">
-      <div class="guns-nav-left">
-        <button class="guns-nav-btn" onclick="gunsSubPage='weapons';renderGuns()">WEAPONS</button>
-        <button class="guns-nav-btn on" onclick="gunsSubPage='items';renderGuns()">ITEMS</button>
-      </div>
-    </div>
+  el.innerHTML = gunsNav("mods") + `
     <div style="padding:16px 20px">
-      ${cats.map(cat=>`
-        <div style="margin-bottom:20px">
-          <div style="font-family:'Orbitron',monospace;font-size:16px;color:#4a6070;letter-spacing:2px;margin-bottom:10px;border-bottom:1px solid #1a2530;padding-bottom:6px">${cat.toUpperCase()}</div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px">
-            ${ITEMS_DATA.filter(i=>i.cat===cat).map(item=>`
-              <div style="background:#0d1318;border:1px solid #1a2530;border-left:3px solid ${item.col};padding:10px 12px;cursor:default;position:relative"
-                onmouseenter="showItemTT(event,'${item.id}')" onmouseleave="hideTT()" onmousemove="moveTT(event)">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-                  <span style="font-size:18px">${item.emoji}</span>
-                  <div>
-                    <div style="font-size:9.5px;color:${item.col};font-weight:700">${item.name}</div>
-                    <div style="font-size:7.5px;color:#4a6070">${item.cat}</div>
-                  </div>
-                </div>
-                <div style="font-size:16px;color:#8aa0b0;line-height:1.5">${item.effect}</div>
-                <div style="font-size:15px;color:#4a6070;margin-top:5px;border-top:1px solid #1a2530;padding-top:4px">📍 ${item.find}</div>
-              </div>`).join("")}
-          </div>
-        </div>`).join("")}
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:11px;color:#4a6070;letter-spacing:2px">SLOT:</span>
+        ${["All",...slots].map(s=>{
+          const on=filter===s;
+          return `<button onclick="window._modFilter='${s}';renderGuns()"
+            style="background:${on?'#bf5af222':'none'};border:1px solid ${on?'#bf5af2':'#1a2530'};
+            color:${on?'#bf5af2':'#4a6070'};font-family:'Share Tech Mono',monospace;font-size:12px;
+            padding:4px 12px;cursor:pointer;transition:all .15s">${s}</button>`;
+        }).join("")}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
+        ${filtered.map(m => {
+          const rc = RARITY_COL[m.rarity];
+          return `<div style="background:#0d1318;border:1px solid #1a2530;border-left:3px solid ${rc};padding:14px 16px">
+            <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+              <div style="font-family:'Orbitron',monospace;font-size:13px;color:${rc}">${m.name}</div>
+              <span style="font-size:10px;color:#4a6070;padding:1px 5px;border:1px solid #1a2530">${m.slot}</span>
+            </div>
+            <div style="font-size:11px;color:${rc};letter-spacing:1px;margin-bottom:8px">${m.rarity.toUpperCase()}</div>
+            <div style="font-size:13px;color:#8aa0b0;line-height:1.5;margin-bottom:8px">${m.desc}</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">
+              ${Object.entries(m.stats).map(([k,v])=>{
+                const dc=v>0?"#39ff14":"#ff4444";
+                return `<span style="font-size:11px;padding:2px 6px;border:1px solid ${dc}44;color:${dc}">${k.toUpperCase()} ${v>0?"+":""}${v}</span>`;
+              }).join("")}
+            </div>
+            <div style="font-size:11px;color:#4a6070;line-height:1.6">
+              <span style="color:#4a6070;letter-spacing:1px">FITS: </span>${m.weapons.slice(0,4).join(", ")}${m.weapons.length>4?` +${m.weapons.length-4} more`:""}
+            </div>
+            ${m.tip?`<div style="margin-top:8px;font-size:12px;color:#ffd600;padding:6px 8px;background:#0a0f13;border-left:2px solid #ffd60044">💡 ${m.tip}</div>`:""}
+          </div>`;
+        }).join("")}
+      </div>
     </div>`;
 }
 
-function showItemTT(e,id){
-  const item=ITEMS_DATA.find(x=>x.id===id);if(!item)return;
-  const tt=document.getElementById("tt");
-  tt.innerHTML=`<div style="font-size:16px;color:${item.col};font-family:'Orbitron',monospace;margin-bottom:6px">${item.emoji} ${item.name}</div>
-    <div style="font-size:16px;color:#c8d8e8;margin-bottom:6px">${item.effect}</div>
-    <div style="font-size:15px;color:#39ff14;padding:4px 6px;border-left:2px solid #39ff14;margin-bottom:4px">💡 ${item.tip}</div>
-    <div style="font-size:15px;color:#4a6070">📍 ${item.find}</div>`;
-  tt.style.display="block";moveTT(e);
+// ── ITEMS TAB ─────────────────────────────
+function renderItemsPage(el) {
+  const cats = [...new Set(ITEMS_DATA.map(i=>i.cat))];
+  el.innerHTML = gunsNav("items") + `<div style="padding:16px 20px">
+    ${cats.map(cat=>`
+      <div style="margin-bottom:20px">
+        <div style="font-family:'Orbitron',monospace;font-size:11px;color:#4a6070;letter-spacing:3px;margin-bottom:10px">${cat.toUpperCase()}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">
+          ${ITEMS_DATA.filter(i=>i.cat===cat).map(i=>`
+            <div style="background:#0d1318;border:1px solid #1a2530;border-left:3px solid ${i.col};padding:12px 14px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span>${i.emoji}</span>
+                <span style="font-size:14px;color:#c8d8e8;font-weight:700">${i.name}</span>
+              </div>
+              <div style="font-size:13px;color:#8aa0b0;margin-bottom:6px;line-height:1.5">${i.effect}</div>
+              <div style="font-size:12px;color:#4a6070;margin-bottom:4px">📍 ${i.find}</div>
+              <div style="font-size:12px;color:#ffd600;padding:5px 8px;background:#0a0f13;border-left:2px solid #ffd60044">💡 ${i.tip}</div>
+            </div>`).join("")}
+        </div>
+      </div>`).join("")}
+  </div>`;
 }
 
 // ═══ auth.js ═══
