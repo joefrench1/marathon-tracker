@@ -1994,6 +1994,14 @@ const RUNNERS=[
  prime:"Search & Destroy — shoulder-mounted homing missiles that lock and chase targets",
  tactical:"Riot Barricade — deployable energy shield, blocks incoming fire for you and teammates",
  traits:["Thruster — burst forward dash for closing gaps or escaping","Tactical Sprint — extended sprint that builds less heat"],
+ abilityVideos:{
+   prime:    {videoId:null,start:0,note:"Missiles auto-lock and track through repositions. Best used on targets who break cover — the homing arc makes them nearly unavoidable."},
+   tactical: {videoId:null,start:0,note:"Place at a doorway or corner before pushing. Your whole squad can advance safely behind it."},
+   traits:[
+     {videoId:null,start:0,note:"Costs heat — best chained with Tactical Sprint before or after for a full burst movement combo."},
+     {videoId:null,start:0,note:"Generates less heat per metre than standard sprint, letting you sustain movement much longer before overheating."}
+   ]
+ },
  tips:["Deploy Riot Barricade before pushing a corner so teammates can safely follow","Use Search & Destroy on runners who break cover — missiles track through repositions","Pair with Triage behind you for sustained frontline pressure","Thruster + Tactical Sprint lets you close gaps faster than enemies expect"],
  weapons:[{name:"WSTR Combat Shotgun",role:"Close range delete",tier:"S"},{name:"Bully SMG",role:"Mid range pressure",tier:"A"},{name:"Hardline PR",role:"Punish exposed targets",tier:"A"}],
  upgrades:{priority:["nc_saf","nc_rest","ca_sink","ca_firm","ca_cred"],reason:"Shields and heat management are critical — Destroyer burns heat fast with movement abilities"},
@@ -2006,6 +2014,14 @@ const RUNNERS=[
  prime:"Amplify — increased movement speed, weapon handling, reduced heat from movement abilities",
  tactical:"Disrupt Cannon — energy blast that pushes enemies out of cover and deals damage",
  traits:["Microjets — double jump (generates heat)","Power Slide — faster, longer slide (generates heat)"],
+ abilityVideos:{
+   prime:    {videoId:null,start:0,note:"Activate before chaining Microjets and Power Slide — heat costs are drastically reduced during Amplify."},
+   tactical: {videoId:null,start:0,note:"Aim at the ground beneath an enemy to fling them upward, breaking their position."},
+   traits:[
+     {videoId:null,start:0,note:"Each jump costs heat. With Heat_Sink.exe you can chain multiple jumps before overheating."},
+     {videoId:null,start:0,note:"Extends slide distance significantly. Combine with Microjets at the end for maximum speed burst."}
+   ]
+ },
  tips:["Heat management is everything — overheating mid-fight is a death sentence","Use Amplify to chain Microjets + Power Slide bursts to disorient enemies","Disrupt Cannon is excellent for knocking runners off objectives or into bad positions","Pair with Heat_Sink.exe and Quick_Vent.exe upgrades to extend your movement window"],
  weapons:[{name:"BRRT SMG",role:"Fast TTK for flanks",tier:"S"},{name:"WSTR Combat Shotgun",role:"Ambush closer",tier:"S"},{name:"Overrun AR",role:"Versatile fallback",tier:"S"}],
  upgrades:{priority:["ca_sink","ca_qvent","ca_acool","ca_slide","ca_firm"],reason:"Vandal uses heat constantly — maximising heat capacity and recovery is the core build priority"},
@@ -2018,6 +2034,14 @@ const RUNNERS=[
  prime:"Reboot+ (Capacitive Gauntlets) — fully revive downed teammates from range, or EMP enemies",
  tactical:"Med-Drone — deployable healing drone that attaches to a teammate, providing health and shield regen",
  traits:["Battery Overcharge — EMPs enemies when you break their shields","Shareware.exe — any consumable you use is applied to teammates with Med-Drone"],
+ abilityVideos:{
+   prime:    {videoId:null,start:0,note:"Can revive thirsted teammates (already fully eliminated). Crucial PvP swing tool. Also doubles as a shield-breaker EMP on enemies."},
+   tactical: {videoId:null,start:0,note:"Drone persists until destroyed or replaced. Attach it before using consumables — Shareware only works if drone is already on target."},
+   traits:[
+     {videoId:null,start:0,note:"The EMP disrupts enemy movement abilities and shield regen briefly — great for locking down a Vandal mid-flank."},
+     {videoId:null,start:0,note:"A single Med Kit effectively heals two players simultaneously. Multiply every consumable you carry."}
+   ]
+ },
  tips:["Always attach Med-Drone before using consumables — Shareware only works if drone is already on target","Reboot+ can revive thirsted teammates — this is game-changing in PvP","Battery Overcharge EMPs complements Destroyer's push windows perfectly","Stay mid-range behind Destroyer, not in the frontline"],
  weapons:[{name:"Hardline PR",role:"Safe mid-range poke",tier:"A"},{name:"BR33 Volley Rifle",role:"Versatile burst",tier:"S"},{name:"Overrun AR",role:"Reliable fallback",tier:"S"}],
  upgrades:{priority:["nc_saf","nc_saf2","nc_shie","nc_rest","nc_rest2","nc_regen"],reason:"Full NuCaloric investment maximises survivability so you stay alive to support your squad"},
@@ -2030,6 +2054,14 @@ const RUNNERS=[
  prime:"Echo Pulse — sends sonar pulses that reveal all nearby player locations through walls",
  tactical:"Tracker Mine — deployable sensor mine that pings and tracks enemies who walk near it",
  traits:["Ghost Ping — your pings stay on enemies briefly after they leave line of sight","Threat Assessment — highlights nearby enemies with low health"],
+ abilityVideos:{
+   prime:    {videoId:null,start:0,note:"Pulses pass through all geometry. Use before entering a building or pushing a choke — reveals exact positions for several seconds."},
+   tactical: {videoId:null,start:0,note:"Place at doorways, staircases, and extraction points. Enemies cannot disarm mines before triggering them."},
+   traits:[
+     {videoId:null,start:0,note:"Extends tracking window when enemies step out of line of sight — great countering flankers who try to hide after being pinged."},
+     {videoId:null,start:0,note:"Low-health highlights appear through walls at close range. Makes cleanup kills significantly easier after a fight."}
+   ]
+ },
  tips:["Echo Pulse before every push — never walk into a room blind","Tracker Mines at choke points give persistent map awareness","Ghost Ping + Echo Pulse combination makes you essentially omniscient in a zone","Pair with Assassin who can convert your intel into guaranteed first strikes"],
  weapons:[{name:"BR33 Volley Rifle",role:"Mid-range dominant",tier:"S"},{name:"Hardline PR",role:"Longer range control",tier:"A"},{name:"Longshot",role:"Punish exposed runners",tier:"A"}],
  upgrades:{priority:["ca_inf","ca_cred","mi_flex","sg_tac","ca_firm"],reason:"Credit accumulation and agility upgrades — Recon wins by information, not brute force"},
@@ -2042,6 +2074,14 @@ const RUNNERS=[
  prime:"Smoke Screen — throws smoke grenades to block sightlines and enable repositioning",
  tactical:"Active Camo — full invisibility, cancelled by any action. Perfect for repositioning or initiating",
  traits:["Shadow Dive — dive creates a field of smoke","Shroud — become invisible while inside your own smoke"],
+ abilityVideos:{
+   prime:    {videoId:null,start:0,note:"Smoke persists for several seconds and can be thrown around corners. Combine with Shroud to turn any cloud into an invisibility zone."},
+   tactical: {videoId:null,start:0,note:"Any action cancels camo. Use it purely for silent repositioning — break camo with a guaranteed first shot from an unexpected angle."},
+   traits:[
+     {videoId:null,start:0,note:"Creates instant smoke in the open. Useful for breaking line of sight in areas where you cannot throw a grenade."},
+     {videoId:null,start:0,note:"You go invisible inside your own smoke. Enemies cannot see you even if they spray into the cloud."}
+   ]
+ },
  tips:["Smoke first, reposition under Active Camo, take a guaranteed shot, vanish — this is the core loop","Never spray and pray — Assassin collapses if you fight on their terms instead of yours","Smoke + Shroud means you can become invisible mid-fight when inside your own smoke","In squads, your flank forces enemies to split attention — critical timing with Destroyer pushes"],
  weapons:[{name:"WSTR Combat Shotgun",role:"Backstab delete",tier:"S"},{name:"BRRT SMG",role:"Extended engagements",tier:"S"},{name:"Longshot",role:"Picked off from smoke edge",tier:"A"}],
  upgrades:{priority:["ar_kni","ar_str","ar_shot","ca_firm","ca_cred"],reason:"Arachne upgrades for combat capability, Firm Stance for movement — Assassin dies in 2 shots if caught"},
@@ -2054,6 +2094,14 @@ const RUNNERS=[
  prime:"Pickpocket Drone — pilotable flying drone that attacks UESC drones and players, causing them to drop loot",
  tactical:"Grapple — dart launcher for grappling to surfaces or enemies. Fastest mobility tool in the game",
  traits:["Enhanced Loot Visor — better container highlighting, see rare items through walls","Quick Fingers — faster container looting speed"],
+ abilityVideos:{
+   prime:    {videoId:null,start:0,note:"You pilot the drone in first-person while your body stands still. Target UESC cargo drones for free high-tier loot with zero combat risk."},
+   tactical: {videoId:null,start:0,note:"Can grapple to walls, ceilings, platforms, or enemies directly. Used offensively it closes gaps faster than any sprint."},
+   traits:[
+     {videoId:null,start:0,note:"Highlights containers by rarity through walls up to ~40m. Prioritise high-value crates without opening every box."},
+     {videoId:null,start:0,note:"Significant looting speed reduction — allows looting in contested areas that other runners cannot safely access."}
+   ]
+ },
  tips:["Pickpocket Drone on UESC cargo drones is free high-tier loot with no combat risk","Grapple is the best escape tool in the game — always have a grapple exit planned","Use Enhanced Loot Visor to prioritise which containers are worth the risk","Best combined with CyberAcme Scavenger/Loot Siphon upgrades for maximum efficiency"],
  weapons:[{name:"Overrun AR",role:"Safe and reliable",tier:"S"},{name:"Bully SMG",role:"Forced close fights",tier:"A"},{name:"Hardline PR",role:"Pick off threats before looting",tier:"A"}],
  upgrades:{priority:["ca_scav","ca_lsip","ca_exp","ca_cred","ca_lock"],reason:"CyberAcme loot upgrades synergise directly with Thief's kit — maximise loot efficiency"},
@@ -2066,6 +2114,14 @@ const RUNNERS=[
  prime:"Signal Mask — brief invisibility to other players. Useful for escaping hostile runners",
  tactical:"Scanner — highlights nearby containers and items through walls",
  traits:["Salvage Protocol — increased loot from broken containers","Resupply — collect ammo from downed runners faster"],
+ abilityVideos:{
+   prime:    {videoId:null,start:0,note:"Short duration but enough to break line of sight and disengage. Not a combat tool — treat it as a pure escape button."},
+   tactical: {videoId:null,start:0,note:"Reveals container locations through walls in a radius. Use on entering a new area to identify looting priorities before moving."},
+   traits:[
+     {videoId:null,start:0,note:"Applies to all container types including UESC crates. Makes every container more worth opening."},
+     {videoId:null,start:0,note:"Lets you scavenge ammo from kills without standing still for long. Keep moving after downed enemies."}
+   ]
+ },
  tips:["Never engage a geared squad — you will lose","Use Scanner before entering rooms to locate loot fast","Signal Mask is a panic button, not an initiation tool","Best map: Overflow or South Relay for safe loot loops"],
  weapons:[{name:"CE Tactical Sidearm",role:"Starting weapon",tier:"C"},{name:"Overrun AR",role:"First upgrade priority",tier:"S"},{name:"WSTR Combat Shotgun",role:"When found — keep it",tier:"S"}],
  upgrades:{priority:["ca_scav","ca_lsip","ca_exp","ca_carr","ca_carr2"],reason:"Pure loot upgrades — Rook's value is entirely in how fast and efficiently you extract salvage"},
@@ -2082,6 +2138,65 @@ const RUNNER_UPGRADE_LOADS={
   thief:    [{id:"ca_scav",lv:2},{id:"ca_lsip",lv:2},{id:"ca_exp",lv:1},{id:"ca_cred",lv:2},{id:"ca_lock",lv:1}],
   rook:     [{id:"ca_scav",lv:2},{id:"ca_lsip",lv:2},{id:"ca_exp",lv:1},{id:"ca_carr",lv:2}]
 };
+
+// ── Ability tooltip ────────────────────────
+function showAbilityTT(runnerId, abilityKey, traitIdx, e) {
+  const abt = document.getElementById("abt");
+  if (!abt) return;
+  const r = RUNNERS.find(x => x.id === runnerId);
+  if (!r) return;
+
+  let label, videoData, type;
+  if (abilityKey === "prime") {
+    label = r.prime; videoData = r.abilityVideos?.prime || null; type = "PRIME";
+  } else if (abilityKey === "tactical") {
+    label = r.tactical; videoData = r.abilityVideos?.tactical || null; type = "TACTICAL";
+  } else if (abilityKey === "trait") {
+    label = r.traits[traitIdx] || ""; videoData = r.abilityVideos?.traits?.[traitIdx] || null; type = "TRAIT";
+  }
+  if (!label) return;
+
+  const dash = label.indexOf(" — ");
+  const name = dash !== -1 ? label.slice(0, dash) : label;
+  const desc = dash !== -1 ? label.slice(dash + 3) : "";
+  const typeColors = { PRIME:"#ffd600", TACTICAL:"#4a9eff", TRAIT:"#39ff14" };
+  const typeColor  = typeColors[type] || r.color;
+
+  const noteHtml = videoData?.note
+    ? `<div style="font-size:.78rem;color:#8aa0b0;margin-top:6px;padding-top:6px;border-top:1px solid #1a2530;line-height:1.5">${videoData.note}</div>`
+    : "";
+
+  let videoHtml = "";
+  if (videoData?.videoId) {
+    const vid = videoData.videoId, t = videoData.start || 0;
+    const src = `https://www.youtube-nocookie.com/embed/${vid}?start=${t}&autoplay=1&mute=1&controls=0&loop=1&playlist=${vid}&modestbranding=1`;
+    videoHtml = `<div class="abt-video"><iframe src="${src}" allow="autoplay" allowfullscreen loading="lazy"></iframe></div>`;
+  } else {
+    videoHtml = `<div class="abt-no-video"><span>▶</span>Clip not yet available</div>`;
+  }
+
+  abt.style.borderColor = typeColor + "66";
+  abt.innerHTML = `
+    <div class="abt-hdr" style="border-bottom-color:${typeColor}33">
+      <div class="abt-type" style="color:${typeColor}">${type}</div>
+      <div class="abt-name">${name}</div>
+    </div>
+    <div class="abt-desc">${desc}${noteHtml}</div>
+    ${videoHtml}`;
+  abt.style.display = "block";
+  moveAbilityTT(e);
+}
+function moveAbilityTT(e) {
+  const abt = document.getElementById("abt");
+  if (!abt) return;
+  const w = abt.offsetWidth || 340, h = abt.offsetHeight || 200;
+  abt.style.left = Math.min(e.clientX + 16, window.innerWidth  - w - 10) + "px";
+  abt.style.top  = Math.min(e.clientY + 16, window.innerHeight - h - 10) + "px";
+}
+function hideAbilityTT() {
+  const abt = document.getElementById("abt");
+  if (abt) abt.style.display = "none";
+}
 
 let activeRunner = null;
 
@@ -2246,18 +2361,24 @@ function renderRunnerDetail(el) {
 
         <!-- Abilities -->
         <div style="background:#0d1318;border:1px solid #1a2530;padding:16px 18px">
-          <div style="font-family:'Orbitron',monospace;font-size:11px;color:${r.color};letter-spacing:3px;margin-bottom:14px">⚡ ABILITIES</div>
-          <div style="margin-bottom:12px;padding:10px 12px;background:#0a0f13;border-left:3px solid #ffd600">
-            <div style="font-size:10px;color:#ffd600;letter-spacing:2px;margin-bottom:5px">PRIME ABILITY</div>
+          <div style="font-family:'Orbitron',monospace;font-size:11px;color:${r.color};letter-spacing:3px;margin-bottom:14px">⚡ ABILITIES <span style="font-size:10px;color:#4a6070;font-family:'Share Tech Mono',monospace;letter-spacing:0;font-weight:400">— hover for details</span></div>
+          <div style="margin-bottom:12px;padding:10px 12px;background:#0a0f13;border-left:3px solid #ffd600;cursor:help;transition:background .15s"
+               onmouseenter="this.style.background='#111a20';showAbilityTT('${r.id}','prime',0,event)"
+               onmouseleave="this.style.background='#0a0f13';hideAbilityTT()" onmousemove="moveAbilityTT(event)">
+            <div style="font-size:10px;color:#ffd600;letter-spacing:2px;margin-bottom:5px">PRIME ABILITY ⓘ</div>
             <div style="font-size:14px;color:#c8d8e8;line-height:1.6">${r.prime}</div>
           </div>
-          <div style="margin-bottom:12px;padding:10px 12px;background:#0a0f13;border-left:3px solid #4a9eff">
-            <div style="font-size:10px;color:#4a9eff;letter-spacing:2px;margin-bottom:5px">TACTICAL</div>
+          <div style="margin-bottom:12px;padding:10px 12px;background:#0a0f13;border-left:3px solid #4a9eff;cursor:help;transition:background .15s"
+               onmouseenter="this.style.background='#111a20';showAbilityTT('${r.id}','tactical',0,event)"
+               onmouseleave="this.style.background='#0a0f13';hideAbilityTT()" onmousemove="moveAbilityTT(event)">
+            <div style="font-size:10px;color:#4a9eff;letter-spacing:2px;margin-bottom:5px">TACTICAL ⓘ</div>
             <div style="font-size:14px;color:#c8d8e8;line-height:1.6">${r.tactical}</div>
           </div>
           <div style="padding:10px 12px;background:#0a0f13;border-left:3px solid #39ff14">
-            <div style="font-size:10px;color:#39ff14;letter-spacing:2px;margin-bottom:5px">TRAITS</div>
-            ${r.traits.map(t => `<div style="font-size:14px;color:#c8d8e8;margin-bottom:4px;line-height:1.5">• ${t}</div>`).join("")}
+            <div style="font-size:10px;color:#39ff14;letter-spacing:2px;margin-bottom:5px">TRAITS ⓘ</div>
+            ${r.traits.map((t,i) => `<div style="font-size:14px;color:#c8d8e8;margin-bottom:4px;line-height:1.5;cursor:help;padding:3px 0;transition:color .15s"
+              onmouseenter="this.style.color='#fff';showAbilityTT('${r.id}','trait',${i},event)"
+              onmouseleave="this.style.color='#c8d8e8';hideAbilityTT()" onmousemove="moveAbilityTT(event)">• ${t}</div>`).join("")}
           </div>
         </div>
 
@@ -3028,6 +3149,7 @@ async function authSignIn(username, password) {
     const fd = row.faction_data || {};
     if (fd.LV) Object.assign(LV, fd.LV);
     if (fd.PL) Object.assign(PL, fd.PL);
+    _restoreUserData(fd);
     refresh();
 
     _onAuthOK();
@@ -3041,6 +3163,48 @@ async function authSignIn(username, password) {
 }
 
 // ══════════════════════════════════════════
+// RESTORE / CLEAR HELPERS
+// ══════════════════════════════════════════
+function _restoreUserData(fd) {
+  // Runs
+  if (Array.isArray(fd.runs)) {
+    runLog = fd.runs;
+    try { localStorage.setItem("mara_runs", JSON.stringify(runLog)); } catch(e){}
+  }
+  // Loadouts
+  if (Array.isArray(fd.loadouts)) {
+    savedLoadouts = fd.loadouts;
+    try { localStorage.setItem("mara_loadouts", JSON.stringify(savedLoadouts)); } catch(e){}
+  }
+  // Contracts
+  if (fd.contracts && typeof fd.contracts === "object") {
+    completedContracts = fd.contracts;
+    try { localStorage.setItem("mara_contracts", JSON.stringify(completedContracts)); } catch(e){}
+  }
+  // Saved builds
+  if (fd.builds && typeof fd.builds === "object") {
+    putBuilds(fd.builds);
+  }
+}
+
+function _clearUserData() {
+  // Reset in-memory state
+  for (const k in LV) delete LV[k];
+  for (const k in PL) delete PL[k];
+  if (typeof runLog            !== "undefined") runLog            = [];
+  if (typeof savedLoadouts     !== "undefined") savedLoadouts     = [];
+  if (typeof completedContracts!== "undefined") completedContracts = {};
+  putBuilds({});
+  // Wipe localStorage
+  try {
+    localStorage.removeItem("mara_runs");
+    localStorage.removeItem("mara_loadouts");
+    localStorage.removeItem("mara_contracts");
+    localStorage.removeItem("mg_builds");
+  } catch(e){}
+}
+
+// ══════════════════════════════════════════
 // SIGN OUT
 // ══════════════════════════════════════════
 async function authSignOut() {
@@ -3049,6 +3213,8 @@ async function authSignOut() {
   try { sessionCode = null; } catch(e){}
   try { squadPlayers = {}; } catch(e){}
   try { sessionStorage.clear(); } catch(e){}
+  _clearUserData();
+  refresh();
   renderAuthWidget();
   updateSquadPill();
   updateHdr();
@@ -3081,6 +3247,7 @@ async function tryRestoreSession() {
       const fd = rows[0].faction_data || {};
       if (fd.LV) Object.assign(LV, fd.LV);
       if (fd.PL) Object.assign(PL, fd.PL);
+      _restoreUserData(fd);
       refresh();
       renderAuthWidget();
       updateSquadPill();
@@ -3109,7 +3276,16 @@ async function pushProfile() {
       await sbFetch(`/rest/v1/profiles?id=eq.${authUser.id}`, {
         method: "PATCH",
         extraHeaders: { "Prefer": "return=minimal" },
-        body: JSON.stringify({ faction_data: { LV, PL }, updated_at: new Date().toISOString() })
+        body: JSON.stringify({
+          faction_data: {
+            LV, PL,
+            runs:      typeof runLog              !== "undefined" ? runLog              : [],
+            loadouts:  typeof savedLoadouts        !== "undefined" ? savedLoadouts        : [],
+            contracts: typeof completedContracts   !== "undefined" ? completedContracts   : {},
+            builds:    getBuilds()
+          },
+          updated_at: new Date().toISOString()
+        })
       });
     } catch(e) { console.warn("pushProfile failed:", e); }
   }, 1200);
@@ -4049,7 +4225,7 @@ function showMapPinTT(e, label, tip, hot) {
 let runLog = JSON.parse(localStorage.getItem("mara_runs") || "[]");
 let showRunForm = false;
 
-function saveRuns(){ try{localStorage.setItem("mara_runs", JSON.stringify(runLog));}catch(e){} }
+function saveRuns(){ try{localStorage.setItem("mara_runs", JSON.stringify(runLog));}catch(e){} pushProfile(); }
 
 function renderRuns(){
   const el = document.getElementById("runsv");
@@ -4202,7 +4378,7 @@ let currentLoadout = {
 };
 let editingLoadout = null;
 
-function saveLoadouts(){try{localStorage.setItem("mara_loadouts",JSON.stringify(savedLoadouts));}catch(e){}}
+function saveLoadouts(){try{localStorage.setItem("mara_loadouts",JSON.stringify(savedLoadouts));}catch(e){} pushProfile(); }
 
 function renderLoadout(){
   const el = document.getElementById("loadoutv");
@@ -4383,7 +4559,7 @@ const CONTRACTS_DATA = {
 let completedContracts = JSON.parse(localStorage.getItem("mara_contracts")||"{}");
 let contractFilter = "All";
 
-function saveContracts(){try{localStorage.setItem("mara_contracts",JSON.stringify(completedContracts));}catch(e){}}
+function saveContracts(){try{localStorage.setItem("mara_contracts",JSON.stringify(completedContracts));}catch(e){} pushProfile(); }
 
 function renderContracts(){
   const el = document.getElementById("contractsv");
