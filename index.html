@@ -678,9 +678,462 @@ body {
   #sqv > div { padding: 20px 14px !important; }
 }
 
+
+/* ═══════════════════════════════════════════════════
+   LANDING PAGE
+   ═══════════════════════════════════════════════════ */
+#landing {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #00000e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity .9s ease;
+}
+#landing.exiting { opacity: 0; pointer-events: none; }
+
+/* scanline overlay */
+#landing::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 3px,
+    rgba(0,229,255,.015) 3px, rgba(0,229,255,.015) 4px
+  );
+  pointer-events: none;
+  z-index: 4;
+}
+/* vignette */
+#landing::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 25%, rgba(0,0,0,.75) 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+#lp-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+#lp-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: -160px; /* shift up so runner fills lower half */
+}
+#lp-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .68rem;
+  letter-spacing: 5px;
+  color: #00e5ff;
+  opacity: .55;
+  animation: lp-flicker 5s infinite;
+}
+#lp-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(2.8rem, 9vw, 7rem);
+  font-weight: 900;
+  letter-spacing: 10px;
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 0 50px rgba(0,229,255,.35), 0 0 100px rgba(0,229,255,.1);
+  position: relative;
+}
+.lp-glitch {
+  position: relative;
+  display: inline-block;
+}
+.lp-glitch::before, .lp-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  overflow: hidden;
+}
+.lp-glitch::before {
+  color: #ff6d00;
+  clip-path: polygon(0 20%, 100% 20%, 100% 42%, 0 42%);
+  transform: translateX(-4px);
+  animation: lp-g1 7s infinite linear;
+}
+.lp-glitch::after {
+  color: #00e5ff;
+  clip-path: polygon(0 58%, 100% 58%, 100% 78%, 0 78%);
+  transform: translateX(4px);
+  animation: lp-g2 7s infinite linear;
+}
+@keyframes lp-g1 {
+  0%,88%,100% { opacity:0; transform:translateX(-4px); }
+  89%          { opacity:1; transform:translateX(-4px); clip-path:polygon(0 10%,100% 10%,100% 35%,0 35%); }
+  90%          { opacity:1; transform:translateX(4px);  clip-path:polygon(0 55%,100% 55%,100% 80%,0 80%); }
+  91%          { opacity:0; }
+}
+@keyframes lp-g2 {
+  0%,86%,100% { opacity:0; transform:translateX(4px); }
+  87%          { opacity:1; transform:translateX(4px);  clip-path:polygon(0 45%,100% 45%,100% 68%,0 68%); }
+  88%          { opacity:1; transform:translateX(-4px); clip-path:polygon(0 5%, 100% 5%, 100% 22%,0 22%); }
+  89%          { opacity:0; }
+}
+#lp-sub {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(.85rem, 2.5vw, 1.25rem);
+  letter-spacing: 8px;
+  color: #00e5ff;
+  opacity: .65;
+  margin-top: 4px;
+}
+#lp-divider {
+  width: 220px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #00e5ff80, transparent);
+  margin: 10px auto 4px;
+}
+#lp-flavor {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .7rem;
+  letter-spacing: 2px;
+  color: #3a5a6a;
+  text-transform: uppercase;
+}
+#lp-enter {
+  margin-top: 26px;
+  padding: 13px 46px;
+  font-family: 'Orbitron', monospace;
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: 5px;
+  color: #00e5ff;
+  background: transparent;
+  border: 1px solid #00e5ff55;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: color .25s, border-color .25s, box-shadow .25s;
+  box-shadow: 0 0 25px rgba(0,229,255,.12), inset 0 0 20px rgba(0,229,255,.04);
+}
+#lp-enter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #00e5ff00, #00e5ff18, #00e5ff00);
+  transform: translateX(-110%);
+  transition: transform .4s ease;
+}
+#lp-enter:hover {
+  color: #fff;
+  border-color: #00e5ff;
+  box-shadow: 0 0 50px rgba(0,229,255,.4), inset 0 0 30px rgba(0,229,255,.1);
+}
+#lp-enter:hover::before { transform: translateX(110%); }
+#lp-hint {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .6rem;
+  letter-spacing: 3px;
+  color: #1e3040;
+  margin-top: 4px;
+  animation: lp-flicker 3.5s infinite;
+}
+@keyframes lp-flicker {
+  0%,94%,100% { opacity:1; }
+  95%          { opacity:.15; }
+  96%          { opacity:.7; }
+  97%          { opacity:.2; }
+  98%          { opacity:.9; }
+}
 </style>
 </head>
 <body>
+
+<!-- ═══ LANDING PAGE ═══ -->
+<div id="landing" onclick="enterApp()">
+
+  <!-- SVG ART BACKGROUND -->
+  <svg id="lp-art" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="lp-bg-grad" cx="50%" cy="60%" r="75%">
+        <stop offset="0%"   stop-color="#080418"/>
+        <stop offset="100%" stop-color="#00000e"/>
+      </radialGradient>
+      <filter id="lp-glow-c" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="lp-glow-o" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="8" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="lp-glow-soft" x="-80%" y="-80%" width="360%" height="360%">
+        <feGaussianBlur stdDeviation="18"/>
+      </filter>
+      <linearGradient id="lp-run-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#14283c"/>
+        <stop offset="100%" stop-color="#060c14"/>
+      </linearGradient>
+      <linearGradient id="lp-ground-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#00e5ff" stop-opacity=".12"/>
+        <stop offset="100%" stop-color="#00e5ff" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Background -->
+    <rect width="1200" height="700" fill="url(#lp-bg-grad)"/>
+
+    <!-- Stars -->
+    <g fill="#fff">
+      <circle cx="42"  cy="22"  r="1.1" opacity=".55"/>
+      <circle cx="118" cy="14"  r=".8"  opacity=".4"/>
+      <circle cx="198" cy="38"  r="1.2" opacity=".65"/>
+      <circle cx="347" cy="9"   r=".8"  opacity=".45"/>
+      <circle cx="453" cy="28"  r="1"   opacity=".55"/>
+      <circle cx="549" cy="5"   r=".7"  opacity=".3"/>
+      <circle cx="698" cy="18"  r="1"   opacity=".5"/>
+      <circle cx="797" cy="7"   r="1.2" opacity=".65"/>
+      <circle cx="897" cy="32"  r=".8"  opacity=".4"/>
+      <circle cx="998" cy="13"  r="1"   opacity=".55"/>
+      <circle cx="1098" cy="24" r=".8"  opacity=".45"/>
+      <circle cx="1155" cy="9"  r="1.2" opacity=".65"/>
+      <circle cx="78"  cy="75"  r=".9"  opacity=".3"/>
+      <circle cx="162" cy="92"  r=".7"  opacity=".35"/>
+      <circle cx="283" cy="68"  r="1"   opacity=".45"/>
+      <circle cx="417" cy="82"  r=".8"  opacity=".3"/>
+      <circle cx="758" cy="58"  r="1"   opacity=".35"/>
+      <circle cx="848" cy="88"  r="1.1" opacity=".5"/>
+      <circle cx="958" cy="72"  r=".8"  opacity=".3"/>
+      <circle cx="1068" cy="84" r="1"   opacity=".45"/>
+      <circle cx="234" cy="50"  r=".6"  opacity=".25"/>
+      <circle cx="522" cy="44"  r=".9"  opacity=".4"/>
+      <circle cx="875" cy="48"  r=".7"  opacity=".3"/>
+      <circle cx="1133" cy="60" r=".8"  opacity=".35"/>
+    </g>
+
+    <!-- Perspective grid (vanishing at 600,460) -->
+    <g stroke="#00e5ff" fill="none" opacity=".12">
+      <line x1="600" y1="460" x2="-250" y2="700"/>
+      <line x1="600" y1="460" x2="0"    y2="700"/>
+      <line x1="600" y1="460" x2="200"  y2="700"/>
+      <line x1="600" y1="460" x2="370"  y2="700"/>
+      <line x1="600" y1="460" x2="490"  y2="700"/>
+      <line x1="600" y1="460" x2="600"  y2="700"/>
+      <line x1="600" y1="460" x2="710"  y2="700"/>
+      <line x1="600" y1="460" x2="830"  y2="700"/>
+      <line x1="600" y1="460" x2="1000" y2="700"/>
+      <line x1="600" y1="460" x2="1200" y2="700"/>
+      <line x1="600" y1="460" x2="1450" y2="700"/>
+    </g>
+    <g stroke="#00e5ff" fill="none" stroke-width=".6" opacity=".1">
+      <line x1="0" y1="476" x2="1200" y2="476"/>
+      <line x1="0" y1="500" x2="1200" y2="500"/>
+      <line x1="0" y1="528" x2="1200" y2="528"/>
+      <line x1="0" y1="562" x2="1200" y2="562"/>
+      <line x1="0" y1="600" x2="1200" y2="600"/>
+      <line x1="0" y1="644" x2="1200" y2="644"/>
+      <line x1="0" y1="690" x2="1200" y2="690"/>
+    </g>
+
+    <!-- Horizon glow line -->
+    <line x1="0" y1="460" x2="1200" y2="460" stroke="#00e5ff" stroke-width="1" opacity=".25" filter="url(#lp-glow-c)"/>
+    <rect x="0" y="456" width="1200" height="8" fill="url(#lp-ground-grad)"/>
+
+    <!-- Station/City silhouette (left) -->
+    <g fill="#060d18">
+      <rect x="0"   y="380" width="85"  height="80"/>
+      <rect x="18"  y="355" width="45"  height="28"/>
+      <rect x="25"  y="342" width="12"  height="15"/>
+      <rect x="92"  y="390" width="105" height="70"/>
+      <rect x="118" y="368" width="32"  height="24"/>
+      <rect x="205" y="402" width="75"  height="58"/>
+      <rect x="218" y="382" width="22"  height="22"/>
+    </g>
+    <!-- Station/City silhouette (right) -->
+    <g fill="#060d18">
+      <rect x="928"  y="392" width="85"  height="68"/>
+      <rect x="942"  y="368" width="28"  height="26"/>
+      <rect x="948"  y="354" width="10"  height="16"/>
+      <rect x="1020" y="382" width="105" height="78"/>
+      <rect x="1048" y="355" width="38"  height="28"/>
+      <rect x="1055" y="340" width="12"  height="17"/>
+      <rect x="1133" y="400" width="70"  height="60"/>
+    </g>
+    <!-- Antenna lights on buildings -->
+    <g fill="#ff8c00" opacity=".7" filter="url(#lp-glow-c)">
+      <circle cx="31"   cy="340" r="2.5"/>
+      <circle cx="1061" cy="338" r="2.5"/>
+      <circle cx="952"  cy="352" r="2"/>
+    </g>
+    <!-- Building windows -->
+    <g fill="#00e5ff" opacity=".25">
+      <rect x="28"  y="370" width="4" height="4"/>
+      <rect x="42"  y="385" width="4" height="4"/>
+      <rect x="103" y="400" width="4" height="4"/>
+      <rect x="120" y="412" width="4" height="4"/>
+      <rect x="210" y="408" width="4" height="4"/>
+      <rect x="940" y="396" width="4" height="4"/>
+      <rect x="958" y="408" width="4" height="4"/>
+      <rect x="1028" y="390" width="4" height="4"/>
+      <rect x="1052" y="362" width="4" height="4"/>
+    </g>
+
+    <!-- Runner ambient body glow -->
+    <ellipse cx="600" cy="360" rx="90" ry="160" fill="#ff6d00" opacity=".03" filter="url(#lp-glow-soft)"/>
+
+    <!-- ── RUNNER SILHOUETTE ── -->
+    <g>
+      <!-- Legs -->
+      <polygon points="564,462 578,342 592,342 588,462" fill="url(#lp-run-grad)"/>
+      <polygon points="612,462 626,342 640,342 636,462" fill="url(#lp-run-grad)"/>
+      <!-- Knee armor plates -->
+      <rect x="566" y="395" width="24" height="12" rx="2" fill="#0e1e2e"/>
+      <rect x="614" y="395" width="24" height="12" rx="2" fill="#0e1e2e"/>
+      <line x1="566" y1="395" x2="590" y2="395" stroke="#ff6d00" stroke-width=".8" opacity=".5"/>
+      <line x1="614" y1="395" x2="638" y2="395" stroke="#ff6d00" stroke-width=".8" opacity=".5"/>
+      <!-- Boot armor -->
+      <polygon points="554,462 592,462 596,452 550,452" fill="#0e1e2e"/>
+      <polygon points="608,462 646,462 650,452 604,452" fill="#0e1e2e"/>
+      <line x1="554" y1="452" x2="596" y2="452" stroke="#ff6d00" stroke-width="1" opacity=".6"/>
+      <line x1="608" y1="452" x2="650" y2="452" stroke="#ff6d00" stroke-width="1" opacity=".6"/>
+
+      <!-- Torso / chest armor -->
+      <polygon points="553,342 647,342 658,218 542,218" fill="url(#lp-run-grad)"/>
+      <!-- Chest center panel -->
+      <polygon points="572,318 628,318 634,268 566,268" fill="#0a1825"/>
+      <!-- Chest vertical stripes -->
+      <line x1="595" y1="318" x2="592" y2="268" stroke="#00e5ff" stroke-width=".8" opacity=".2"/>
+      <line x1="605" y1="318" x2="608" y2="268" stroke="#00e5ff" stroke-width=".8" opacity=".2"/>
+      <!-- Energy core glow -->
+      <ellipse cx="600" cy="293" rx="22" ry="24" fill="#ff6d00" opacity=".07" filter="url(#lp-glow-o)"/>
+      <ellipse cx="600" cy="293" rx="14" ry="15" fill="#ff6d00" opacity=".18"/>
+      <ellipse cx="600" cy="293" rx="7"  ry="7"  fill="#ff8c00" opacity=".5"/>
+      <ellipse cx="600" cy="293" rx="3"  ry="3"  fill="#ffd600"/>
+      <!-- Chest trim lines -->
+      <line x1="553" y1="305" x2="647" y2="305" stroke="#00e5ff" stroke-width=".8" opacity=".15"/>
+      <line x1="555" y1="280" x2="645" y2="280" stroke="#00e5ff" stroke-width=".8" opacity=".1"/>
+      <!-- Collar / neck guard -->
+      <polygon points="572,220 628,220 622,200 578,200" fill="#0e1e2e"/>
+
+      <!-- Left shoulder pad -->
+      <polygon points="542,218 500,245 508,318 553,288 553,218" fill="url(#lp-run-grad)"/>
+      <polygon points="542,218 500,245 503,260 542,235" fill="#0e1e2e" opacity=".5"/>
+      <line x1="500" y1="245" x2="553" y2="255" stroke="#00e5ff" stroke-width="1.2" opacity=".4"/>
+      <!-- Right shoulder pad -->
+      <polygon points="658,218 700,245 692,318 647,288 647,218" fill="url(#lp-run-grad)"/>
+      <polygon points="658,218 700,245 697,260 658,235" fill="#0e1e2e" opacity=".5"/>
+      <line x1="700" y1="245" x2="647" y2="255" stroke="#00e5ff" stroke-width="1.2" opacity=".4"/>
+      <!-- Shoulder orange trim -->
+      <line x1="504" y1="252" x2="545" y2="222" stroke="#ff6d00" stroke-width="1" opacity=".4"/>
+      <line x1="696" y1="252" x2="655" y2="222" stroke="#ff6d00" stroke-width="1" opacity=".4"/>
+
+      <!-- Left arm -->
+      <polygon points="508,318 498,405 524,410 546,324" fill="url(#lp-run-grad)"/>
+      <!-- Right arm (extended, holding weapon) -->
+      <polygon points="692,318 710,395 685,400 654,324" fill="url(#lp-run-grad)"/>
+
+      <!-- WEAPON — right hand -->
+      <!-- Main body -->
+      <rect x="668" y="334" width="145" height="26" rx="4" fill="#080e16"/>
+      <!-- Top rail -->
+      <rect x="710" y="328" width="90"  height="11" rx="2" fill="#0f1e2c"/>
+      <!-- Grip -->
+      <polygon points="680,360 695,360 692,385 677,385" fill="#0c1820"/>
+      <!-- Fore grip -->
+      <polygon points="740,360 755,360 752,378 737,378" fill="#0c1820"/>
+      <!-- Barrel -->
+      <rect x="790" y="337" width="30" height="10" rx="2" fill="#0a1520"/>
+      <!-- Muzzle glow -->
+      <rect x="818" y="338" width="6"  height="8"  rx="1" fill="#00e5ff" opacity=".9" filter="url(#lp-glow-c)"/>
+      <ellipse cx="821" cy="342" rx="10" ry="6" fill="#00e5ff" opacity=".15" filter="url(#lp-glow-soft)"/>
+      <!-- Scope / optic -->
+      <rect x="730" y="322" width="35" height="8"  rx="2" fill="#0f1e2c"/>
+      <circle cx="747" cy="326" r="5" fill="#00e5ff" opacity=".25"/>
+      <!-- Side detail lines -->
+      <line x1="675" y1="340" x2="805" y2="340" stroke="#00e5ff" stroke-width=".5" opacity=".15"/>
+      <line x1="720" y1="334" x2="720" y2="360" stroke="#ff6d00" stroke-width=".8" opacity=".25"/>
+
+      <!-- ── HELMET ── -->
+      <!-- Neck -->
+      <rect x="583" y="198" width="34" height="24" fill="#0e1e2e"/>
+      <!-- Helmet shell -->
+      <path d="M 553 175 Q 553 118 600 112 Q 647 118 647 175 L 647 200 L 553 200 Z" fill="url(#lp-run-grad)"/>
+      <!-- Helmet side trim -->
+      <line x1="553" y1="175" x2="558" y2="200" stroke="#00e5ff" stroke-width="1" opacity=".3"/>
+      <line x1="647" y1="175" x2="642" y2="200" stroke="#00e5ff" stroke-width="1" opacity=".3"/>
+      <!-- Visor glow layer -->
+      <path d="M 558 162 Q 600 182 642 162 Q 638 138 600 130 Q 562 138 558 162" fill="#ff6d00" opacity=".06" filter="url(#lp-glow-soft)"/>
+      <!-- Visor -->
+      <path d="M 560 163 Q 600 183 640 163 Q 636 140 600 132 Q 564 140 560 163" fill="#ff6d00" opacity=".7"/>
+      <!-- Visor highlight -->
+      <path d="M 566 154 Q 600 168 634 154 Q 630 142 600 136 Q 570 142 566 154" fill="#ff8c00" opacity=".35"/>
+      <!-- Helmet stripe -->
+      <line x1="560" y1="185" x2="640" y2="185" stroke="#00e5ff" stroke-width=".7" opacity=".25"/>
+      <!-- Ear/sensor modules -->
+      <rect x="548" y="155" width="10" height="22" rx="2" fill="#0c1a28"/>
+      <rect x="642" y="155" width="10" height="22" rx="2" fill="#0c1a28"/>
+      <rect x="549" y="162" width="4"  height="5"  rx="1" fill="#00e5ff" opacity=".5"/>
+      <rect x="647" y="162" width="4"  height="5"  rx="1" fill="#00e5ff" opacity=".5"/>
+      <!-- Top sensor fin -->
+      <polygon points="594,125 606,125 603,108 597,108" fill="#0e1e2e"/>
+      <line x1="600" y1="108" x2="600" y2="100" stroke="#00e5ff" stroke-width="1.2" opacity=".6" filter="url(#lp-glow-c)"/>
+      <circle cx="600" cy="98" r="3.5" fill="#00e5ff" opacity=".8" filter="url(#lp-glow-c)"/>
+    </g>
+
+    <!-- Runner edge light (rim light from behind) -->
+    <g opacity=".18" filter="url(#lp-glow-c)">
+      <polygon points="553,342 647,342 658,218 542,218" fill="none" stroke="#00e5ff" stroke-width="1"/>
+      <polygon points="542,218 500,245 508,318 553,288 553,218" fill="none" stroke="#00e5ff" stroke-width=".8"/>
+      <polygon points="658,218 700,245 692,318 647,288 647,218" fill="none" stroke="#00e5ff" stroke-width=".8"/>
+    </g>
+
+    <!-- Ground shadow under runner -->
+    <ellipse cx="600" cy="462" rx="80" ry="10" fill="#00e5ff" opacity=".04" filter="url(#lp-glow-soft)"/>
+
+    <!-- Marathon M-circle watermark (faint, top center) -->
+    <g transform="translate(520,38)" opacity=".08" filter="url(#lp-glow-c)">
+      <circle cx="80" cy="80" r="72" fill="none" stroke="#00e5ff" stroke-width="2"/>
+      <path d="M 28 108 L 28 52 L 80 92 L 132 52 L 132 108" fill="none" stroke="#00e5ff" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+    </g>
+
+    <!-- Corner frame brackets -->
+    <g stroke="#00e5ff" stroke-width="1.5" fill="none" opacity=".35">
+      <polyline points="22,22 22,58 58,58"/> <polyline points="22,22 58,22"/>
+      <polyline points="1178,22 1142,22"/>   <polyline points="1178,22 1178,58 1142,58"/>
+      <polyline points="22,678 22,642 58,642"/>  <polyline points="22,678 58,678"/>
+      <polyline points="1178,678 1142,678"/> <polyline points="1178,678 1178,642 1142,642"/>
+    </g>
+
+    <!-- Horizontal data lines -->
+    <line x1="22" y1="120" x2="1178" y2="120" stroke="#00e5ff" stroke-width=".3" opacity=".08"/>
+    <line x1="22" y1="460" x2="1178" y2="460" stroke="#00e5ff" stroke-width=".3" opacity=".05"/>
+  </svg>
+
+  <!-- TEXT CONTENT -->
+  <div id="lp-content">
+    <div id="lp-eyebrow">RUNNER DATABASE // AUTHORIZED ACCESS ONLY</div>
+    <div id="lp-title">
+      <span class="lp-glitch" data-text="MARATHON">MARATHON</span>
+    </div>
+    <div id="lp-sub">// UPGRADE TRACKER</div>
+    <div id="lp-divider"></div>
+    <div id="lp-flavor">TRACK YOUR BUILD &nbsp;·&nbsp; PLAN YOUR ROUTE &nbsp;·&nbsp; SURVIVE THE NEXT RUN</div>
+    <button id="lp-enter" onclick="enterApp(event)">[ ACCESS TERMINAL ]</button>
+    <div id="lp-hint">CLICK ANYWHERE TO ENTER</div>
+  </div>
+
+</div>
+<!-- ═══ END LANDING ═══ -->
+
 <!-- AUTH MODAL -->
 <div id="auth-modal" class="auth-modal-wrap">
   <div class="auth-modal-box">
@@ -810,6 +1263,15 @@ body {
   </div>
 </div>
 <script>
+// ── Landing page ──
+function enterApp(e) {
+  if (e) e.stopPropagation();
+  const l = document.getElementById('landing');
+  if (!l) return;
+  l.classList.add('exiting');
+  setTimeout(() => { l.style.display = 'none'; }, 900);
+}
+
 // ═══ data.js ═══
 
 // ══════════════════════════════════════════
@@ -4130,6 +4592,48 @@ const MAPS = {
       {x:665,y:430,icon:"🌿",label:"Sparkleaf Field",    tip:"Overflow — 6+ ground spawns, almost zero risk."                   },
       {x:705,y:255,icon:"🚀",label:"Extract Alpha",      tip:"Most contested extract. Approach from south.",              hot:true },
       {x: 90,y:435,icon:"⚡",label:"Volatile Wire",      tip:"South Relay Munitions Crates."                                    },
+    ]
+  },
+  outpost_3: {
+    name:"OUTPOST 3", sub:"Derelict Orbital Station", color:"#ff8c00", danger:4,
+    desc:"A decaying orbital outpost. Maze-like corridors slow rotations. UESC Sentinels patrol Server Hub. Highest Fractal Circuit density in the game — but Reactor Core pulses radiation every 90 seconds.",
+    vw:800, vh:560,
+    zones:[
+      {id:"cargo_bay",    label:"CARGO BAY",     x:20,y:30,w:175,h:145, color:"#ff8c00", danger:2, tier:"Enhanced",   tcolor:"#4a9eff",
+       desc:"Primary intake bay. Dense crate fields yield consistent Unstable Lead and Fractal Circuits. Low traffic — ideal for opening loot. Upper gantry is a known sniper perch.",
+       loot:["Munitions Crate ×4","Fractal Circuit ×2","Unstable Lead ×8","Standard Containers"],
+       tip:"Clear the upper gantry before touching the crates — it's the most common ambush spot on the map."},
+      {id:"command_deck", label:"COMMAND DECK",  x:295,y:20,w:200,h:185, color:"#ff8c00", danger:5, tier:"Superior",   tcolor:"#bf5af2",
+       desc:"Central command hub. Command Terminals yield Reclaimed Chipsets. Highest Fractal Circuit concentration on the map. Always contested from first rotation.",
+       loot:["Command Terminal ×3","Superior Containers ×3","Fractal Circuit ×4","Reclaimed Chipset"],
+       tip:"Enter through the eastern vent shaft — the main entrance is permanently watched. Terminals are staggered; loot fast and don't stop."},
+      {id:"reactor_core", label:"REACTOR CORE",  x:610,y:50,w:160,h:155, color:"#ff3366", danger:5, tier:"Superior",   tcolor:"#bf5af2",
+       desc:"Extreme radiation zone. Volatile Lens and Fractured Drive only found here. UESC Sentinel patrol in force. Radiation pulses every 90 seconds — time your entry.",
+       loot:["Volatile Lens ×2","Fractured Drive","Superior Containers","UESC Sentinel ×4"],
+       tip:"Enter after a pulse, not before. Loot quickly — the second pulse kills without a full Med Kit."},
+      {id:"server_hub",   label:"SERVER HUB",    x:25,y:295,w:155,h:130, color:"#bf5af2", danger:3, tier:"Event",      tcolor:"#ffd600",
+       desc:"Data server cluster. Triggering the Upload Protocol awards a Superior data cache. Server racks guarantee Fractal Circuits regardless of the event.",
+       loot:["Upload Protocol Event → Superior Cache","Server Rack ×4","Fractal Circuit ×3"],
+       tip:"Trigger Upload Protocol the moment you arrive — the 3-minute timer starts on activation, not on completion."},
+      {id:"maint_ring",   label:"MAINT. RING",   x:310,y:380,w:175,h:130, color:"#4a9eff", danger:1, tier:"Standard",  tcolor:"#8aad6a",
+       desc:"Maintenance ring corridor. Scrap Bundles and Unstable Diodes litter the floor. Almost zero player traffic — the fastest low-risk income on the map.",
+       loot:["Scrap Bundle ×6+","Unstable Diode ×3","Standard Containers"],
+       tip:"Full loop under 90 seconds. No reason to fight here — take the loot and rotate to Server Hub."},
+      {id:"launch_bay",   label:"LAUNCH BAY",    x:575,y:325,w:190,h:110, color:"#ffd600", danger:3, tier:"Enhanced",  tcolor:"#4a9eff",
+       desc:"Shuttle launch bay. Arms Lockers line the loading dock. Players exiting Reactor Core funnel through here — expect traffic late-game.",
+       loot:["Arms Locker ×3","Munitions Crate ×3","Unstable Gunmetal ×6"],
+       tip:"Hold the dock entrance, not the open bay floor. Reactor Core runners will push through in a hurry."},
+      {id:"extract_c",    label:"EXTRACT ⬡",    x:355,y:215,w:120,h:80,  color:"#ffd600", danger:4, tier:"Extraction", tcolor:"#ffd600",
+       desc:"Central extraction. Flanked by Command Deck and Server Hub — maximum exposure from all angles. Every player on the map can reach this in 30 seconds.",
+       loot:["Extraction Point"],
+       tip:"Use a decoy or smoke. Never beacon in the open. Approach from Maint. Ring — it's the least-watched angle."},
+    ],
+    pins:[
+      {x:480,y: 42,icon:"💻",label:"Command Terminal", tip:"Command Deck — Reclaimed Chipsets + Fractal Circuits. Must-visit.", hot:true},
+      {x:685,y:125,icon:"☢️",label:"Reactor Pulse",    tip:"Volatile Lens here. Enter AFTER the 90s radiation pulse.", hot:true},
+      {x: 98,y:357,icon:"📡",label:"Upload Protocol",  tip:"Server Hub — trigger the event for a Superior Cache."},
+      {x: 95,y:100,icon:"📦",label:"Cargo Crates",     tip:"Cargo Bay — 4 Munitions Crates. Fractal Circuits guaranteed."},
+      {x:415,y:228,icon:"🚀",label:"Central Extract",  tip:"Most exposed extract. Smoke the approach from Command Deck.", hot:true},
     ]
   },
   dire_marsh: {
