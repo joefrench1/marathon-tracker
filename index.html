@@ -76,7 +76,43 @@ body {
   display: flex;
   gap: 20px;
   align-items: center;
+  flex: 1;
+  justify-content: center;
 }
+
+#live-players-widget {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 14px;
+  border: 1px solid rgba(57,255,20,.25);
+  background: rgba(57,255,20,.04);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+#live-players-widget .lpw-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: lpw-pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes lpw-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--green); }
+  50%       { opacity: .4; box-shadow: none; }
+}
+#live-players-widget .lpw-count {
+  font-size: 1.1rem; font-weight: 700; color: var(--green);
+  line-height: 1; font-family: 'Orbitron', monospace;
+}
+#live-players-widget .lpw-label {
+  font-size: .62rem; color: var(--text-dead); letter-spacing: 1.5px;
+  text-transform: uppercase; line-height: 1.3;
+}
+#live-players-widget.lpw-loading .lpw-count { color: var(--text-dead); }
+#live-players-widget.lpw-error  { border-color: rgba(255,51,102,.2); background: rgba(255,51,102,.04); }
+#live-players-widget.lpw-error .lpw-dot { background: var(--red); animation: none; opacity: .5; }
+#live-players-widget.lpw-error .lpw-count { color: var(--text-dead); font-size: .75rem; }
 .hs      { text-align: center; }
 .hs .v   { font-size: 1.25rem; font-weight: 700; display: block; line-height: 1; }
 .hs .l   { font-size: .72rem; color: var(--text-dead); letter-spacing: 1.5px; margin-top: 2px; display: block; text-transform: uppercase; }
@@ -653,6 +689,13 @@ body {
     <div class="hs hs-hoverable" id="hs-salv" onmouseenter="showSalvHdrTT(event)" onmouseleave="hideTT()" onmousemove="moveTT(event)">
       <span class="v" id="h-salv" style="color:var(--orange)">0</span>
       <span class="l">MATERIALS</span>
+    </div>
+    <div id="live-players-widget" class="lpw-loading" title="Live player count from Steam — updates every 5 minutes">
+      <div class="lpw-dot"></div>
+      <div>
+        <span class="lpw-count" id="lpw-count">—</span>
+        <span class="lpw-label" style="display:block">LIVE PLAYERS</span>
+      </div>
     </div>
   </div>
 
@@ -4659,6 +4702,43 @@ function renderToolsContent() {
     renderAmmo();
   }
 }
+
+// ══════════════════════════════════════════
+// LIVE PLAYER COUNT — Steam Web API
+// App ID 3065800 = Marathon (Bungie)
+// ══════════════════════════════════════════
+
+(function initLivePlayerCount() {
+  const STEAM_URL = "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=3065800";
+  const REFRESH_MS = 5 * 60 * 1000; // 5 minutes (Steam API update cadence)
+
+  async function fetchPlayers() {
+    const widget = document.getElementById("live-players-widget");
+    const countEl = document.getElementById("lpw-count");
+    if (!widget || !countEl) return;
+
+    try {
+      const res  = await fetch(STEAM_URL);
+      const data = await res.json();
+      const n    = data?.response?.player_count;
+      if (typeof n === "number") {
+        countEl.textContent = n.toLocaleString();
+        widget.classList.remove("lpw-loading", "lpw-error");
+        widget.title = `${n.toLocaleString()} players in Marathon right now · updates every 5 min`;
+      } else {
+        throw new Error("unexpected response");
+      }
+    } catch(e) {
+      widget.classList.add("lpw-error");
+      widget.classList.remove("lpw-loading");
+      countEl.textContent = "N/A";
+      widget.title = "Could not fetch live player count";
+    }
+  }
+
+  fetchPlayers();
+  setInterval(fetchPlayers, REFRESH_MS);
+})();
 
 // ── INIT ──
 buildFbar();
