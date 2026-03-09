@@ -1,3 +1,8 @@
+let sessionCode  = null;
+let squadPlayers = {};
+let sqPollTimer  = null;
+let squadViewTab = null;
+let widgetOpen   = false;
 function renderAuthWidget() {
   const el = document.getElementById("auth-widget");
   if (!el) return;
